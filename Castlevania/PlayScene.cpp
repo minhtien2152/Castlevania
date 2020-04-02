@@ -219,7 +219,7 @@ void CPlayScene::LoadScene()
 
 	f.close();
 
-	CTextures::GetInstance()->Add(ID_TEX_BBOX, L"textures\\bbox.png", D3DCOLOR_XRGB(255, 255, 255));
+	CTextures::GetInstance()->Add(ID_TEX_BBOX, L"Resources\\bbox.png", D3DCOLOR_XRGB(255, 255, 255));
 
 	DebugOut(L"[INFO] Done loading scene resources %s\n", sceneFilePath);
 }
@@ -359,7 +359,8 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		return;//chi can else 1 lan 
 	if (simon->GetState() == SIMON_SIT_ATTACK && simon->animation_set->at(SIMON_SIT_ATTACK)->IsOver() == false)
 		return;//
-
+	if (simon->GetState() == SIMON_DEFLECT&& simon->animation_set->at(SIMON_DEFLECT)->IsOver() == false)
+		return;//
 	if (simon->isJumping)
 		return;
 

@@ -1,6 +1,8 @@
 #include "Simon.h"
 #include "Utils.h"
 #include "Define.h"
+#include "Zombie.h"
+
 bool Simon::IsAttacking()
 {
 	return state == SIMON_SIT_ATTACK || state == SIMON_STAND_ATTACK;
@@ -9,7 +11,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CGameObject::Update(dt);
 
-
+	
 	// simple fall down
 	vy += SIMON_GRAVITY*dt;
 
@@ -22,11 +24,11 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	coEvents.clear();
 
 	CalcPotentialCollisions(coObjects, coEvents);
-	// turn off collision when die 
-	/*if (state != MARIO_STATE_DIE)
-		CalcPotentialCollisions(coObjects, coEvents);*/
-
-	// reset untouchable timer if untouchable time has passed
+	if (GetTickCount() - invulnerable_start > SIMON_INVULNERABLE_TIME)
+	{
+		invulnerable_start = 0;
+		isInvulerable = 0;
+	}
 
 
 	// No collision occured, proceed normally
@@ -51,42 +53,22 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			isJumping = false;
 		}
 
-		// Collision logic with Goombas
-		//for (UINT i = 0; i < coEventsResult.size(); i++)
-		//{
-		//	LPCOLLISIONEVENT e = coEventsResult[i];
+		 //Collision logic with Goombas
+		for (UINT i = 0; i < coEventsResult.size(); i++)
+		{
+			LPCOLLISIONEVENT e = coEventsResult[i];
 
-		//	if (dynamic_cast<CGoomba*>(e->obj)) // if e->obj is Goomba 
-		//	{
-		//		CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
+			if (dynamic_cast<CZombie*>(e->obj)) // zombie
+			{
+				CZombie* zombie = dynamic_cast<CZombie*>(e->obj);
+				if (e->ny != 0||e->nx !=0)
+				{
+					if(!isInvulerable)
+						SetState(SIMON_DEFLECT);
 
-		//		// jump on top >> kill Goomba and deflect a bit 
-		//		if (e->ny < 0)
-		//		{
-		//			if (goomba->GetState() != GOOMBA_STATE_DIE)
-		//			{
-		//				goomba->SetState(GOOMBA_STATE_DIE);
-		//				vy = -MARIO_JUMP_DEFLECT_SPEED;
-		//			}
-		//		}
-		//		else if (e->nx != 0)
-		//		{
-		//			if (untouchable == 0)
-		//			{
-		//				if (goomba->GetState() != GOOMBA_STATE_DIE)
-		//				{
-		//					if (level > MARIO_LEVEL_SMALL)
-		//					{
-		//						level = MARIO_LEVEL_SMALL;
-		//						StartUntouchable();
-		//					}
-		//					else
-		//						SetState(MARIO_STATE_DIE);
-		//				}
-		//			}
-		//		}
-		//	}
-		//}
+				}
+			}
+		}
 	}
 
 	// clean up collision events
@@ -99,7 +81,10 @@ void Simon::Render()
 	if (isJumping && IsAttacking() && animations[state]->IsOver())
 		tempState = SIMON_JUMP;*/
 	//DebugOut(L"[INFO] vy: %d\n", vy);
-	animation_set->at(state)->Render(x, y,nx);
+	int alpha = 255;
+	if (isInvulerable > 0)
+		alpha /= 2;
+	animation_set->at(state)->Render(x, y,nx,alpha);
 	//animations[state]->SetFrame(animations[tempState]->GetCurrentFrame());
 	RenderBoundingBox();
 }
@@ -128,9 +113,15 @@ void Simon::SetState(int state)
 	case SIMON_SIT_ATTACK:	case SIMON_STAND_ATTACK:
 		animation_set->at(state)->Reset();
 		animation_set->at(state)->SetAniStartTime(GetTickCount());
-		
 		break;
-
+	case SIMON_DEFLECT:
+		vx = nx*SIMON_DEFLECT_SPEED_X;
+		vy = -SIMON_DEFLECT_SPEED_Y;
+		animation_set->at(state)->Reset();
+		animation_set->at(state)->SetAniStartTime(GetTickCount());
+		isInvulerable = true;
+		invulnerable_start = GetTickCount();
+		break;
 	default:
 		break;
 	}

@@ -2,8 +2,8 @@
 
 void CZombie::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
-	left = x;
-	top = y;
+	left = x+1;
+	top = y+1;
 	right = x + ZOMBIE_BBOX_WIDTH;
 	bottom = y + ZOMBIE_BBOX_HEIGHT;
 
@@ -76,7 +76,7 @@ void CZombie::SetState(int state)
 		vy = 0;
 		break;
 	case ZOMBIE_STATE_WALKING:
-		vx = nx*ZOMBIE_WALKING_SPEED;
+		//vx = nx*ZOMBIE_WALKING_SPEED;
 		break;
 	}
 
