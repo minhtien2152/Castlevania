@@ -1,0 +1,40 @@
+# id	file_path			
+[RESOURCES]
+1	Simon.txt
+2	Ground.txt
+3	Zombie.txt
+				
+[OBJECTS]
+# type	x	y	ani_set_id	extra_settings per object type
+# type: 1= Simon , 2 =Ground , 3 = Zombie				
+# Simon				
+1	50	0	1
+
+#Zombie				
+3	200	135	3
+
+#Ground				
+# --- platform (hint: I created the list using Excel!) ----				
+2	0	400	2
+2	32	400	2
+2	64	400	2
+2	96	400	2
+2	128	400	2
+2	160	400	2
+2	192	400	2
+2	224	400	2
+2	256	400	2
+2	288	400	2
+2	320	400	2
+2	352	400	2
+2	384	400	2
+2	416	400	2
+2	448	400	2
+2	480	400	2
+2	512	400	2
+2	544	400	2
+2	576	400	2
+2	608	400	2
+2	640	400	2
+2	672	400	2
+2	704	400	2

@@ -1,15 +1,13 @@
 #pragma once
-
-#include "Game.h"
-#include "Simon.h"
-class Input : public CKeyEventHandler
+#include <Windows.h>
+/*
+	Abstract class to define keyboard event handlers
+*/
+class CKeyEventHandler
 {
-	Simon* simon;
-	CGame* game;
 public:
-	Input(Simon* s,CGame *g);
-	virtual void KeyState(BYTE* states);
-	virtual void OnKeyDown(int KeyCode);
-	virtual void OnKeyUp(int KeyCode);
+	virtual void KeyState(BYTE* state) = 0;
+	virtual void OnKeyDown(int KeyCode) = 0;
+	virtual void OnKeyUp(int KeyCode) = 0;
 };
-
+typedef CKeyEventHandler* LPKEYEVENTHANDLER;

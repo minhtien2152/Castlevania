@@ -5,11 +5,8 @@ void CZombie::GetBoundingBox(float& left, float& top, float& right, float& botto
 	left = x;
 	top = y;
 	right = x + ZOMBIE_BBOX_WIDTH;
+	bottom = y + ZOMBIE_BBOX_HEIGHT;
 
-	if (state == ZOMBIE_STATE_DIE)
-		bottom = y + ZOMBIE_BBOX_HEIGHT_DIE;
-	else
-		bottom = y + ZOMBIE_BBOX_HEIGHT;
 }
 
 void CZombie::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -17,28 +14,55 @@ void CZombie::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	CGameObject::Update(dt, coObjects);
 
 	
+	// Check collision between zombie and ground (falling on ground)
+	vector<LPCOLLISIONEVENT> coEvents;
+	vector<LPCOLLISIONEVENT> coEventsResult;
 
-	x += dx;
-	y += dy;
+	coEvents.clear();
 
-	if (vx < 0 && x < 0) {
-		x = 0; vx = -vx;
+	CalcPotentialCollisions(coObjects, coEvents);
+
+	if (coEvents.size() == 0)
+	{
+		x += dx;
+		y += dy;
+		vy += ZOMBIE_GRAVITY * dt;
+	}
+	else
+	{
+		float min_tx, min_ty, nx = 0, ny = 0;
+
+		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny);
+
+		x += min_tx * dx + nx * 0.1f;
+		y += min_ty * dy + ny * 0.1f;
+
+		if (nx != 0 && ny == 0)
+		{
+			this->nx *= -1;
+			this->vx *= -1;
+		}
+		else if (ny == -1.0f)
+		{
+			vy = 0;
+		}
 	}
 
-	if (vx > 0 && x > 290) {
-		x = 290; vx = -vx;
-	}
+	// clean up collision events
+	for (int i = 0; i < coEvents.size(); i++) delete coEvents[i];
 }
 
 void CZombie::Render()
 {
-	int ani = ZOMBIE_ANI_WALKING;
-	if (state == ZOMBIE_STATE_DIE) {
-		ani = ZOMBIE_ANI_DIE;
-	}
+	if(state!= ZOMBIE_STATE_DIE)
+		animation_set->at(state)->Render(x, y,nx);
+	RenderBoundingBox();
+}
 
-	animations[ani]->Render(x, y,1);
-	//RenderBoundingBox();
+CZombie::CZombie()
+{
+	SetState(ZOMBIE_STATE_WALKING);
+	nx = -1;
 }
 
 void CZombie::SetState(int state)
@@ -47,12 +71,13 @@ void CZombie::SetState(int state)
 	switch (state)
 	{
 	case ZOMBIE_STATE_DIE:
-		y += ZOMBIE_BBOX_HEIGHT - ZOMBIE_BBOX_HEIGHT_DIE + 1;
+		
 		vx = 0;
 		vy = 0;
 		break;
 	case ZOMBIE_STATE_WALKING:
-		vx = -ZOMBIE_WALKING_SPEED;
+		vx = nx*ZOMBIE_WALKING_SPEED;
+		break;
 	}
 
 }

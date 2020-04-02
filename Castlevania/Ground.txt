@@ -1,0 +1,18 @@
+# id	file_path	transparent_color_r	g	b	
+[TEXTURES]
+2	Resources\Ground.png	255	0	255
+
+# id	left	top	right	bottom	texture_id
+[SPRITES]
+# ground1					
+20001	0	0	32	32	2
+#ground2					
+20002	32	0	64	32	2
+
+# ani_id	sprite1_id	time1	sprite2_id	time2	...
+[ANIMATIONS]
+ ground1	20001	100
+ ground2	20002	100
+
+[ANIMATION_SETS]
+2	 ground1	 ground2

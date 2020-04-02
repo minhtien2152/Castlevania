@@ -1,5 +1,5 @@
 #pragma once
-#include"Sprite.h"
+#include"Sprites.h"
 
 class CAnimationFrame
 {

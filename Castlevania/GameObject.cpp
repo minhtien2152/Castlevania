@@ -1,7 +1,7 @@
 #include "GameObject.h"
 #include <algorithm>
 
-#include "debug.h"
+#include "Utils.h"
 #include "Game.h"
 #include "Textures.h"
 
@@ -128,11 +128,7 @@ void CGameObject::RenderBoundingBox()
 	CGame::GetInstance()->Draw(l, t, bbox, 0, 0, rect.right, rect.bottom, 32);
 }
 
-void CGameObject::AddAnimation(int aniId)
-{
-	LPANIMATION ani = CAnimations::GetInstance()->Get(aniId);
-	animations.push_back(ani);
-}
+
 
 
 

@@ -1,16 +1,16 @@
 #pragma once
-#include"Animation.h"
+#include "Animation.h"
 
 class CAnimations
 {
 	static CAnimations* __instance;
 
-	unordered_map<int, LPANIMATION> animations;
+	unordered_map<string, LPANIMATION> animations;
 
 public:
-	void Add(int id, LPANIMATION ani);
-	LPANIMATION Get(int id);
-
+	void Add(string id, LPANIMATION ani);
+	LPANIMATION Get(string id);
+	void Clear();
 	static CAnimations* GetInstance();
 };
 

@@ -1,7 +1,7 @@
 #pragma once
 #include "GameObject.h"
 
-class CBrick : public CGameObject
+class Ground : public CGameObject
 {
 public:
 	virtual void Render();

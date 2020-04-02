@@ -1,5 +1,5 @@
 #include "Simon.h"
-#include "Debug.h"
+#include "Utils.h"
 #include "Define.h"
 bool Simon::IsAttacking()
 {
@@ -13,7 +13,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// simple fall down
 	vy += SIMON_GRAVITY*dt;
 
-	if (isJumping && IsAttacking() && animations[state]->IsOver())
+	if (isJumping && IsAttacking() && animation_set->at(state)->IsOver())
 		CGameObject::SetState(SIMON_JUMP);
 
 	vector<LPCOLLISIONEVENT> coEvents;
@@ -98,8 +98,8 @@ void Simon::Render()
 	/*int tempState = state;
 	if (isJumping && IsAttacking() && animations[state]->IsOver())
 		tempState = SIMON_JUMP;*/
-	DebugOut(L"[INFO] vy: %d\n", vy);
-	animations[state]->Render(x, y,nx);
+	//DebugOut(L"[INFO] vy: %d\n", vy);
+	animation_set->at(state)->Render(x, y,nx);
 	//animations[state]->SetFrame(animations[tempState]->GetCurrentFrame());
 	RenderBoundingBox();
 }
@@ -111,11 +111,11 @@ void Simon::SetState(int state)
 	{
 	case SIMON_STAND:
 		vx = 0;
-		
+		isSitting = false;
 		break;
 	case SIMON_WALK:
 	 vx = -nx*SIMON_WALKING_SPEED;
-	
+	 isSitting = false;
 		break;
 	case SIMON_JUMP:
 		vy = -SIMON_JUMP_SPEED_Y;
@@ -123,11 +123,11 @@ void Simon::SetState(int state)
 		break;
 	case SIMON_SIT:
 		vx = 0;
-	
+		isSitting = true;
 		break;
 	case SIMON_SIT_ATTACK:	case SIMON_STAND_ATTACK:
-		animations[state]->Reset();
-		animations[state]->SetAniStartTime(GetTickCount());
+		animation_set->at(state)->Reset();
+		animation_set->at(state)->SetAniStartTime(GetTickCount());
 		
 		break;
 
@@ -138,8 +138,19 @@ void Simon::SetState(int state)
 
 void Simon::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
-	left = x+18;
-	top = y;
-	right = left + SIMON_BBOX_WIDTH;
-	bottom = y + SIMON_BBOX_HEIGHT;
+	if (isSitting)
+	{
+		left = x + 16;
+		top = y+18;
+		right = left + SIMON_BBOX_WIDTH;
+		bottom = y + SIMON_BBOX_HEIGHT;
+	}
+	else
+	{
+		left = x + 16;
+		top = y+2;
+		right = left + SIMON_BBOX_WIDTH;
+		bottom = y + SIMON_BBOX_HEIGHT;
+	
+	}
 }

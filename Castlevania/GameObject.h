@@ -2,12 +2,12 @@
 #include <Windows.h>
 #include <d3dx9.h>
 #include <vector>
-#include "Animations.h"
+#include "AnimationSets.h"
 
 
 using namespace std;
 
-#define ID_TEX_BBOX -100		// special texture to draw object bounding box
+
 
 class CGameObject;
 typedef CGameObject* LPGAMEOBJECT;
@@ -48,7 +48,7 @@ public:
 
 	int state;
 
-	vector<LPANIMATION> animations;
+	LPANIMATION_SET animation_set;
 
 public:
 	
@@ -59,7 +59,7 @@ public:
 	void SetDirection(int nx) { this->nx = nx; }
 	int GetState() { return this->state; }
 	
-	void AddAnimation(int aniId);
+	void SetAnimationSet(LPANIMATION_SET ani_set) { animation_set = ani_set; }
 
 	void RenderBoundingBox();
 

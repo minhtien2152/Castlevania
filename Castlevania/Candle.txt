@@ -1,0 +1,20 @@
+# id	file_path	transparent_color_r	g	b	
+[TEXTURES]					
+4	Resources\Candle.png	255	0	255	
+					
+# id	left	top	right	bottom	texture_id
+[SPRITES]					
+#Big_candle					
+40001	0	0	32	64	4
+40002	32	0	64	64	4
+#Small_candle					
+40003	64	0	80	32	4
+40004	80	0	96	32	4
+					
+# ani_id	sprite1_id	time1	sprite2_id	time2	...
+[ANIMATIONS]					
+big_candle	40001	150	40002	150	
+small_candle	40003	150	40004	150	
+					
+[ANIMATION_SETS]					
+4	big_candle	small_candle			

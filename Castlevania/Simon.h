@@ -1,8 +1,8 @@
 #pragma once
 #include"GameObject.h"
 
-#define SIMON_WALKING_SPEED		0.12f
-#define SIMON_JUMP_SPEED_Y		0.6f
+#define SIMON_WALKING_SPEED		0.2f
+#define SIMON_JUMP_SPEED_Y		0.5f
 #define SIMON_GRAVITY			0.002f
 
 

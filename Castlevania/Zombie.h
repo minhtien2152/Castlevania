@@ -1,17 +1,18 @@
 #pragma once
 #include "GameObject.h"
 
-#define ZOMBIE_WALKING_SPEED 0.05f;
+#define ZOMBIE_WALKING_SPEED		0.15f
+#define ZOMBIE_GRAVITY				0.002f
+#define ZOMBIE_MAX_DISTANCE			1200.0f
 
-#define ZOMBIE_BBOX_WIDTH 16
-#define ZOMBIE_BBOX_HEIGHT 15
-#define ZOMBIE_BBOX_HEIGHT_DIE 9
+#define ZOMBIE_BBOX_WIDTH			32
+#define ZOMBIE_BBOX_HEIGHT			64
 
-#define ZOMBIE_STATE_WALKING 100
-#define ZOMBIE_STATE_DIE 200
 
-#define ZOMBIE_ANI_WALKING 0
-#define ZOMBIE_ANI_DIE 1
+#define ZOMBIE_STATE_WALKING 0
+#define ZOMBIE_STATE_DIE 1
+
+
 
 class CZombie : public CGameObject
 {
@@ -21,5 +22,6 @@ class CZombie : public CGameObject
 
 
 public:
+	CZombie();
 	virtual void SetState(int state);
 };

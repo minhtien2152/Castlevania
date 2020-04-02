@@ -1,9 +1,9 @@
 #include "Animation.h"
-#include"Sprites.h"
+
 
 CAnimation::CAnimation(int defaultTime)
 {
-	this->defaultTime = defaultTime; 
+	this->defaultTime = defaultTime;
 	lastFrameTime = -1;
 	currentFrame = -1;
 	totalFrameTime = 0;
@@ -19,7 +19,7 @@ void CAnimation::Add(int spriteId, DWORD time)
 	totalFrameTime += time;
 }
 
-void CAnimation::Render(float x, float y,int nx,int alpha)
+void CAnimation::Render(float x, float y, int nx, int alpha)
 {
 	DWORD now = GetTickCount();
 	if (currentFrame == -1)
@@ -39,7 +39,6 @@ void CAnimation::Render(float x, float y,int nx,int alpha)
 		}
 
 	}
-	
-	frames[currentFrame]->GetSprite()->Draw(x, y,nx,alpha);
-}
 
+	frames[currentFrame]->GetSprite()->Draw(x, y, nx, alpha);
+}

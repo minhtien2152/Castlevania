@@ -2,7 +2,7 @@
 
 CAnimationFrame::CAnimationFrame(LPSPRITE sprite, int time)
 {
-	this->sprite = sprite; 
+	this->sprite = sprite;
 	this->time = time;
 }
 
@@ -15,3 +15,4 @@ LPSPRITE CAnimationFrame::GetSprite()
 {
 	return this->sprite;
 }
+
