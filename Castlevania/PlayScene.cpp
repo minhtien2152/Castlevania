@@ -293,7 +293,7 @@ void CPlayScene::Update(DWORD dt)
 	cx -= game->GetScreenWidth() / 2-SIMON_BBOX_WIDTH;
 	cy -= game->GetScreenHeight() / 2 - SIMON_BBOX_HEIGHT;
 
-	CGame::GetInstance()->SetCamPos(cx, 0/*cy*/);
+	CGame::GetInstance()->SetCamPos(cx,0);
 	DebugOut(L"Cx = %d , Cy = %d\n", cx, cy);
 }
 

@@ -18,6 +18,7 @@
 #define SIMON_BBOX_WIDTH 30
 #define SIMON_BBOX_HEIGHT 63
 #define SIMON_JUMP_BBOX_HEIGHT 43
+#define SIMON_PULL_UP 11
 
 // Ground
 #define GROUND_BBOX_WIDTH			32

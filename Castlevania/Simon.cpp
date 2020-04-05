@@ -15,8 +15,8 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// simple fall down
 	vy += SIMON_GRAVITY*dt;
 
-	if (isJumping && IsAttacking() && animation_set->at(state)->IsOver())
-		CGameObject::SetState(SIMON_JUMP);
+	/*if (isJumping && IsAttacking() && animation_set->at(state)->IsOver())
+		CGameObject::SetState(SIMON_JUMP);*/
 
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
@@ -44,8 +44,8 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny);
 
 		// block 
-		x += min_tx * dx + nx * 0.4f;		// nx*0.4f : need to push out a bit to avoid overlapping next frame
-		y += min_ty * dy + ny * 0.4f;
+		x += min_tx * dx + nx * 0.5f;		// nx*0.4f : need to push out a bit to avoid overlapping next frame
+		y += min_ty * dy + ny * 0.5f;
 
 		if (nx != 0) vx = 0;
 		if (ny != 0) {
@@ -96,19 +96,30 @@ void Simon::SetState(int state)
 	{
 	case SIMON_STAND:
 		vx = 0;
-		isSitting = false;
+		PullUp();
+	
 		break;
 	case SIMON_WALK:
-	 vx = -nx*SIMON_WALKING_SPEED;
-	 isSitting = false;
+		if (isSitting)
+			PullUp();
+	
+		vx = -nx*SIMON_WALKING_SPEED;
+		
 		break;
 	case SIMON_JUMP:
 		vy = -SIMON_JUMP_SPEED_Y;
 		isJumping = true;
+		isSitting = true;
 		break;
 	case SIMON_SIT:
-		vx = 0;
+		if (isSitting == false)
+		{
+			y = y + SIMON_PULL_UP;
+		}
 		isSitting = true;
+		vx = 0;
+
+		
 		break;
 	case SIMON_SIT_ATTACK:	case SIMON_STAND_ATTACK:
 		animation_set->at(state)->Reset();
@@ -127,9 +138,19 @@ void Simon::SetState(int state)
 	}
 }
 
-void Simon::GetBoundingBox(float& left, float& top, float& right, float& bottom)
+void Simon::PullUp()
 {
 	if (isSitting)
+	{
+		isSitting = false;
+		y = y - SIMON_PULL_UP;
+
+	}
+}
+
+void Simon::GetBoundingBox(float& left, float& top, float& right, float& bottom)
+{
+	/*if (isSitting)
 	{
 		left = x + 16;
 		top = y+18;
@@ -143,5 +164,14 @@ void Simon::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 		right = left + SIMON_BBOX_WIDTH;
 		bottom = y + SIMON_BBOX_HEIGHT;
 	
-	}
+	}*/
+
+		left = x + 16;
+		top = y + 2;
+		right = left + SIMON_BBOX_WIDTH;
+		bottom = y + SIMON_BBOX_HEIGHT;
+
+		if (isJumping||isSitting)
+			bottom = y + SIMON_BBOX_HEIGHT- SIMON_PULL_UP;
+	
 }
