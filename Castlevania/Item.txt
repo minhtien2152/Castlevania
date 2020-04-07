@@ -1,0 +1,78 @@
+# id	file_path	transparent_color_r	g	b
+[TEXTURES]
+7	Resources\Items.png	255	0	255
+
+# id	left	top	right	bottom	texture_id
+[SPRITES]
+#stopwatch	
+70001	194	0	224	32	7
+#smallheart	
+70002	0	0	16	16	7
+#largeheart	
+70003	16	0	40	20	7
+#redmoneybag	
+70004	40	0	70	30	7
+#whitemoneybag	
+70005	70	0	100	30	7
+#bluemoneybag	
+70006	100	0	130	30	7
+#chain	
+70007	130	0	162	32	7
+#dagger	
+70008	162	0	194	18	7
+#cross	
+70009	224	0	256	32	7
+#axe	
+70010	256	0	286	28	7
+#invisibilitypotion	
+70011	286	0	312	32	7
+#treasurechest_1	
+70012	312	0	344	24	7
+#treasurechest_2	
+70013	344	0	376	24	7
+#boomerang	
+70014	0	32	30	60	7
+#holywater	
+70015	30	32	62	64	7
+#porkchop	
+70016	62	32	94	58	7
+#doubleshot	
+70017	94	32	122	60	7
+#tripleshot	
+70018	164	32	192	60	7
+#magiccrystal_1	
+70019	234	32	260	64	7
+#magiccrystal_2	
+70020	260	32	286	64	7
+#crown_1	
+70021	286	32	316	64	7
+#crown_2	
+70020	316	32	346	64	7
+
+# ani_id	sprite1_id	time1	sprite2_id	time2	...			
+[ANIMATIONS]
+stopwatch	70001	100
+smallheart	70002	100
+largeheart	70003	100
+redmoneybag	70004	100
+whitemoneybag	70005	100
+bluemoneybag	70006	100
+chain	70007	100
+dagger	70008	100
+cross	70009	100
+axe	70010	100
+invispotion	70011	100
+treasurechest_1	70012	100
+treasurechest_2	70013	100
+boomerang	70014	100
+holywater	70015	100
+porkchop	70016	100
+doubleshot	70017	100
+tripleshot	70018	100
+magiccrystal_1	70019	100
+magiccrystal_2	70020	100
+crown_1	70021	100
+crown_2	70020	100
+
+[ANIMATION_SETS]
+7	stopwatch	smallheart	largeheart	redmoneybag	whitemoneybag	bluemoneybag	chain	dagger	cross	axe	invispotion	treasurechest_1	treasurechest_2	boomerang	holywater	porkchop	doubleshot	tripleshot	magiccrystal_1	magiccrystal_2	crown_1	crown_2

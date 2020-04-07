@@ -1,6 +1,6 @@
 #pragma once
 #include "GameObject.h"
-
+#include "Ground.h"
 #define ZOMBIE_WALKING_SPEED		0.15f
 #define ZOMBIE_GRAVITY				0.002f
 #define ZOMBIE_MAX_DISTANCE			1200.0f
@@ -16,12 +16,11 @@
 
 class CZombie : public CGameObject
 {
+	
+public:
+	CZombie();
+
 	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	virtual void Render();
-
-
-public:
-	CZombie();
-	virtual void SetState(int state);
 };

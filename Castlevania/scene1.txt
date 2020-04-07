@@ -3,7 +3,9 @@
 1	Simon.txt
 2	Ground.txt
 3	Zombie.txt
-				
+4	Candle.txt
+5	MorningStar.txt
+6	Item.txt
 [OBJECTS]
 # type	x	y	ani_set_id	extra_settings per object type
 # type: 1= Simon , 2 =Ground , 3 = Zombie				
@@ -12,6 +14,9 @@
 
 #Zombie				
 3	200	135	3
+
+#Candle
+4	32	350	4
 
 #Ground				
 # --- platform (hint: I created the list using Excel!) ----				

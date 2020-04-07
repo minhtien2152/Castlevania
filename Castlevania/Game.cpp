@@ -425,6 +425,11 @@ void CGame::SweptAABB(
 
 }
 
+bool CGame::IsOverlapping(float ml, float mt, float mr, float mb, float sl, float st, float sr, float sb)
+{
+	return !(mr < sl || ml > sr || mb < st || mt > sb);
+}
+
 CGame* CGame::GetInstance()
 {
 	if (__instance == NULL) __instance = new CGame();

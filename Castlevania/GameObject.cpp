@@ -13,6 +13,29 @@ CGameObject::CGameObject()
 	nx = 1;
 }
 
+bool CGameObject::IsOverlapping(CGameObject* obj)
+{
+	float l, t, r, b;
+	float l1, t1, r1, b1;
+	this->GetBoundingBox(l, t, r, b);
+	obj->GetBoundingBox(l1, t1, r1, b1);
+
+	if (CGame::GetInstance()->IsOverlapping(l, t, r, b, l1, t1, r1, b1))
+		return true;
+
+	return false;
+}
+
+bool CGameObject::IsColiding(CGameObject* obj)
+{
+	if (IsOverlapping(obj)) // ki?m tra va ch?m b?ng AABB tr??c
+		return true;
+
+	LPCOLLISIONEVENT e = SweptAABBEx(obj); // kt va ch?m gi?a 2 object b?ng sweptAABB
+	bool res = e->t > 0 && e->t <= 1.0f; // ?K va ch?m
+	return res;
+}
+
 void CGameObject::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	this->dt = dt;

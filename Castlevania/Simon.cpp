@@ -3,6 +3,15 @@
 #include "Define.h"
 #include "Zombie.h"
 
+Simon::Simon()
+{
+	mainWeapon = new Whip();
+}
+
+Simon::~Simon()
+{
+}
+
 bool Simon::IsAttacking()
 {
 	return state == SIMON_SIT_ATTACK || state == SIMON_STAND_ATTACK;
@@ -15,8 +24,8 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// simple fall down
 	vy += SIMON_GRAVITY*dt;
 
-	/*if (isJumping && IsAttacking() && animation_set->at(state)->IsOver())
-		CGameObject::SetState(SIMON_JUMP);*/
+	if (isJumping && IsAttacking() && animation_set->at(state)->IsOver())
+		CGameObject::SetState(SIMON_JUMP);									//khi roi xuong luon co chan
 
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
@@ -44,8 +53,8 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny);
 
 		// block 
-		x += min_tx * dx + nx * 0.5f;		// nx*0.4f : need to push out a bit to avoid overlapping next frame
-		y += min_ty * dy + ny * 0.5f;
+		x += min_tx * dx + nx * 0.4f;		// nx*0.4f : need to push out a bit to avoid overlapping next frame
+		y += min_ty * dy + ny * 0.4f;
 
 		if (nx != 0) vx = 0;
 		if (ny != 0) {
@@ -70,7 +79,11 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			}
 		}
 	}
-
+	if (IsAttacking())
+	{
+		mainWeapon->SetPosition(x, y);
+		mainWeapon->Update(dt, coObjects);
+	}
 	// clean up collision events
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 }
@@ -85,6 +98,7 @@ void Simon::Render()
 	if (isInvulerable > 0)
 		alpha /= 2;
 	animation_set->at(state)->Render(x, y,nx,alpha);
+	if (IsAttacking()) mainWeapon->Render();
 	//animations[state]->SetFrame(animations[tempState]->GetCurrentFrame());
 	RenderBoundingBox();
 }
@@ -121,9 +135,12 @@ void Simon::SetState(int state)
 
 		
 		break;
-	case SIMON_SIT_ATTACK:	case SIMON_STAND_ATTACK:
+	case SIMON_STAND_ATTACK:
+		isSitting = false;
+	case SIMON_SIT_ATTACK:	
 		animation_set->at(state)->Reset();
 		animation_set->at(state)->SetAniStartTime(GetTickCount());
+		Attack();
 		break;
 	case SIMON_DEFLECT:
 		vx = nx*SIMON_DEFLECT_SPEED_X;
@@ -171,7 +188,12 @@ void Simon::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 		right = left + SIMON_BBOX_WIDTH;
 		bottom = y + SIMON_BBOX_HEIGHT;
 
-		if (isJumping||isSitting)
+		if (isJumping&&IsAttacking()&&animation_set->at(state)->IsOver()||isSitting)
 			bottom = y + SIMON_BBOX_HEIGHT- SIMON_PULL_UP;
 	
+}
+
+void Simon::Attack()
+{
+	mainWeapon->Attack(nx, isSitting);
 }

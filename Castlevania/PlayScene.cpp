@@ -169,8 +169,9 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	// General object setup
 	obj->SetPosition(x, y);
 
-	LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
 
+	
+	LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
 	obj->SetAnimationSet(ani_set);
 	objects.push_back(obj);
 }
@@ -186,6 +187,7 @@ void CPlayScene::_ParseSection_RESOURCES(string line)
 
 void CPlayScene::LoadScene()
 {
+	
 	DebugOut(L"[INFO] Start loading scene resources from : %s \n", sceneFilePath);
 
 	ifstream f;
@@ -220,7 +222,12 @@ void CPlayScene::LoadScene()
 	f.close();
 
 	CTextures::GetInstance()->Add(ID_TEX_BBOX, L"Resources\\bbox.png", D3DCOLOR_XRGB(255, 255, 255));
-
+	
+	Item* item = new Item();
+	item->SetState(0);
+	item->SetPosition(33, 33);
+	item->SetAnimationSet(CAnimationSets::GetInstance()->Get(7));
+	objects.push_back(item);
 	DebugOut(L"[INFO] Done loading scene resources %s\n", sceneFilePath);
 }
 
@@ -294,7 +301,7 @@ void CPlayScene::Update(DWORD dt)
 	cy -= game->GetScreenHeight() / 2 - SIMON_BBOX_HEIGHT;
 
 	CGame::GetInstance()->SetCamPos(cx,0);
-	DebugOut(L"Cx = %d , Cy = %d\n", cx, cy);
+	//DebugOut(L"Cx = %d , Cy = %d\n", cx, cy);
 }
 
 void CPlayScene::Render()
@@ -327,7 +334,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		if (simon->isJumping || simon->IsAttacking() || simon->GetState() == SIMON_SIT)
 			return;
 		simon->SetState(SIMON_JUMP);
-		DebugOut(L"[INFO] JUMP ");
+		DebugOut(L"[INFO] JUMP \n");
 		break;
 	case DIK_X:
 		if (simon->IsAttacking())
@@ -342,7 +349,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		{
 			simon->SetState(SIMON_SIT_ATTACK);
 		}
-		DebugOut(L"[INFO] Attack");
+		DebugOut(L"[INFO] Attack\n");
 		break;
 	}
 }
@@ -356,7 +363,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	Simon* simon = ((CPlayScene*)scence)->player;
 
 	if (simon->GetState() == SIMON_STAND_ATTACK && simon->animation_set->at(SIMON_STAND_ATTACK)->IsOver() == false)
-		return;//chi can else 1 lan 
+		return;
 	if (simon->GetState() == SIMON_SIT_ATTACK && simon->animation_set->at(SIMON_SIT_ATTACK)->IsOver() == false)
 		return;//
 	if (simon->GetState() == SIMON_DEFLECT&& simon->animation_set->at(SIMON_DEFLECT)->IsOver() == false)

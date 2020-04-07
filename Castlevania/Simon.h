@@ -1,6 +1,6 @@
 #pragma once
 #include"GameObject.h"
-
+#include "Whip.h"
 #define SIMON_WALKING_SPEED		0.2f
 #define SIMON_JUMP_SPEED_Y		0.5f
 #define SIMON_GRAVITY			0.002f
@@ -23,7 +23,10 @@
 class Simon : public CGameObject
 {
 	DWORD invulnerable_start;
+	Whip* mainWeapon;
 public:
+	Simon();
+	~Simon();
 	bool isJumping = false;
 	bool isSitting = false;
 	bool isInvulerable = false;
@@ -33,6 +36,6 @@ public:
 	void SetState(int state);
 	void PullUp();
 	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
-
+	void Attack();
 };
 

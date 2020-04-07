@@ -19,8 +19,16 @@ void CZombie::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	vector<LPCOLLISIONEVENT> coEventsResult;
 
 	coEvents.clear();
-
-	CalcPotentialCollisions(coObjects, coEvents);
+	vector<LPGAMEOBJECT>* bricks = new vector<LPGAMEOBJECT>();
+	for (UINT i = 0; i < coObjects->size(); i++)
+	{
+		LPGAMEOBJECT obj = coObjects->at(i);
+		if (dynamic_cast<Ground*>(obj))
+			bricks->push_back(obj);
+	}
+	if(state!= ZOMBIE_STATE_DIE)
+		CalcPotentialCollisions(bricks, coEvents);
+	
 
 	if (coEvents.size() == 0)
 	{
@@ -54,8 +62,11 @@ void CZombie::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 void CZombie::Render()
 {
-	if(state!= ZOMBIE_STATE_DIE)
-		animation_set->at(state)->Render(x, y,nx);
+	if (state != ZOMBIE_STATE_DIE)
+	{
+		animation_set->at(state)->Render(x, y, nx);
+		RenderBoundingBox();
+	}
 	RenderBoundingBox();
 }
 
@@ -63,21 +74,4 @@ CZombie::CZombie()
 {
 	SetState(ZOMBIE_STATE_WALKING);
 	nx = -1;
-}
-
-void CZombie::SetState(int state)
-{
-	CGameObject::SetState(state);
-	switch (state)
-	{
-	case ZOMBIE_STATE_DIE:
-		
-		vx = 0;
-		vy = 0;
-		break;
-	case ZOMBIE_STATE_WALKING:
-		//vx = nx*ZOMBIE_WALKING_SPEED;
-		break;
-	}
-
 }

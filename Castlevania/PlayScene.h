@@ -7,7 +7,7 @@
 #include "Zombie.h"
 #include "Simon.h"
 #include "Candle.h"
-
+#include "Item.h"
 #include "Textures.h"
 #include "Animations.h"
 
