@@ -19,6 +19,7 @@ public:
 	void SetFrame(int x) { currentFrame = x; }
 	void Reset() { currentFrame = -1; }
 	int GetCurrentFrame() { return currentFrame; }
+	bool IsRenderingLastFrame();
 
 };
 

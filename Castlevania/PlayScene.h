@@ -10,14 +10,16 @@
 #include "Item.h"
 #include "Textures.h"
 #include "Animations.h"
-
+#include "SparkEffect.h"
 class CPlayScene : public CScene
 {
 protected:
 	Simon* player;					// A play scene has to have player, right? 
 
-	vector<LPGAMEOBJECT> objects;
-
+	vector<LPGAMEOBJECT> objectList;
+	vector<LPGAMEOBJECT> itemList;
+	vector<LPGAMEOBJECT> enemyList;
+	vector<LPEFFECT> effectList;
 	void _ParseSection_TEXTURES(string line);
 	void _ParseSection_SPRITES(string line);
 	void _ParseSection_ANIMATIONS(string line);
@@ -32,7 +34,11 @@ public:
 	virtual void Update(DWORD dt);
 	virtual void Render();
 	virtual void Unload();
-
+	void SpawnItem(LPGAMEOBJECT obj);
+	void CreateEffect(LPGAMEOBJECT obj);
+	void CheckForWeaponCollision();
+	void CheckForEnemyCollison();
+	void GetCollidableObject(LPGAMEOBJECT obj, vector<LPGAMEOBJECT>& coObjects);
 	friend class CPlayScenceKeyHandler;
 };
 

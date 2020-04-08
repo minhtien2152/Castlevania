@@ -6,6 +6,7 @@
 4	Candle.txt
 5	MorningStar.txt
 6	Item.txt
+7	Effect.txt
 [OBJECTS]
 # type	x	y	ani_set_id	extra_settings per object type
 # type: 1= Simon , 2 =Ground , 3 = Zombie				

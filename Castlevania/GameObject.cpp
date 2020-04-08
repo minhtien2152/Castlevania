@@ -11,6 +11,7 @@ CGameObject::CGameObject()
 	x = y = 0;
 	vx = vy = 0;
 	nx = 1;
+	isEnabled = true;
 }
 
 bool CGameObject::IsOverlapping(CGameObject* obj)

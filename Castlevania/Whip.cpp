@@ -29,30 +29,7 @@ void Whip::SetPosition(int x, int y)
 
 void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
-	if (animation_set->at(state)->GetCurrentFrame() != 2)
-		return;
-	for (UINT i = 0; i < coObjects->size(); i++)
-	{
-		LPGAMEOBJECT obj = coObjects->at(i);
-		if (dynamic_cast<CZombie*>(obj))
-		{
-			CZombie* e = dynamic_cast<CZombie*> (obj);
-			if (this->IsColiding(e) == true) 
-			{
-				e->SetState(ZOMBIE_STATE_DIE);
-			
-			}
-		}
-		else if (dynamic_cast<Candle*>(obj))
-		{
-			Candle* e = dynamic_cast<Candle*> (obj);
-			if (this->IsColiding(e) == true)
-			{
-				e->SetState(CANDLE_DESTROYED);
-
-			}
-		}
-	}
+	
 }
 
 void Whip::Render()

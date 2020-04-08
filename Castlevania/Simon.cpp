@@ -60,29 +60,14 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		if (ny != 0) {
 			vy = 0;
 			isJumping = false;
+			if (IsAttacking())
+				vx = 0;
 		}
 
-		 //Collision logic with Goombas
-		for (UINT i = 0; i < coEventsResult.size(); i++)
-		{
-			LPCOLLISIONEVENT e = coEventsResult[i];
-
-			if (dynamic_cast<CZombie*>(e->obj)) // zombie
-			{
-				CZombie* zombie = dynamic_cast<CZombie*>(e->obj);
-				if (e->ny != 0||e->nx !=0)
-				{
-					if(!isInvulerable)
-						SetState(SIMON_DEFLECT);
-
-				}
-			}
-		}
 	}
 	if (IsAttacking())
 	{
 		mainWeapon->SetPosition(x, y);
-		mainWeapon->Update(dt, coObjects);
 	}
 	// clean up collision events
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
@@ -196,4 +181,9 @@ void Simon::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 void Simon::Attack()
 {
 	mainWeapon->Attack(nx, isSitting);
+}
+
+Whip* Simon::GetMainWeapon()
+{
+	return mainWeapon;
 }

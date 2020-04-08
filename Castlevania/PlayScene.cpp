@@ -4,7 +4,7 @@
 
 #include "Utils.h"
 #include"Define.h"
-
+#include <stdlib.h> 
 
 
 using namespace std;
@@ -124,7 +124,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 {
 	vector<string> tokens = split(line);
 
-	DebugOut(L"--> %s\n",ToWSTR(line).c_str());
+	DebugOut(L"--> %s\n", ToWSTR(line).c_str());
 
 	if (tokens.size() < 3) return; // skip invalid lines - an object set must have at least id, x, y
 
@@ -152,15 +152,15 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case Object_Type::GROUND: obj = new Ground(); break;
 	case Object_Type::ZOMBIE: obj = new CZombie(); break;
 	case Object_Type::CANDLE: obj = new Candle(); break;
-	
-	/*case OBJECT_TYPE_PORTAL:
-	{
-		float r = atof(tokens[4].c_str());
-		float b = atof(tokens[5].c_str());
-		int scene_id = atoi(tokens[6].c_str());
-		obj = new CPortal(x, y, r, b, scene_id);
-	}
-	break;*/
+
+		/*case OBJECT_TYPE_PORTAL:
+		{
+			float r = atof(tokens[4].c_str());
+			float b = atof(tokens[5].c_str());
+			int scene_id = atoi(tokens[6].c_str());
+			obj = new CPortal(x, y, r, b, scene_id);
+		}
+		break;*/
 	default:
 		DebugOut(L"[ERR] Invalid object type: %d\n", object_type);
 		return;
@@ -170,10 +170,20 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	obj->SetPosition(x, y);
 
 
-	
+
 	LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
 	obj->SetAnimationSet(ani_set);
-	objects.push_back(obj);
+	switch (object_type)
+	{
+	case Object_Type::SIMON:
+	case Object_Type::GROUND:
+	case Object_Type::CANDLE:
+		objectList.push_back(obj);
+		break;
+	case Object_Type::ZOMBIE:
+		enemyList.push_back(obj);
+
+	}
 }
 
 void CPlayScene::_ParseSection_RESOURCES(string line)
@@ -222,12 +232,7 @@ void CPlayScene::LoadScene()
 	f.close();
 
 	CTextures::GetInstance()->Add(ID_TEX_BBOX, L"Resources\\bbox.png", D3DCOLOR_XRGB(255, 255, 255));
-	
-	Item* item = new Item();
-	item->SetState(0);
-	item->SetPosition(33, 33);
-	item->SetAnimationSet(CAnimationSets::GetInstance()->Get(7));
-	objects.push_back(item);
+	Effect::SetAnimationSet(CAnimationSets::GetInstance()->Get(8));
 	DebugOut(L"[INFO] Done loading scene resources %s\n", sceneFilePath);
 }
 
@@ -278,19 +283,43 @@ void CPlayScene::Update(DWORD dt)
 {
 	// We know that Mario is the first object in the list hence we won't add him into the colliable object list
 	// TO-DO: This is a "dirty" way, need a more organized way 
-
-	vector<LPGAMEOBJECT> coObjects;
-	for (size_t i = 1; i < objects.size(); i++)
+	
+	//update objects
+	for (int i = 0; i < objectList.size(); i++)
 	{
-		coObjects.push_back(objects[i]);
+		LPGAMEOBJECT object = objectList[i];
+		vector<LPGAMEOBJECT> coObjects;
+
+		GetCollidableObject(object, coObjects);
+		object->Update(dt, &coObjects);
+	}
+	//update item
+	for (int i = 0; i < itemList.size(); i++)
+	{
+		LPGAMEOBJECT item = itemList[i];
+		vector<LPGAMEOBJECT> coObjects;
+
+		GetCollidableObject(item, coObjects);
+		item->Update(dt, &coObjects);
+	}
+	//update enemy
+	for (int i = 0; i < enemyList.size(); i++)
+	{
+		LPGAMEOBJECT enemy = enemyList[i];
+		vector<LPGAMEOBJECT> coObjects;
+
+		GetCollidableObject(enemy, coObjects);
+		enemy->Update(dt, &coObjects);
 	}
 
-	for (size_t i = 0; i < objects.size(); i++)
-	{
-		objects[i]->Update(dt, &coObjects);
-	}
+	//update effect
+	for (auto effect : effectList)
+		if(!effect->isFinished)
+			effect->Update(dt);
+	
 
-
+	CheckForWeaponCollision();
+	CheckForEnemyCollison();
 	// Update camera to follow mario
 	float cx, cy;
 	player->GetPosition(cx, cy);
@@ -306,8 +335,15 @@ void CPlayScene::Update(DWORD dt)
 
 void CPlayScene::Render()
 {
-	for (int i = 0; i < objects.size(); i++)
-		objects[i]->Render();
+	for (int i = 0; i < objectList.size(); i++)
+		objectList[i]->Render();
+	for (int i = 0; i < itemList.size(); i++)
+		itemList[i]->Render();
+	for (int i = 0; i < enemyList.size(); i++)
+		enemyList[i]->Render();
+	for (auto effect : effectList)
+		if (!effect->isFinished)
+			effect->Render();
 }
 
 /*
@@ -315,11 +351,92 @@ void CPlayScene::Render()
 */
 void CPlayScene::Unload()
 {
-	for (int i = 0; i < objects.size(); i++)
-		delete objects[i];
+	for (int i = 0; i < objectList.size(); i++)
+		delete objectList[i];
 
-	objects.clear();
+	objectList.clear();
 	player = NULL;
+}
+
+void CPlayScene::SpawnItem(LPGAMEOBJECT obj)
+{
+	float x, y;
+	obj->GetPosition(x, y);
+	Item* item = new Item();
+	int type = rand() % 17;
+	item->SetState(type);
+	item->SetPosition(x, y);
+	itemList.push_back(item);
+}
+
+void CPlayScene::CreateEffect(LPGAMEOBJECT obj)
+{
+	DebugOut(L"create effect\n");
+	float x, y;
+	obj->GetPosition(x, y);
+	Effect* effect = new SparkEffect(x, y);
+	effectList.push_back(effect);
+}
+
+void CPlayScene::CheckForWeaponCollision()
+{
+	if (player->IsAttacking() && player->animation_set->at(player->state)->IsRenderingLastFrame())
+	{
+		for (UINT i = 0; i < objectList.size(); i++)
+		{
+			LPGAMEOBJECT obj = objectList[i];
+			if (dynamic_cast<Candle*>(obj))
+			{
+				Candle* e = dynamic_cast<Candle*> (obj);
+				if (this->player->GetMainWeapon()->IsColiding(e) == true)
+				{
+					e->SetState(CANDLE_DESTROYED);
+					SpawnItem(e);
+					CreateEffect(e);
+				}
+			}
+		}
+		for (UINT i = 0; i < enemyList.size(); i++)
+		{
+			LPGAMEOBJECT obj = enemyList[i];
+			if (dynamic_cast<CZombie*>(obj) && obj->state != ZOMBIE_STATE_DIE)
+			{
+				CZombie* e = dynamic_cast<CZombie*> (obj);
+				if (this->player->GetMainWeapon()->IsColiding(e) == true)
+				{
+					e->SetState(ZOMBIE_STATE_DIE);
+					SpawnItem(e);
+					CreateEffect(e);
+				}
+			}
+		}
+	}
+}
+
+void CPlayScene::CheckForEnemyCollison()
+{
+	for (auto enemy : enemyList)
+	{
+		if (player->IsColiding(enemy))
+		{
+			if (!player->isInvulerable)
+				player->SetState(SIMON_DEFLECT);
+			
+		}
+	}
+}
+
+void CPlayScene::GetCollidableObject(LPGAMEOBJECT obj, vector<LPGAMEOBJECT>& coObjects)
+{
+	if (dynamic_cast<Item*>(obj) || dynamic_cast<CZombie*>(obj) || dynamic_cast<Simon*>(obj))
+	{
+		for (int i = 0; i < objectList.size(); i++)
+		{
+			if (dynamic_cast<Ground*>(objectList[i]))
+				coObjects.push_back(objectList[i]);
+		}
+	}
+
 }
 
 void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)

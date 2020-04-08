@@ -6,7 +6,7 @@
 #define SIMON_GRAVITY			0.002f
 #define SIMON_DEFLECT_SPEED_X	0.05
 #define SIMON_DEFLECT_SPEED_Y	0.5
-#define SIMON_INVULNERABLE_TIME 10000
+#define SIMON_INVULNERABLE_TIME 3000
 
 #define SIMON_STAND				0
 #define SIMON_WALK				1
@@ -37,5 +37,6 @@ public:
 	void PullUp();
 	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 	void Attack();
+	Whip* GetMainWeapon();
 };
 

@@ -42,3 +42,8 @@ void CAnimation::Render(float x, float y, int nx, int alpha)
 
 	frames[currentFrame]->GetSprite()->Draw(x, y, nx, alpha);
 }
+
+bool CAnimation::IsRenderingLastFrame()
+{
+	return currentFrame == frames.size() - 1;
+}

@@ -11,6 +11,7 @@ void CZombie::GetBoundingBox(float& left, float& top, float& right, float& botto
 
 void CZombie::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
+	
 	CGameObject::Update(dt, coObjects);
 
 	
@@ -19,15 +20,9 @@ void CZombie::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	vector<LPCOLLISIONEVENT> coEventsResult;
 
 	coEvents.clear();
-	vector<LPGAMEOBJECT>* bricks = new vector<LPGAMEOBJECT>();
-	for (UINT i = 0; i < coObjects->size(); i++)
-	{
-		LPGAMEOBJECT obj = coObjects->at(i);
-		if (dynamic_cast<Ground*>(obj))
-			bricks->push_back(obj);
-	}
+
 	if(state!= ZOMBIE_STATE_DIE)
-		CalcPotentialCollisions(bricks, coEvents);
+		CalcPotentialCollisions(coObjects, coEvents);
 	
 
 	if (coEvents.size() == 0)
@@ -67,7 +62,7 @@ void CZombie::Render()
 		animation_set->at(state)->Render(x, y, nx);
 		RenderBoundingBox();
 	}
-	RenderBoundingBox();
+	
 }
 
 CZombie::CZombie()
