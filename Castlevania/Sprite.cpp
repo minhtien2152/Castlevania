@@ -12,11 +12,10 @@ CSprite::CSprite(int id, int left, int top, int right, int bottom, LPDIRECT3DTEX
 }
 
 
-void CSprite::Draw(float x, float y,int nx,int alpha)
+void CSprite::Draw( float x, float y,int nx,int alpha,bool accordingCam )
 {
 	CGame* game = CGame::GetInstance();
-	if(nx==1)
-		game->Draw(x, y, texture, left, top, right, bottom,alpha);
-	else
-		game->DrawFlipVertical(x, y, texture, left, top, right, bottom,alpha);
+	game->Draw(x, y, nx, texture, left, top, right, bottom,alpha, accordingCam);
+
+		//game->DrawFlipVertical(x, y, texture, left, top, right, bottom,alpha);
 }

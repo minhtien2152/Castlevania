@@ -21,7 +21,7 @@ void Whip::Attack( int nx, bool isSitting)
 
 
 
-void Whip::SetPosition(int x, int y)
+void Whip::SetPosition(float x, float y)
 {
 	this->x = x- 90;
 	this->y = y;
@@ -46,15 +46,24 @@ void Whip::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 	bottom = top + WHIP_BBOX_HEIGHT;
 	if (nx < 0)
 	{
-	
-		 left = x + 80+ WHIP_BBOX_WIDTH;
+		if (state != LEVEL2)
+			left = x + 80 + LONG_CHAIN_BBOX_WIDTH;
+		 left = x + 80+ NORMAL_WHIP_BBOX_WIDTH;
 	}
 	else if (nx > 0)
 	{
-		
-		left = WHIP_BBOX_WIDTH + x;
+		if (state != LEVEL2)
+			left = LONG_CHAIN_BBOX_WIDTH + x;
+		left = NORMAL_WHIP_BBOX_WIDTH + x;
 	
 	}
-	right = left + WHIP_BBOX_WIDTH;
-	
+
+	if (state != LEVEL2)
+		right = left + NORMAL_WHIP_BBOX_WIDTH;
+	else  right = left + LONG_CHAIN_BBOX_WIDTH;
+}
+
+void Whip::LevelUp()
+{
+	if (state < 2)	state++;
 }

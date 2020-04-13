@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -146,11 +146,14 @@
     <ClCompile Include="AnimationSets.cpp" />
     <ClCompile Include="Bat.cpp" />
     <ClCompile Include="Effect.cpp" />
+    <ClCompile Include="FireEffect.cpp" />
     <ClCompile Include="Ground.cpp" />
     <ClCompile Include="Candle.cpp" />
     <ClCompile Include="AnimationFrame.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="HealthBar.cpp" />
+    <ClCompile Include="Map.cpp" />
     <ClCompile Include="SparkEffect.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="main.cpp" />
@@ -159,6 +162,8 @@
     <ClCompile Include="Simon.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Sprites.cpp" />
+    <ClCompile Include="StatusBoard.cpp" />
+    <ClCompile Include="SubWeapon.cpp" />
     <ClCompile Include="Textures.cpp" />
     <ClCompile Include="Ultis.cpp" />
     <ClCompile Include="Whip.cpp" />
@@ -170,12 +175,15 @@
     <ClInclude Include="AnimationSets.h" />
     <ClInclude Include="Bat.h" />
     <ClInclude Include="Effect.h" />
+    <ClInclude Include="FireEffect.h" />
     <ClInclude Include="Ground.h" />
     <ClInclude Include="Candle.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="AnimationFrame.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="HealthBar.h" />
+    <ClInclude Include="Map.h" />
     <ClInclude Include="SparkEffect.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="KeyHandler.h" />
@@ -184,6 +192,8 @@
     <ClInclude Include="Simon.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Sprites.h" />
+    <ClInclude Include="StatusBoard.h" />
+    <ClInclude Include="SubWeapon.h" />
     <ClInclude Include="Textures.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Whip.h" />

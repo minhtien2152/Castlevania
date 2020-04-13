@@ -14,9 +14,10 @@ public:
 	Whip();
 	~Whip();
 	void Attack(int nx,bool isSitting);
-	void SetPosition(int x, int y);
+	void SetPosition(float x, float y);
 	void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = NULL);
 	void Render() ;
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);
+	void LevelUp();
 };
 

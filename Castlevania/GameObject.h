@@ -50,9 +50,11 @@ public:
 	bool isEnabled;
 	LPANIMATION_SET animation_set;
 
+	int hp;
+
 public:
 	
-	void SetPosition(float x, float y) { this->x = x, this->y = y; }
+	virtual void SetPosition(float x, float y) { this->x = x, this->y = y; }
 	void SetSpeed(float vx, float vy) { this->vx = vx; this ->vy = vy; }
 	void GetSpeed(float& vx, float& vy) { vx = this->vx; vy = this->vy; }
 	void GetPosition(float& x, float& y) { x = this->x; y = this->y; }
@@ -81,5 +83,9 @@ public:
 	virtual void Render() = 0;
 	virtual void SetState(int state) { this->state = state; }
 	
+
+	int GetHP() { return hp; }
+	void AddHealth(int amount);
+
 	~CGameObject();
 };

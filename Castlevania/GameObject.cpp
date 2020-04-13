@@ -149,12 +149,17 @@ void CGameObject::RenderBoundingBox()
 	rect.right = (int)r - (int)l;
 	rect.bottom = (int)b - (int)t;
 
-	CGame::GetInstance()->Draw(l, t, bbox, 0, 0, rect.right, rect.bottom, 32);
+	CGame::GetInstance()->Draw(l, t, nx,bbox, 0, 0, rect.right, rect.bottom, 32);
 }
 
 
 
 
+
+void CGameObject::AddHealth(int amount)
+{
+	this->hp += amount;
+}
 
 CGameObject::~CGameObject()
 {

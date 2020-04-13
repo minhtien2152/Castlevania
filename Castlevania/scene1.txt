@@ -7,6 +7,13 @@
 5	MorningStar.txt
 6	Item.txt
 7	Effect.txt
+8	HP.txt
+9	SubWeapon.txt
+
+[TILE_SET]
+-1	Resources\TileMap\scene1_bank.png	255	0	255
+[TILE_MAP_DATA]
+Resources\TileMap\scene1.txt
 [OBJECTS]
 # type	x	y	ani_set_id	extra_settings per object type
 # type: 1= Simon , 2 =Ground , 3 = Zombie				

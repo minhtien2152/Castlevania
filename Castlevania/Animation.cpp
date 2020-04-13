@@ -19,7 +19,7 @@ void CAnimation::Add(int spriteId, DWORD time)
 	totalFrameTime += time;
 }
 
-void CAnimation::Render(float x, float y, int nx, int alpha)
+void CAnimation::Render(float x, float y, int nx,bool accordingCam, int alpha)
 {
 	DWORD now = GetTickCount();
 	if (currentFrame == -1)
@@ -40,10 +40,15 @@ void CAnimation::Render(float x, float y, int nx, int alpha)
 
 	}
 
-	frames[currentFrame]->GetSprite()->Draw(x, y, nx, alpha);
+	frames[currentFrame]->GetSprite()->Draw(x, y, nx, alpha,accordingCam);
 }
 
 bool CAnimation::IsRenderingLastFrame()
 {
 	return currentFrame == frames.size() - 1;
+}
+
+LPANIMATION_FRAME CAnimation::GetLPCurrentFrame()
+{
+	return frames[currentFrame];
 }

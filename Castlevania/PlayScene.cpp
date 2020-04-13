@@ -5,8 +5,8 @@
 #include "Utils.h"
 #include"Define.h"
 #include <stdlib.h> 
-
-
+#include "SparkEffect.h"
+#include "FireEffect.h"
 using namespace std;
 
 CPlayScene::CPlayScene(int id, LPCWSTR filePath) :	CScene(id, filePath)
@@ -22,14 +22,15 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :	CScene(id, filePath)
 #define SECTION_UNKNOWN					-1
 #define SCENE_SECTION_RESOURCES			0	
 #define SCENE_SECTION_OBJECTS			1
-
+#define SCENE_SECTION_TILESET			2
+#define SCENE_SECTION_TILEMAP_DATA		3
 
 #define RESOURCES_SECTION_TEXTURES		0
 #define RESOURCES_SECTION_SPRITES		1
 #define RESOURCES_SECTION_ANIMATIONS	2
 #define RESOURCES_SECTION_ANIMATION_SETS 3
 
-#define OBJECT_TYPE_PORTAL	50
+
 
 #define MAX_SCENE_LINE 1024
 
@@ -83,7 +84,7 @@ void CPlayScene::_ParseSection_ANIMATIONS(string line)
 	LPANIMATION ani = new CAnimation();
 
 	string ani_id = tokens[0].c_str();
-	for (int i = 1; i < tokens.size(); i += 2)	// why i+=2 ?  sprite_id | frame_time  
+	for (UINT i = 1; i < tokens.size(); i += 2)	// why i+=2 ?  sprite_id | frame_time  
 	{
 		int sprite_id = atoi(tokens[i].c_str());
 		int frame_time = atoi(tokens[i + 1].c_str());
@@ -106,7 +107,7 @@ void CPlayScene::_ParseSection_ANIMATION_SETS(string line)
 
 	CAnimations* animations = CAnimations::GetInstance();
 
-	for (int i = 1; i < tokens.size(); i++)
+	for (UINT i = 1; i < tokens.size(); i++)
 	{
 		string ani_id = tokens[i].c_str();
 
@@ -195,6 +196,27 @@ void CPlayScene::_ParseSection_RESOURCES(string line)
 	LoadObjectResourses(path);
 }
 
+void CPlayScene::_ParseSection_TILEMAP_DATA(string line)
+{
+	LPCWSTR path = ToLPCWSTR(line);
+	ifstream f;
+	f.open(path);
+	int ID;
+	int rowMap, columnMap , columnTile, rowTile ,totalTiles;
+	f >>ID>> rowMap >> columnMap >> columnTile >> rowTile >> totalTiles;
+	int** tileMapData = new int*[rowMap];
+	for (int j = 0; j < rowMap; j++)
+		tileMapData[j] = new int[columnMap];
+	for (int i = 0; i < rowMap; i++)
+		for (int j = 0; j < columnMap; j++)
+			f >> tileMapData[i][j];
+	f.close();
+
+	tileMap = new Map(ID, rowMap, columnMap, columnTile, rowTile, totalTiles);
+	tileMap->SetTileMapData(tileMapData);
+
+}
+
 void CPlayScene::LoadScene()
 {
 	
@@ -214,6 +236,12 @@ void CPlayScene::LoadScene()
 		if (line[0] == '#') continue;	// skip comment lines	
 
 		if (line == "[RESOURCES]") { section = SCENE_SECTION_RESOURCES; continue; }
+
+		if (line == "[TILE_SET]") { section = SCENE_SECTION_TILESET; continue; }
+
+		if (line == "[TILE_MAP_DATA]") { section = SCENE_SECTION_TILEMAP_DATA; continue; }
+
+
 		if (line == "[OBJECTS]") {
 			section = SCENE_SECTION_OBJECTS; continue;
 		}
@@ -226,6 +254,8 @@ void CPlayScene::LoadScene()
 		{
 		case SCENE_SECTION_RESOURCES: _ParseSection_RESOURCES(line); break;
 		case SCENE_SECTION_OBJECTS: _ParseSection_OBJECTS(line); break;
+		case SCENE_SECTION_TILESET: _ParseSection_TEXTURES(line); break;
+		case SCENE_SECTION_TILEMAP_DATA: _ParseSection_TILEMAP_DATA(line); break;
 		}
 	}
 
@@ -233,6 +263,8 @@ void CPlayScene::LoadScene()
 
 	CTextures::GetInstance()->Add(ID_TEX_BBOX, L"Resources\\bbox.png", D3DCOLOR_XRGB(255, 255, 255));
 	Effect::SetAnimationSet(CAnimationSets::GetInstance()->Get(8));
+	statusboard = new StatusBoard(player);
+	statusboard->SetFont(CGame::GetInstance()->GetFont());
 	DebugOut(L"[INFO] Done loading scene resources %s\n", sceneFilePath);
 }
 
@@ -285,7 +317,7 @@ void CPlayScene::Update(DWORD dt)
 	// TO-DO: This is a "dirty" way, need a more organized way 
 	
 	//update objects
-	for (int i = 0; i < objectList.size(); i++)
+	for (UINT i = 0; i < objectList.size(); i++)
 	{
 		LPGAMEOBJECT object = objectList[i];
 		vector<LPGAMEOBJECT> coObjects;
@@ -294,16 +326,18 @@ void CPlayScene::Update(DWORD dt)
 		object->Update(dt, &coObjects);
 	}
 	//update item
-	for (int i = 0; i < itemList.size(); i++)
+	for (UINT i = 0; i < itemList.size(); i++)
 	{
 		LPGAMEOBJECT item = itemList[i];
+		if (!item->isEnabled)
+			continue;
 		vector<LPGAMEOBJECT> coObjects;
 
 		GetCollidableObject(item, coObjects);
 		item->Update(dt, &coObjects);
 	}
 	//update enemy
-	for (int i = 0; i < enemyList.size(); i++)
+	for (UINT i = 0; i < enemyList.size(); i++)
 	{
 		LPGAMEOBJECT enemy = enemyList[i];
 		vector<LPGAMEOBJECT> coObjects;
@@ -317,10 +351,16 @@ void CPlayScene::Update(DWORD dt)
 		if(!effect->isFinished)
 			effect->Update(dt);
 	
+	if (player->GetSubWeapon() != NULL)
+	{
+		if(player->GetSubWeapon()->isEnabled == true)
+			player->GetSubWeapon()->Update(dt);
+	}
 
 	CheckForWeaponCollision();
 	CheckForEnemyCollison();
-	// Update camera to follow mario
+	CheckForCollisonWithItems();
+	// Update camera
 	float cx, cy;
 	player->GetPosition(cx, cy);
 
@@ -331,19 +371,31 @@ void CPlayScene::Update(DWORD dt)
 
 	CGame::GetInstance()->SetCamPos(cx,0);
 	//DebugOut(L"Cx = %d , Cy = %d\n", cx, cy);
+
+	statusboard->Update(dt);
 }
 
 void CPlayScene::Render()
 {
+	tileMap->Render();
+
 	for (int i = 0; i < objectList.size(); i++)
 		objectList[i]->Render();
-	for (int i = 0; i < itemList.size(); i++)
-		itemList[i]->Render();
+	for (auto item : itemList)
+		if (item->isEnabled)
+			item->Render();
 	for (int i = 0; i < enemyList.size(); i++)
 		enemyList[i]->Render();
 	for (auto effect : effectList)
 		if (!effect->isFinished)
 			effect->Render();
+
+	if (player->GetSubWeapon() != NULL)
+	{
+		if (player->GetSubWeapon()->isEnabled)
+			player->GetSubWeapon()->Render();
+	}
+	statusboard->Render();
 }
 
 /*
@@ -363,7 +415,7 @@ void CPlayScene::SpawnItem(LPGAMEOBJECT obj)
 	float x, y;
 	obj->GetPosition(x, y);
 	Item* item = new Item();
-	int type = rand() % 17;
+	int type = Item_Type::DAGGER_ITEM;
 	item->SetState(type);
 	item->SetPosition(x, y);
 	itemList.push_back(item);
@@ -374,7 +426,7 @@ void CPlayScene::CreateEffect(LPGAMEOBJECT obj)
 	DebugOut(L"create effect\n");
 	float x, y;
 	obj->GetPosition(x, y);
-	Effect* effect = new SparkEffect(x, y);
+	Effect* effect = new FireEffect(x, y);
 	effectList.push_back(effect);
 }
 
@@ -384,17 +436,19 @@ void CPlayScene::CheckForWeaponCollision()
 	{
 		for (UINT i = 0; i < objectList.size(); i++)
 		{
-			LPGAMEOBJECT obj = objectList[i];
-			if (dynamic_cast<Candle*>(obj))
-			{
-				Candle* e = dynamic_cast<Candle*> (obj);
-				if (this->player->GetMainWeapon()->IsColiding(e) == true)
+
+				LPGAMEOBJECT obj = objectList[i];
+				if (this->player->GetMainWeapon()->IsColiding(obj) == true)
 				{
-					e->SetState(CANDLE_DESTROYED);
-					SpawnItem(e);
-					CreateEffect(e);
+					if (dynamic_cast<Candle*>(obj))
+					{
+						Candle* e = dynamic_cast<Candle*> (obj);
+						e->SetState(CANDLE_DESTROYED);
+						SpawnItem(e);
+						CreateEffect(e);
+					
+					}
 				}
-			}
 		}
 		for (UINT i = 0; i < enemyList.size(); i++)
 		{
@@ -415,13 +469,49 @@ void CPlayScene::CheckForWeaponCollision()
 
 void CPlayScene::CheckForEnemyCollison()
 {
-	for (auto enemy : enemyList)
-	{
-		if (player->IsColiding(enemy))
+	if (!player->isInvulnerable)
+		for (auto enemy : enemyList)
 		{
-			if (!player->isInvulerable)
+
+			if (player->IsColiding(enemy))
+			{
 				player->SetState(SIMON_DEFLECT);
-			
+				player->AddHealth(-1);
+			}
+		}
+}
+
+void CPlayScene::CheckForCollisonWithItems()
+{
+	for (auto item : itemList)
+	{
+		if (item->isEnabled)
+		{
+			if (player->IsColiding(item))
+			{
+				switch (item->GetState())
+				{
+				case Item_Type::AXE_ITEM:
+				case Item_Type::BOOMERANG_ITEM:
+				case Item_Type::CROSS:
+				case Item_Type::DAGGER_ITEM:
+					statusboard->SetSupweaponSprite(item->GetCurrentSprite());
+					player->SetSubWeapon(Weapon_Type::DAGGER);
+					break;
+				case Item_Type::HOLYWATER_ITEM:
+					statusboard->SetSupweaponSprite(item->GetCurrentSprite());
+					player->SetSubWeapon(Weapon_Type::HOLYWATER);
+					break;
+				case Item_Type::CHAIN:
+					player->SetState(SIMON_POWERUP);
+					break;
+				case Item_Type::INVISPOTION:
+					player->StartInvisibilityTimer();
+					break;
+				}
+				item->isEnabled = false;
+
+			}
 		}
 	}
 }
@@ -439,12 +529,18 @@ void CPlayScene::GetCollidableObject(LPGAMEOBJECT obj, vector<LPGAMEOBJECT>& coO
 
 }
 
+//void CPlayScene::AqquireWeapon(Weapon_Type type)
+//{
+//	player->SetSubWeapon(type);
+//
+//}
+
 void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 {
 	//DebugOut(L"[INFO] KeyDown: %d\n", KeyCode);
 
 	Simon* simon = ((CPlayScene*)scence)->player;
-	
+	CGame* game = CGame::GetInstance();
 	switch (KeyCode)
 	{
 	case DIK_SPACE:
@@ -466,6 +562,13 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		{
 			simon->SetState(SIMON_SIT_ATTACK);
 		}
+		if (game->IsKeyDown(DIK_UP))
+		{
+			
+				simon->AttackWithSubWeapon();
+
+		}
+		else simon->AttackWithWhip();
 		DebugOut(L"[INFO] Attack\n");
 		break;
 	}
@@ -484,6 +587,8 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	if (simon->GetState() == SIMON_SIT_ATTACK && simon->animation_set->at(SIMON_SIT_ATTACK)->IsOver() == false)
 		return;//
 	if (simon->GetState() == SIMON_DEFLECT&& simon->animation_set->at(SIMON_DEFLECT)->IsOver() == false)
+		return;//
+	if (simon->GetState() == SIMON_POWERUP && simon->animation_set->at(SIMON_POWERUP)->IsOver() == false)
 		return;//
 	if (simon->isJumping)
 		return;

@@ -31,6 +31,8 @@ class CGame
 	BYTE  keyStates[256];			// DirectInput keyboard state buffer 
 	DIDEVICEOBJECTDATA keyEvents[KEYBOARD_BUFFER_SIZE];		// Buffered keyboard data
 
+	ID3DXFont* font;
+
 	LPKEYEVENTHANDLER keyHandler;
 
 	float cam_x = 0.0f;
@@ -45,7 +47,7 @@ class CGame
 	void _ParseSection_SCENES(string line);
 public:
 	void Init(HWND hWnd);
-	void Draw(float x, float y, LPDIRECT3DTEXTURE9 texture, int left, int top, int right, int bottom,int alpha=255);
+	void Draw(float x, float y, int nx, LPDIRECT3DTEXTURE9 texture, int left, int top, int right, int bottom,int alpha=255 , bool accordingCam = 1 );
 	void DrawFlipVertical(float x, float y, LPDIRECT3DTEXTURE9 texture, int left, int top, int right, int bottom, int alpha = 255);
 
 	void InitKeyboard();
@@ -91,6 +93,8 @@ public:
 	LPD3DXSPRITE GetSpriteHandler() { return this->spriteHandler; }
 
 	void SetCamPos(float x, float y) { cam_x = x; cam_y = y; }
+
+	ID3DXFont* GetFont();
 
 	static CGame* GetInstance();
 	~CGame();

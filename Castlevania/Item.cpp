@@ -56,7 +56,7 @@ void Item::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	}
 
 	// clean up collision events
-	for (int i = 0; i < coEvents.size(); i++) delete coEvents[i];
+	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 }
 
 void Item::GetBoundingBox(float& left, float& top, float& right, float& bottom)
@@ -66,23 +66,23 @@ void Item::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 
 	switch (state)
 	{
-	case STOPWATCH:
+	case STOPWATCH_ITEM:
 		right = left + 30;
 		bottom = top + 32;
 		break;
-	case DAGGER:
+	case DAGGER_ITEM:
 		right = left + 32;
 		bottom = top + 18;
 		break;
-	case AXE:
+	case AXE_ITEM:
 		right = left + 30;
 		bottom = top + 28;
 		break;
-	case HOLYWATER:
+	case HOLYWATER_ITEM:
 		right = left + 32;
 		bottom = top + 28;
 		break;
-	case BOOMERANG:
+	case BOOMERANG_ITEM:
 		right = left + 30;
 		bottom = top + 28;
 		break;
@@ -136,4 +136,9 @@ void Item::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 void Item::SetState(int state)
 {
 	CGameObject::SetState(state);
+}
+
+LPSPRITE Item::GetCurrentSprite()
+{
+	return animation_set->at(state)->GetLPCurrentFrame()->GetSprite();
 }
