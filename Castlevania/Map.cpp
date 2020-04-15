@@ -19,9 +19,9 @@ Map::~Map()
 
 void Map::Render()
 {
-	for (int i = 0; i < rowMap; i++)
-		for (int j = 0; j < columnMap; j++)
-			DrawTile(tileMap[i][j]-1,i,j);
+	for (int currentRow = 0; currentRow < rowMap; currentRow++)
+		for (int currentColumn = 0; currentColumn < columnMap; currentColumn++)
+			tiles.at(tileMap[currentRow][currentColumn] - 1)->Draw(currentColumn * TILE_WIDTH, currentRow * TILE_HEIGHT + STATUS_BOARD_HEIGHT);
 }
 
 void Map::SetTileMapData(int** tileMapData)
@@ -30,14 +30,15 @@ void Map::SetTileMapData(int** tileMapData)
 }
 
 
-
-void Map::DrawTile(int id,int currentRow,int currentColumn)
+void Map::ExtractTileFromTileSet()
 {
-
-	int left = id % columnTileSet * TILE_WIDTH;
-	int top = id / columnTileSet * TILE_HEIGHT;
-	int right = left + TILE_WIDTH;
-	int bottom = top + TILE_HEIGHT;
-	LPSPRITE tile = new CSprite(id, left, top, right, bottom, tileSet);
-	tile->Draw(currentColumn * TILE_WIDTH, currentRow * TILE_HEIGHT+ STATUS_BOARD_HEIGHT);
+	for (int tileNum = 0; tileNum < totalTile; tileNum++)
+	{
+		int left =  tileNum	% columnTileSet * TILE_WIDTH;
+		int top = tileNum / columnTileSet * TILE_HEIGHT;
+		int right = left + TILE_WIDTH;
+		int bottom = top + TILE_HEIGHT;
+		LPSPRITE newTile = new CSprite(tileNum, left, top, right, bottom, tileSet);
+		this->tiles.push_back(newTile);
+	}
 }

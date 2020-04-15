@@ -1,6 +1,7 @@
 #pragma once
 #include <d3d9.h>
 #include"Textures.h"
+#include "Sprite.h"
 class Map
 {
 	int rowMap, columnMap;
@@ -9,12 +10,14 @@ class Map
 	int totalTile;	//total tiles of tile set
 	
 	LPDIRECT3DTEXTURE9 tileSet;
+	vector<LPSPRITE> tiles;
 	int** tileMap;
 public:
 	Map(int tileSetID,int rowMap,int columnMap, int rowTileSet,int  columnTileSet, int totalTile);
 	~Map();
 	void Render();
 	void SetTileMapData(int** tileMapData);
-	void DrawTile(int id,int currentRow,int currentColumn);
+
+	void ExtractTileFromTileSet();
 };
 

@@ -3,7 +3,7 @@
 #include "Utils.h"
 SubWeapon::SubWeapon()
 {
-
+	isEnabled = false;
 	animation_set = CAnimationSets::GetInstance()->Get(12);
 }
 

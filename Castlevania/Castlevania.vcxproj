@@ -145,6 +145,7 @@
     <ClCompile Include="Animations.cpp" />
     <ClCompile Include="AnimationSets.cpp" />
     <ClCompile Include="Bat.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Effect.cpp" />
     <ClCompile Include="FireEffect.cpp" />
     <ClCompile Include="Ground.cpp" />
@@ -174,6 +175,7 @@
     <ClInclude Include="Animations.h" />
     <ClInclude Include="AnimationSets.h" />
     <ClInclude Include="Bat.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Effect.h" />
     <ClInclude Include="FireEffect.h" />
     <ClInclude Include="Ground.h" />

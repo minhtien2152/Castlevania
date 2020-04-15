@@ -72,8 +72,13 @@ void CGame::Init(HWND hWnd)
 void CGame::Draw(float x, float y,int nx, LPDIRECT3DTEXTURE9 texture, int left, int top, int right, int bottom, int alpha, bool accordingCam)
 {
 	D3DXVECTOR3 p;
-	if(accordingCam)
+	float cam_x, cam_y;
+	camera->GetCamPosition(cam_x, cam_y);
+	if (accordingCam)
+	{
+		
 		p = D3DXVECTOR3(floor(x - cam_x), floor(y - cam_y), 0);
+	}
 	else
 		p= D3DXVECTOR3(x , y, 0);
 	//D3DXVECTOR3 p(x, y, 0);
@@ -107,36 +112,7 @@ void CGame::Draw(float x, float y,int nx, LPDIRECT3DTEXTURE9 texture, int left, 
 	spriteHandler->SetTransform(&oldTransform);
 }
 
-void CGame::DrawFlipVertical(float x, float y, LPDIRECT3DTEXTURE9 texture, int left, int top, int right, int bottom,int alpha)
-{
-	D3DXVECTOR3 p(floor(x - cam_x), floor(y - cam_y), 0);
-	//D3DXVECTOR3 p(x, y, 0);
-	RECT rect;
-	rect.left = left;
-	rect.top = top;
-	rect.right = right;
-	rect.bottom = bottom;
 
-	// flip sprite, using nx parameter
-	D3DXMATRIX oldTransform;
-	D3DXMATRIX newTransform;
-
-	spriteHandler->GetTransform(&oldTransform);
-
-	D3DXVECTOR2 center = D3DXVECTOR2(floor(x - cam_x) + (right - left) / 2, floor(y - cam_y) + (bottom - top) / 2);
-	D3DXVECTOR2 rotate = D3DXVECTOR2(1 , 1);
-
-	// Xây dựng một ma trận 2D lưu thông tin biến đổi (scale, rotate)
-	D3DXMatrixTransformation2D(&newTransform, &center, 0.0f, &rotate, NULL, 0.0f, NULL);
-
-	// Cần nhân với ma trận cũ để tính ma trận biến đổi cuối cùng
-	D3DXMATRIX finalTransform = newTransform * oldTransform;
-	spriteHandler->SetTransform(&finalTransform);
-
-	spriteHandler->Draw(texture, &rect, NULL, &p, D3DCOLOR_ARGB(alpha, 255, 255, 255));
-
-	spriteHandler->SetTransform(&oldTransform);
-}
 
 
 int CGame::IsKeyDown(int KeyCode)
@@ -343,11 +319,11 @@ void CGame::Load(LPCWSTR gameFile)
 void CGame::SwitchScene(int scene_id)
 {
 	// IMPORTANT: has to implement "unload" previous scene assets to avoid duplicate resources
-	current_scene = scene_id;
+	
 
 	LPSCENE s = scenes[current_scene];
 	s->Unload();
-
+	current_scene = scene_id;
 	CTextures::GetInstance()->Clear();
 	CSprites::GetInstance()->Clear();
 	CAnimations::GetInstance()->Clear();
@@ -363,6 +339,8 @@ CGame::~CGame()
 	if (d3ddv != NULL) d3ddv->Release();
 	if (d3d != NULL) d3d->Release();
 }
+
+
 
 /*
 	SweptAABB
@@ -468,6 +446,11 @@ void CGame::SweptAABB(
 bool CGame::IsOverlapping(float ml, float mt, float mr, float mb, float sl, float st, float sr, float sb)
 {
 	return !(mr < sl || ml > sr || mb < st || mt > sb);
+}
+
+void CGame::SetCamera(Camera* camera)
+{
+	this->camera = camera;
 }
 
 ID3DXFont* CGame::GetFont()

@@ -39,7 +39,7 @@ public:
 	bool isSitting = false;
 	bool isInvulnerable = false;
 	bool isInvisible = false;
-	bool isUsingSubWeapon = false;
+	bool canUseSubWeapon = false;
 	bool IsAttacking();
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects = NULL);
 	virtual void Render();

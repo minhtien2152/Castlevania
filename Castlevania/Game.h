@@ -6,7 +6,7 @@
 
 #include"Utils.h"
 #include"Scene.h"
-
+#include "Camera.h"
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 
@@ -35,8 +35,7 @@ class CGame
 
 	LPKEYEVENTHANDLER keyHandler;
 
-	float cam_x = 0.0f;
-	float cam_y = 0.0f;
+	Camera* camera;
 	int screen_width;
 	int screen_height;
 
@@ -48,7 +47,7 @@ class CGame
 public:
 	void Init(HWND hWnd);
 	void Draw(float x, float y, int nx, LPDIRECT3DTEXTURE9 texture, int left, int top, int right, int bottom,int alpha=255 , bool accordingCam = 1 );
-	void DrawFlipVertical(float x, float y, LPDIRECT3DTEXTURE9 texture, int left, int top, int right, int bottom, int alpha = 255);
+	
 
 	void InitKeyboard();
 	void SetKeyHandler(LPKEYEVENTHANDLER handler) { keyHandler = handler; }
@@ -92,7 +91,7 @@ public:
 	LPDIRECT3DSURFACE9 GetBackBuffer() { return this->backBuffer; }
 	LPD3DXSPRITE GetSpriteHandler() { return this->spriteHandler; }
 
-	void SetCamPos(float x, float y) { cam_x = x; cam_y = y; }
+	void SetCamera(Camera* camera);
 
 	ID3DXFont* GetFont();
 

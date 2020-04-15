@@ -26,6 +26,7 @@ protected:
 	vector<LPGAMEOBJECT> enemyList;
 	vector<LPEFFECT> effectList;
 	Map* tileMap;
+	Camera* camera;
 
 	void _ParseSection_TEXTURES(string line);
 	void _ParseSection_SPRITES(string line);

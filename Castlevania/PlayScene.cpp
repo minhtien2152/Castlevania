@@ -213,6 +213,7 @@ void CPlayScene::_ParseSection_TILEMAP_DATA(string line)
 	f.close();
 
 	tileMap = new Map(ID, rowMap, columnMap, columnTile, rowTile, totalTiles);
+	tileMap->ExtractTileFromTileSet();
 	tileMap->SetTileMapData(tileMapData);
 
 }
@@ -265,6 +266,8 @@ void CPlayScene::LoadScene()
 	Effect::SetAnimationSet(CAnimationSets::GetInstance()->Get(8));
 	statusboard = new StatusBoard(player);
 	statusboard->SetFont(CGame::GetInstance()->GetFont());
+	camera = new Camera();
+	CGame::GetInstance()->SetCamera(camera);
 	DebugOut(L"[INFO] Done loading scene resources %s\n", sceneFilePath);
 }
 
@@ -355,6 +358,14 @@ void CPlayScene::Update(DWORD dt)
 	{
 		if(player->GetSubWeapon()->isEnabled == true)
 			player->GetSubWeapon()->Update(dt);
+		
+		if (camera->IsInCam(player->GetSubWeapon()) == false)
+		{
+			
+			player->GetSubWeapon()->isEnabled = false;
+			//player->isUsingSubWeapon == false;
+		}
+
 	}
 
 	CheckForWeaponCollision();
@@ -365,11 +376,7 @@ void CPlayScene::Update(DWORD dt)
 	player->GetPosition(cx, cy);
 
 
-	CGame* game = CGame::GetInstance();
-	cx -= game->GetScreenWidth() / 2-SIMON_BBOX_WIDTH;
-	cy -= game->GetScreenHeight() / 2 - SIMON_BBOX_HEIGHT;
-
-	CGame::GetInstance()->SetCamPos(cx,0);
+	camera->Update(player);
 	//DebugOut(L"Cx = %d , Cy = %d\n", cx, cy);
 
 	statusboard->Update(dt);
@@ -547,7 +554,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		if (simon->isJumping || simon->IsAttacking() || simon->GetState() == SIMON_SIT)
 			return;
 		simon->SetState(SIMON_JUMP);
-		DebugOut(L"[INFO] JUMP \n");
+	//	DebugOut(L"[INFO] JUMP \n");
 		break;
 	case DIK_X:
 		if (simon->IsAttacking())
@@ -564,12 +571,24 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		}
 		if (game->IsKeyDown(DIK_UP))
 		{
+			if (simon->GetSubWeapon() != NULL)
+			{
+				if (simon->GetSubWeapon()->isEnabled == false)
+					simon->canUseSubWeapon = true;
+				else
+					simon->canUseSubWeapon = false;
+			}
 			
-				simon->AttackWithSubWeapon();
-
 		}
+		else
+			simon->canUseSubWeapon = false;
+	
+		if (simon->GetSubWeapon() != NULL && simon->canUseSubWeapon)
+			simon->AttackWithSubWeapon();
 		else simon->AttackWithWhip();
-		DebugOut(L"[INFO] Attack\n");
+
+
+		//DebugOut(L"[INFO] Attack\n");
 		break;
 	}
 }
@@ -593,6 +612,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	if (simon->isJumping)
 		return;
 
+	
 	if (game->IsKeyDown(DIK_DOWN))
 	{
 		simon->SetState(SIMON_SIT);

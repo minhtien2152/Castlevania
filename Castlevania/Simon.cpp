@@ -75,22 +75,33 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		}
 
 	}
+	//if (subWeapon != NULL)
+	//{
+	//	if (subWeapon->isEnabled == false)
+	//		canUseSubWeapon = true;
+	//	else canUseSubWeapon = false;
+	//}
+	//else canUseSubWeapon = false;
+	
+
 	if (IsAttacking())
 	{
-		if (isUsingSubWeapon == false)
+
+		
+		if (!canUseSubWeapon)
+		{
 			mainWeapon->SetPosition(x, y);
+		}
+	
 	}
-	else 
+	DebugOut(L"can use sub %d\n", canUseSubWeapon);
 	// clean up collision events
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 }
 
 void Simon::Render()
 {
-	/*int tempState = state;
-	if (isJumping && IsAttacking() && animations[state]->IsOver())
-		tempState = SIMON_JUMP;*/
-		//DebugOut(L"[INFO] vy: %d\n", vy);
+	
 	int alpha = 255;
 	if (isInvulnerable == true)
 		alpha /= 2;
@@ -101,7 +112,7 @@ void Simon::Render()
 		animation_set->at(state)->Render(x, y, nx, 1, alpha);
 	if (IsAttacking())
 	{
-		if (isUsingSubWeapon == false)
+		if (!canUseSubWeapon)
 			mainWeapon->Render();
 		/*else if (isUsingSubWeapon && animation_set->at(state)->IsOver() == true)
 			isUsingSubWeapon = false;*/
@@ -207,19 +218,23 @@ void Simon::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 
 void Simon::AttackWithWhip()
 {
-	
+	canUseSubWeapon = false;
 	mainWeapon->Attack(nx, isSitting);
 }
 
 void Simon::AttackWithSubWeapon()
 {
-
+	/*if (animation_set->at(state)->IsRenderingLastFrame())
+	{*/
 		subWeapon->SetPosition(x, y);
 		subWeapon->SetDirection(this->nx);
 		subWeapon->isEnabled = true;
 		//isUsingSubWeapon = true;
 		subWeapon->Attack();
-		DebugOut(L" simon = %d , weapon = %d ", nx, subWeapon->nx);
+		//DebugOut(L" simon = %d , weapon = %d ", nx, subWeapon->nx);
+	/*}
+	DebugOut(L"render last frame %d\n", animation_set->at(state)->IsRenderingLastFrame());
+	DebugOut(L"state %d\n", state);*/
 }
 
 Whip* Simon::GetMainWeapon()

@@ -121,3 +121,6 @@ enum Effect_Type
 #define TILE_HEIGHT 32
 
 #define STATUS_BOARD_HEIGHT 80
+
+#define DEFAULT_CAM_X 0
+#define default_CAM_Y 0
