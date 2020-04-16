@@ -20,7 +20,9 @@
 #define simon_stair_down		8
 #define simon_stair_up_atk		9
 #define simon_stair_down_atk	10
-#define SIMON_DEFLECT			11
+#define SIMON_DAMAGED			11
+#define SIMON_DEAD				12
+#define SIMON_WAIT				13
 class Simon : public CGameObject
 {
 	int score;
@@ -51,6 +53,7 @@ public:
 	Whip* GetMainWeapon();
 	int GetScore() { return score; }
 	int GetHeartsCollected() { return heartsCollected; }
+	void SetHeartsCollected(int heartNum);
 	int GetLife() { return life; }
 	void StartInvisibilityTimer();
 	void SetSubWeapon(Weapon_Type subwp);

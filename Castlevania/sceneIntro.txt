@@ -1,0 +1,17 @@
+# id	file_path			
+[RESOURCES]
+1	Simon.txt
+2	Ground.txt
+8	HP.txt
+9	Mainmenu_bat.txt
+
+[TEXTURES]
+4	Resources/mainmenu.png	255	0	255
+5	Resources/intro_scene_simon_walk.png	255	0	255
+
+[OBJECTS]
+# type	x	y	ani_set_id	extra_settings per object type
+# type: 1= Simon , 2 =Ground , 3 = Zombie				
+# Simon				
+1	450	335	1
+

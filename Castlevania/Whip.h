@@ -3,9 +3,9 @@
 #include "GameObject.h"
 
 #include"AnimationSets.h"
-#define LEVEL0 0
-#define LEVEL1 1
-#define LEVEL2 2
+#define WHIP_LEVEL0 0
+#define WHIP_LEVEL1 1
+#define WHIP_LEVEL2 2
 
 class Whip: public CGameObject
 {

@@ -1,5 +1,6 @@
 ﻿#include "Game.h"
 #include "PlayScene.h"
+#include "IntroScene.h"
 #include <iostream>
 #include <fstream>
 
@@ -62,7 +63,7 @@ void CGame::Init(HWND hWnd)
 		DebugOut(L"[ERROR] Create font failed\n");
 		return;
 	}
-
+	state = GAME_STATE_MENU;
 	OutputDebugString(L"[INFO] InitGame done;\n");
 }
 
@@ -266,8 +267,11 @@ void CGame::_ParseSection_SCENES(string line)
 	if (tokens.size() < 2) return;
 	int id = atoi(tokens[0].c_str());
 	LPCWSTR path = ToLPCWSTR(tokens[1]);
-
-	LPSCENE scene = new CPlayScene(id, path);
+	LPSCENE scene;
+	if(id == 0) 
+		scene = new CIntroScene(id, path);
+	else
+		scene = new CPlayScene(id, path);
 	scenes[id] = scene;
 }
 
@@ -319,11 +323,11 @@ void CGame::Load(LPCWSTR gameFile)
 void CGame::SwitchScene(int scene_id)
 {
 	// IMPORTANT: has to implement "unload" previous scene assets to avoid duplicate resources
-	
-
-	LPSCENE s = scenes[current_scene];
-	s->Unload();
+	scenes[current_scene]->Unload();
 	current_scene = scene_id;
+	LPSCENE s = scenes[current_scene];
+	
+	
 	CTextures::GetInstance()->Clear();
 	CSprites::GetInstance()->Clear();
 	CAnimations::GetInstance()->Clear();
@@ -456,6 +460,16 @@ void CGame::SetCamera(Camera* camera)
 ID3DXFont* CGame::GetFont()
 {
 	return font;
+}
+
+void CGame::SetState(int state)
+{
+	this->state = state;
+}
+
+int CGame::GetState()
+{
+	return state;
 }
 
 CGame* CGame::GetInstance()

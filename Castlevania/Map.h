@@ -19,5 +19,6 @@ public:
 	void SetTileMapData(int** tileMapData);
 
 	void ExtractTileFromTileSet();
+	int GetMapWidth();
 };
 

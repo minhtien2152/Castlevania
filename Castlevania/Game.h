@@ -39,6 +39,8 @@ class CGame
 	int screen_width;
 	int screen_height;
 
+	int state;
+
 	unordered_map<int, LPSCENE> scenes;
 	int current_scene;
 
@@ -95,6 +97,8 @@ public:
 
 	ID3DXFont* GetFont();
 
+	void SetState(int state);
+	int GetState();
 	static CGame* GetInstance();
 	~CGame();
 };

@@ -42,3 +42,8 @@ void Map::ExtractTileFromTileSet()
 		this->tiles.push_back(newTile);
 	}
 }
+
+int Map::GetMapWidth()
+{
+	return columnMap * TILE_WIDTH;
+}

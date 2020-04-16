@@ -38,7 +38,8 @@
 #define SMALL_CANDLE_BBOX_HEIGHT	32
 enum Object_Type
 {
-	SIMON	=1,
+	PORTAL,
+	SIMON,
 	GROUND,
 	ZOMBIE,
 	CANDLE,
@@ -124,3 +125,7 @@ enum Effect_Type
 
 #define DEFAULT_CAM_X 0
 #define default_CAM_Y 0
+
+#define GAME_STATE_MENU	0
+#define GAME_STATE_INTROWALK	1
+#define GAME_STATE_PLAYSCENE	2

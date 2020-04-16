@@ -2,10 +2,12 @@
 #include "Utils.h"
 #include "Define.h"
 #include "Zombie.h"
-
+#include "Game.h"
 Simon::Simon()
 {
-	mainWeapon = new Whip();
+	if (CGame::GetInstance()->GetState() == GAME_STATE_PLAYSCENE)
+		mainWeapon = new Whip();
+	else mainWeapon = NULL;
 	hp = SIMON_DEFAULT_HEALTH;
 	heartsCollected = 5;
 }
@@ -22,7 +24,12 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CGameObject::Update(dt);
 
-	
+	if (CGame::GetInstance()->GetState() == GAME_STATE_INTROWALK)
+	{
+		x += dx* 0.5;	//di cham lai
+		y += dy;
+		return;
+	}
 	// simple fall down
 	vy += SIMON_GRAVITY*dt;
 
@@ -75,13 +82,6 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		}
 
 	}
-	//if (subWeapon != NULL)
-	//{
-	//	if (subWeapon->isEnabled == false)
-	//		canUseSubWeapon = true;
-	//	else canUseSubWeapon = false;
-	//}
-	//else canUseSubWeapon = false;
 	
 
 	if (IsAttacking())
@@ -158,7 +158,7 @@ void Simon::SetState(int state)
 		animation_set->at(state)->Reset();
 		animation_set->at(state)->SetAniStartTime(GetTickCount());
 		break;
-	case SIMON_DEFLECT:
+	case SIMON_DAMAGED:
 		vx = nx*SIMON_DEFLECT_SPEED_X;
 		vy = -SIMON_DEFLECT_SPEED_Y;
 		animation_set->at(state)->Reset();
@@ -172,6 +172,10 @@ void Simon::SetState(int state)
 		mainWeapon->LevelUp();
 		animation_set->at(state)->Reset();
 		animation_set->at(state)->SetAniStartTime(GetTickCount());
+		break;
+	case SIMON_WAIT:
+		vx = 0;
+		vy = 0;
 		break;
 	default:
 		break;
@@ -240,6 +244,11 @@ void Simon::AttackWithSubWeapon()
 Whip* Simon::GetMainWeapon()
 {
 	return mainWeapon;
+}
+
+void Simon::SetHeartsCollected(int heartNum)
+{
+	this->heartsCollected = heartNum;
 }
 
 void Simon::StartInvisibilityTimer()

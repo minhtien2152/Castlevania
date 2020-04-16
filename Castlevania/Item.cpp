@@ -109,7 +109,6 @@ void Item::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 	case REDMONEYBAG:
 	case BLUEMONEYBAG:
 	case WHITEMONEYBAG:
-	/*case MONEYBAGFLASHING:*/
 		right = left + 30;
 		bottom = top + 30;
 		break;
