@@ -97,7 +97,6 @@ enum Effect_Type
 #define HEALTH_FRAME_WIDTH 8
 
 
-
 #define HOLY_WATER_BBOX_WIDTH	32
 #define HOLY_WATER_BBOX_HEIGHT	26
 #define HOLY_WATER_SPEED_X	0.25f
@@ -124,7 +123,7 @@ enum Effect_Type
 #define STATUS_BOARD_HEIGHT 80
 
 #define DEFAULT_CAM_X 0
-#define default_CAM_Y 0
+#define DEFAULT_CAM_Y 0
 
 #define GAME_STATE_MENU	0
 #define GAME_STATE_INTROWALK	1

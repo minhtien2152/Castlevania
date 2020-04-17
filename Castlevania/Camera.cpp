@@ -36,3 +36,8 @@ void Camera::SetMapWidth(int width)
 {
 	mapWidth = width;
 }
+
+int Camera::GetMapWidth()
+{
+	return mapWidth;
+}

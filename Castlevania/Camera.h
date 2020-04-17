@@ -13,5 +13,6 @@ public:
 	void GetCamPosition(float& x, float& y);
 	bool IsInCam(LPGAMEOBJECT obj);
 	void SetMapWidth(int width);
+	int GetMapWidth();
 };
 

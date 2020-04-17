@@ -5,9 +5,9 @@
 #include "Game.h"
 Simon::Simon()
 {
-	if (CGame::GetInstance()->GetState() == GAME_STATE_PLAYSCENE)
+	//if (CGame::GetInstance()->GetState() == GAME_STATE_PLAYSCENE)
 		mainWeapon = new Whip();
-	else mainWeapon = NULL;
+//	else mainWeapon = NULL;
 	hp = SIMON_DEFAULT_HEALTH;
 	heartsCollected = 5;
 }
@@ -34,7 +34,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	vy += SIMON_GRAVITY*dt;
 
 	if (isJumping && IsAttacking() && animation_set->at(state)->IsOver())
-		CGameObject::SetState(SIMON_JUMP);									//khi roi xuong luon co chan
+		CGameObject::SetState(SIMON_JUMP);									//co chan lai sau khi danh xong
 
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
@@ -48,13 +48,13 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			invulnerable_start = 0;
 			isInvulnerable = 0;
 		}
-	if(isInvisible)
-	if (GetTickCount() - invisibility_start > SIMON_INVISIBILITY_TIME)
-	{
-		invisibility_start = 0;
-		isInvisible = 0;
-		isInvulnerable = 0;
-	}
+	//if(isInvisible)
+	//if (GetTickCount() - invisibility_start > SIMON_INVISIBILITY_TIME)
+	//{
+	//	invisibility_start = 0;
+	//	isInvisible = 0;
+	//	isInvulnerable = 0;
+	//}
 
 
 	// No collision occured, proceed normally
@@ -66,11 +66,17 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	else
 	{
 		float min_tx, min_ty, nx = 0, ny;
+		float rdx = 0;
+		float rdy = 0;
 
-		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny);
+		// TODO: This is a very ugly designed function!!!!
+		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
 
-		// block 
-		x += min_tx * dx + nx * 0.4f;		// nx*0.4f : need to push out a bit to avoid overlapping next frame
+		// how to push back Mario if collides with a moving objects, what if Mario is pushed this way into another object?
+		if (rdx != 0 && rdx != dx)
+			x += nx * abs(rdx);
+
+		x += min_tx * dx + nx * 0.4f;
 		y += min_ty * dy + ny * 0.4f;
 
 		if (nx != 0) vx = 0;
@@ -91,10 +97,11 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		if (!canUseSubWeapon)
 		{
 			mainWeapon->SetPosition(x, y);
+			mainWeapon->SetSpeed(vx, vy);
 		}
 	
 	}
-	DebugOut(L"can use sub %d\n", canUseSubWeapon);
+	//DebugOut(L"can use sub %d\n", canUseSubWeapon);
 	// clean up collision events
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 }

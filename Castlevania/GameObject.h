@@ -18,15 +18,24 @@ struct CCollisionEvent
 {
 	LPGAMEOBJECT obj;
 	float t, nx, ny;
-	CCollisionEvent(float t, float nx, float ny, LPGAMEOBJECT obj = NULL) { this->t = t; this->nx = nx; this->ny = ny; this->obj = obj; }
+
+	float dx, dy;		// *RELATIVE* movement distance between this object and obj
+
+	CCollisionEvent(float t, float nx, float ny, float dx = 0, float dy = 0, LPGAMEOBJECT obj = NULL)
+	{
+		this->t = t;
+		this->nx = nx;
+		this->ny = ny;
+		this->dx = dx;
+		this->dy = dy;
+		this->obj = obj;
+	}
 
 	static bool compare(const LPCOLLISIONEVENT& a, LPCOLLISIONEVENT& b)
 	{
 		return a->t < b->t;
 	}
 };
-
-
 
 
 
@@ -47,10 +56,12 @@ public:
 	DWORD dt;
 
 	int state;
+	int type;		//0 : static  1: dynamic
 	bool isEnabled;
 	LPANIMATION_SET animation_set;
 
 	int hp;
+
 
 public:
 	
@@ -73,7 +84,9 @@ public:
 		float& min_tx,
 		float& min_ty,
 		float& nx,
-		float& ny);
+		float& ny,
+		float& rdx,
+		float& rdy);
 
 	CGameObject();
 	bool IsOverlapping(CGameObject* obj);

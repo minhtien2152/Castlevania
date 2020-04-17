@@ -19,7 +19,8 @@ protected:
 	
 	
 
-	vector<LPGAMEOBJECT> objectList;
+	vector<LPGAMEOBJECT> staticObjectList;
+	vector<LPGAMEOBJECT> dynamicObjectList;
 	vector<Item*> itemList;
 	vector<LPGAMEOBJECT> enemyList;
 	vector<LPEFFECT> effectList;

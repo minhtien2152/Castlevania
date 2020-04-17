@@ -37,10 +37,13 @@ void Item::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	}
 	else
 	{
-		float min_tx, min_ty, nx = 0, ny = 0;
+		float min_tx, min_ty, nx = 0, ny;
+		float rdx = 0;
+		float rdy = 0;
 
-		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny);
+		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
 
+	
 		x += min_tx * dx + nx * 0.1f;
 		y += min_ty * dy + ny * 0.1f;
 
@@ -139,5 +142,5 @@ void Item::SetState(int state)
 
 LPSPRITE Item::GetCurrentSprite()
 {
-	return animation_set->at(state)->GetLPCurrentFrame()->GetSprite();
+	return animation_set->at(state)->GetLPFirstFrame()->GetSprite();
 }

@@ -20,7 +20,7 @@ public:
 	void Reset() { currentFrame = -1; }
 	int GetCurrentFrame() { return currentFrame; }
 	bool IsRenderingLastFrame();
-	LPANIMATION_FRAME GetLPCurrentFrame();
+	LPANIMATION_FRAME GetLPFirstFrame();
 };
 
 typedef CAnimation* LPANIMATION;

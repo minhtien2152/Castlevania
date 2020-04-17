@@ -84,10 +84,12 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	obj->SetAnimationSet(ani_set);
 	switch (object_type)
 	{
-	case Object_Type::SIMON:
 	case Object_Type::GROUND:
+		staticObjectList.push_back(obj);
+		break;
+	case Object_Type::SIMON:
 	case Object_Type::CANDLE:
-		objectList.push_back(obj);
+		dynamicObjectList.push_back(obj);
 		break;
 	case Object_Type::ZOMBIE:
 		enemyList.push_back(obj);
@@ -172,6 +174,7 @@ void CPlayScene::LoadScene()
 	statusboard->SetFont(CGame::GetInstance()->GetFont());
 	camera = new Camera();
 	camera->SetMapWidth(tileMap->GetMapWidth());
+	tileMap->SetCamera(camera);
 	CGame::GetInstance()->SetCamera(camera);
 	DebugOut(L"[INFO] Done loading scene resources %s\n", sceneFilePath);
 }
@@ -184,9 +187,9 @@ void CPlayScene::Update(DWORD dt)
 	// TO-DO: This is a "dirty" way, need a more organized way 
 	
 	//update objects
-	for (UINT i = 0; i < objectList.size(); i++)
+	for (UINT i = 0; i < dynamicObjectList.size(); i++)
 	{
-		LPGAMEOBJECT object = objectList[i];
+		LPGAMEOBJECT object = dynamicObjectList[i];
 		vector<LPGAMEOBJECT> coObjects;
 
 		GetCollidableObject(object, coObjects);
@@ -241,6 +244,7 @@ void CPlayScene::Update(DWORD dt)
 
 
 	camera->Update(player);
+
 	//DebugOut(L"Cx = %d , Cy = %d\n", cx, cy);
 
 	statusboard->Update(dt);
@@ -250,8 +254,8 @@ void CPlayScene::Render()
 {
 	tileMap->Render();
 
-	for (int i = 0; i < objectList.size(); i++)
-		objectList[i]->Render();
+	for (int i = 0; i < dynamicObjectList.size(); i++)
+		dynamicObjectList[i]->Render();
 	for (auto item : itemList)
 		if (item->isEnabled)
 			item->Render();
@@ -274,10 +278,12 @@ void CPlayScene::Render()
 */
 void CPlayScene::Unload()
 {
-	for (int i = 0; i < objectList.size(); i++)
-		delete objectList[i];
-
-	objectList.clear();
+	for (int i = 0; i < dynamicObjectList.size(); i++)
+		delete dynamicObjectList[i];
+	for (int i = 0; i < staticObjectList.size(); i++)
+		delete staticObjectList[i];
+	staticObjectList.clear();
+	dynamicObjectList.clear();
 	player = NULL;
 }
 
@@ -313,10 +319,11 @@ void CPlayScene::CheckForWeaponCollision()
 {
 	if (player->IsAttacking() && player->animation_set->at(player->state)->IsRenderingLastFrame())
 	{
-		for (UINT i = 0; i < objectList.size(); i++)
+		for (UINT i = 0; i < dynamicObjectList.size(); i++)
 		{
 
-				LPGAMEOBJECT obj = objectList[i];
+			LPGAMEOBJECT obj = dynamicObjectList[i];
+			if (obj->isEnabled)
 				if (this->player->GetMainWeapon()->IsColiding(obj) == true)
 				{
 					if (dynamic_cast<Candle*>(obj))
@@ -325,23 +332,24 @@ void CPlayScene::CheckForWeaponCollision()
 						e->SetState(CANDLE_DESTROYED);
 						SpawnItem(e);
 						CreateEffect(e);
-					
+
 					}
 				}
 		}
 		for (UINT i = 0; i < enemyList.size(); i++)
 		{
 			LPGAMEOBJECT obj = enemyList[i];
-			if (dynamic_cast<CZombie*>(obj) && obj->state != ZOMBIE_STATE_DIE)
-			{
-				CZombie* e = dynamic_cast<CZombie*> (obj);
-				if (this->player->GetMainWeapon()->IsColiding(e) == true)
+			if(obj->isEnabled)
+				if (dynamic_cast<CZombie*>(obj))
 				{
-					e->SetState(ZOMBIE_STATE_DIE);
-					SpawnItem(e);
-					CreateEffect(e);
+					CZombie* e = dynamic_cast<CZombie*> (obj);
+					if (this->player->GetMainWeapon()->IsColiding(e) == true)
+					{
+						e->SetState(ZOMBIE_STATE_DIE);
+						SpawnItem(e);
+						CreateEffect(e);
+					}
 				}
-			}
 		}
 	}
 }
@@ -375,7 +383,9 @@ void CPlayScene::CheckForCollisonWithItems()
 					player->SetSubWeapon(Weapon_Type::AXE);
 					break;
 				case Item_Type::BOOMERANG_ITEM:
+					break;
 				case Item_Type::CROSS:
+					break;
 				case Item_Type::DAGGER_ITEM:
 					statusboard->SetSupweaponSprite(item->GetCurrentSprite());
 					player->SetSubWeapon(Weapon_Type::DAGGER);
@@ -408,10 +418,10 @@ void CPlayScene::GetCollidableObject(LPGAMEOBJECT obj, vector<LPGAMEOBJECT>& coO
 {
 	if (dynamic_cast<Item*>(obj) || dynamic_cast<CZombie*>(obj) || dynamic_cast<Simon*>(obj))
 	{
-		for (int i = 0; i < objectList.size(); i++)
+		for (int i = 0; i < staticObjectList.size(); i++)
 		{
-			if (dynamic_cast<Ground*>(objectList[i]))
-				coObjects.push_back(objectList[i]);
+			if (dynamic_cast<Ground*>(staticObjectList[i]))
+				coObjects.push_back(staticObjectList[i]);
 		}
 	}
 

@@ -61,19 +61,20 @@ LPCOLLISIONEVENT CGameObject::SweptAABBEx(LPGAMEOBJECT coO)
 	float sdx = svx * dt;
 	float sdy = svy * dt;
 
-	float dx = this->dx - sdx;
-	float dy = this->dy - sdy;
+	// (rdx, rdy) is RELATIVE movement distance/velocity 
+	float rdx = this->dx - sdx;
+	float rdy = this->dy - sdy;
 
 	GetBoundingBox(ml, mt, mr, mb);
 
 	CGame::SweptAABB(
 		ml, mt, mr, mb,
-		dx, dy,
+		rdx, rdy,
 		sl, st, sr, sb,
 		t, nx, ny
 	);
 
-	CCollisionEvent* e = new CCollisionEvent(t, nx, ny, coO);
+	CCollisionEvent* e = new CCollisionEvent(t, nx, ny, rdx, rdy, coO);
 	return e;
 }
 
@@ -104,7 +105,7 @@ void CGameObject::FilterCollision(
 	vector<LPCOLLISIONEVENT>& coEvents,
 	vector<LPCOLLISIONEVENT>& coEventsResult,
 	float& min_tx, float& min_ty,
-	float& nx, float& ny)
+	float& nx, float& ny, float& rdx, float& rdy)
 {
 	min_tx = 1.0f;
 	min_ty = 1.0f;
@@ -121,17 +122,18 @@ void CGameObject::FilterCollision(
 		LPCOLLISIONEVENT c = coEvents[i];
 
 		if (c->t < min_tx && c->nx != 0) {
-			min_tx = c->t; nx = c->nx; min_ix = i;
+			min_tx = c->t; nx = c->nx; min_ix = i; rdx = c->dx;
 		}
 
 		if (c->t < min_ty && c->ny != 0) {
-			min_ty = c->t; ny = c->ny; min_iy = i;
+			min_ty = c->t; ny = c->ny; min_iy = i; rdy = c->dy;
 		}
 	}
 
 	if (min_ix >= 0) coEventsResult.push_back(coEvents[min_ix]);
 	if (min_iy >= 0) coEventsResult.push_back(coEvents[min_iy]);
 }
+
 
 
 void CGameObject::RenderBoundingBox()
