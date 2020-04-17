@@ -41,7 +41,7 @@ public:
 	void CheckForWeaponCollision();
 	void CheckForEnemyCollison();
 	void CheckForCollisonWithItems();
-	void GetCollidableObject(LPGAMEOBJECT obj, vector<LPGAMEOBJECT>& coObjects);
+	void GetCollidableObject(LPGAMEOBJECT obj, vector<LPGAMEOBJECT>& staticCoObjects, vector<LPGAMEOBJECT>& dynamicCoObjects );
 	//void AqquireWeapon(Weapon_Type type);
 	friend class CPlayScenceKeyHandler;
 };

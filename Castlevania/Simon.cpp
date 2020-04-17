@@ -20,9 +20,9 @@ bool Simon::IsAttacking()
 {
 	return state == SIMON_SIT_ATTACK || state == SIMON_STAND_ATTACK;
 }
-void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
+void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* staticCoObjects , vector<LPGAMEOBJECT>* dynamicCoObjects)
 {
-	CGameObject::Update(dt);
+	CGameObject::Update(dt, staticCoObjects,dynamicCoObjects);
 
 	if (CGame::GetInstance()->GetState() == GAME_STATE_INTROWALK)
 	{
@@ -36,12 +36,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (isJumping && IsAttacking() && animation_set->at(state)->IsOver())
 		CGameObject::SetState(SIMON_JUMP);									//co chan lai sau khi danh xong
 
-	vector<LPCOLLISIONEVENT> coEvents;
-	vector<LPCOLLISIONEVENT> coEventsResult;
-
-	coEvents.clear();
-
-	CalcPotentialCollisions(coObjects, coEvents);
+	
 	if(!isInvisible && isInvulnerable)
 		if (GetTickCount() - invulnerable_start > SIMON_INVULNERABLE_TIME)
 		{
@@ -57,8 +52,10 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	//}
 
 
+	vector<LPCOLLISIONEVENT> staticCoEventsResult;
+
 	// No collision occured, proceed normally
-	if (coEvents.size() == 0)
+	if (staticCoEvents.size() == 0)
 	{
 		x += dx;
 		y += dy;
@@ -70,11 +67,11 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		float rdy = 0;
 
 		// TODO: This is a very ugly designed function!!!!
-		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
+		FilterCollision(staticCoEvents, staticCoEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
 
 		// how to push back Mario if collides with a moving objects, what if Mario is pushed this way into another object?
-		if (rdx != 0 && rdx != dx)
-			x += nx * abs(rdx);
+		/*if (rdx != 0 && rdx != dx)
+			x += nx * abs(rdx);*/
 
 		x += min_tx * dx + nx * 0.4f;
 		y += min_ty * dy + ny * 0.4f;
@@ -103,7 +100,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	}
 	//DebugOut(L"can use sub %d\n", canUseSubWeapon);
 	// clean up collision events
-	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
+	for (UINT i = 0; i < staticCoEvents.size(); i++) delete staticCoEvents[i];
 }
 
 void Simon::Render()
@@ -244,7 +241,6 @@ void Simon::AttackWithSubWeapon()
 		subWeapon->Attack();
 		//DebugOut(L" simon = %d , weapon = %d ", nx, subWeapon->nx);
 	/*}
-	DebugOut(L"render last frame %d\n", animation_set->at(state)->IsRenderingLastFrame());
 	DebugOut(L"state %d\n", state);*/
 }
 

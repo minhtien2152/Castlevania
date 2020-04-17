@@ -43,7 +43,7 @@ public:
 	bool isInvisible = false;
 	bool canUseSubWeapon = false;
 	bool IsAttacking();
-	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects = NULL);
+	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* staticCoObjects = NULL, vector<LPGAMEOBJECT>* dynamicCoObjects = NULL);
 	virtual void Render();
 	void SetState(int state);
 	void PullUp();

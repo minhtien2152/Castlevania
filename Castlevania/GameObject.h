@@ -59,7 +59,8 @@ public:
 	int type;		//0 : static  1: dynamic
 	bool isEnabled;
 	LPANIMATION_SET animation_set;
-
+	vector<LPCOLLISIONEVENT> staticCoEvents;
+	vector<LPCOLLISIONEVENT> dynamicCoEvents;
 	int hp;
 
 
@@ -92,7 +93,7 @@ public:
 	bool IsOverlapping(CGameObject* obj);
 	bool IsColiding(CGameObject* obj);
 	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom) = 0;
-	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = NULL);
+	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* staticCoObjects = NULL, vector<LPGAMEOBJECT>* dynamicCoObjects = NULL);
 	virtual void Render() = 0;
 	virtual void SetState(int state) { this->state = state; }
 	

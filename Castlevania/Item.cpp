@@ -14,22 +14,15 @@ void Item::Render()
 		RenderBoundingBox();
 }
 
-void Item::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
+void Item::	Update(DWORD dt, vector<LPGAMEOBJECT>* staticCoObjects , vector<LPGAMEOBJECT>* dynamicCoObjects)
 {
-	CGameObject::Update(dt, coObjects);
+	CGameObject::Update(dt, staticCoObjects, dynamicCoObjects);
 
 
 	// Check collision between zombie and ground (falling on ground)
-	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
-
-	coEvents.clear();
-
-
-		CalcPotentialCollisions(coObjects, coEvents);
-
-
-	if (coEvents.size() == 0)
+	   
+	if (staticCoEvents.size() == 0)
 	{
 		x += dx;
 		y += dy;
@@ -41,7 +34,7 @@ void Item::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		float rdx = 0;
 		float rdy = 0;
 
-		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
+		FilterCollision(staticCoEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
 
 	
 		x += min_tx * dx + nx * 0.1f;
@@ -59,7 +52,7 @@ void Item::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	}
 
 	// clean up collision events
-	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
+	for (UINT i = 0; i < staticCoEvents.size(); i++) delete staticCoEvents[i];
 }
 
 void Item::GetBoundingBox(float& left, float& top, float& right, float& bottom)

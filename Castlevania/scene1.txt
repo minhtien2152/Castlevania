@@ -20,7 +20,7 @@ Resources\TileMap\scene1.txt
 # Simon				
 1	50	0	1
 
-
+3	70	70	3
 #Candle
 4	160	335	4
 4	480	335	4

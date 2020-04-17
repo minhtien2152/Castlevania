@@ -77,7 +77,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 	// General object setup
 	obj->SetPosition(x, y);
-
+	obj->isEnabled = true;
 
 
 	LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
@@ -190,10 +190,10 @@ void CPlayScene::Update(DWORD dt)
 	for (UINT i = 0; i < dynamicObjectList.size(); i++)
 	{
 		LPGAMEOBJECT object = dynamicObjectList[i];
-		vector<LPGAMEOBJECT> coObjects;
-
-		GetCollidableObject(object, coObjects);
-		object->Update(dt, &coObjects);
+		vector<LPGAMEOBJECT> staticCoObjects;
+		vector<LPGAMEOBJECT> dynamicCoObjects;
+		GetCollidableObject(object, staticCoObjects, dynamicCoObjects);
+		object->Update(dt, &staticCoObjects,& dynamicCoObjects);
 	}
 	//update item
 	for (UINT i = 0; i < itemList.size(); i++)
@@ -201,19 +201,19 @@ void CPlayScene::Update(DWORD dt)
 		LPGAMEOBJECT item = itemList[i];
 		if (!item->isEnabled)
 			continue;
-		vector<LPGAMEOBJECT> coObjects;
-
-		GetCollidableObject(item, coObjects);
-		item->Update(dt, &coObjects);
+		vector<LPGAMEOBJECT> staticCoObjects;
+		vector<LPGAMEOBJECT> dynamicCoObjects;
+		GetCollidableObject(item, staticCoObjects, dynamicCoObjects);
+		item->Update(dt, &staticCoObjects,&dynamicCoObjects);
 	}
 	//update enemy
 	for (UINT i = 0; i < enemyList.size(); i++)
 	{
 		LPGAMEOBJECT enemy = enemyList[i];
-		vector<LPGAMEOBJECT> coObjects;
-
-		GetCollidableObject(enemy, coObjects);
-		enemy->Update(dt, &coObjects);
+		vector<LPGAMEOBJECT> staticCoObjects;
+		vector<LPGAMEOBJECT> dynamicCoObjects;
+		GetCollidableObject(enemy, staticCoObjects, dynamicCoObjects);
+		enemy->Update(dt, &staticCoObjects, &dynamicCoObjects);
 	}
 
 	//update effect
@@ -223,9 +223,14 @@ void CPlayScene::Update(DWORD dt)
 	
 	if (player->GetSubWeapon() != NULL)
 	{
-		if(player->GetSubWeapon()->isEnabled == true)
-			player->GetSubWeapon()->Update(dt);
-		
+		if (player->GetSubWeapon()->isEnabled == true)
+		{
+			vector<LPGAMEOBJECT> staticCoObjects;
+			vector<LPGAMEOBJECT> dynamicCoObjects;
+			GetCollidableObject(player->GetSubWeapon(), staticCoObjects, dynamicCoObjects);
+			player->GetSubWeapon()->Update(dt, &staticCoObjects, &dynamicCoObjects);
+
+		}
 		if (camera->IsInCam(player->GetSubWeapon()) == false)
 		{
 			
@@ -255,12 +260,14 @@ void CPlayScene::Render()
 	tileMap->Render();
 
 	for (int i = 0; i < dynamicObjectList.size(); i++)
-		dynamicObjectList[i]->Render();
+		if(dynamicObjectList[i]->isEnabled)
+			dynamicObjectList[i]->Render();
 	for (auto item : itemList)
 		if (item->isEnabled)
 			item->Render();
 	for (int i = 0; i < enemyList.size(); i++)
-		enemyList[i]->Render();
+		if (enemyList[i]->isEnabled)
+			enemyList[i]->Render();
 	for (auto effect : effectList)
 		if (!effect->isFinished)
 			effect->Render();
@@ -292,7 +299,7 @@ void CPlayScene::SpawnItem(LPGAMEOBJECT obj)
 	float x, y;
 	obj->GetPosition(x, y);
 	Item* item = new Item();
-	int type = Item_Type::AXE_ITEM;
+	int type = Item_Type::DAGGER_ITEM;
 	//if (player->GetMainWeapon()->GetState() < WHIP_LEVEL2)
 	//	type = Item_Type::CHAIN;
 	//else if (player->GetHeartsCollected() < 15)
@@ -339,7 +346,8 @@ void CPlayScene::CheckForWeaponCollision()
 		for (UINT i = 0; i < enemyList.size(); i++)
 		{
 			LPGAMEOBJECT obj = enemyList[i];
-			if(obj->isEnabled)
+			if (obj->isEnabled)
+			{
 				if (dynamic_cast<CZombie*>(obj))
 				{
 					CZombie* e = dynamic_cast<CZombie*> (obj);
@@ -350,6 +358,31 @@ void CPlayScene::CheckForWeaponCollision()
 						CreateEffect(e);
 					}
 				}
+				obj->isEnabled = false;
+			}
+		}
+	}
+	if(player->GetSubWeapon() != NULL)
+	if (player->GetSubWeapon()->isEnabled)
+	{
+		for (auto e : player->GetSubWeapon()->dynamicCoEvents)
+		{
+			LPGAMEOBJECT obj = e->obj;
+			if (dynamic_cast<CZombie*>(obj))
+			{
+				obj->SetState(ZOMBIE_STATE_DIE);
+				SpawnItem(obj);
+				CreateEffect(obj);
+			}
+			else if (dynamic_cast<Candle*>(e->obj))
+			{
+				Candle* e = dynamic_cast<Candle*> (obj);
+				e->SetState(CANDLE_DESTROYED);
+				SpawnItem(e);
+				CreateEffect(e);
+			}
+			obj->isEnabled = false;
+			player->GetSubWeapon()->isEnabled = false;
 		}
 	}
 }
@@ -359,7 +392,7 @@ void CPlayScene::CheckForEnemyCollison()
 	if (!player->isInvulnerable)
 		for (auto enemy : enemyList)
 		{
-
+			if(enemy->isEnabled)
 			if (player->IsColiding(enemy))
 			{
 				player->SetState(SIMON_DAMAGED);
@@ -414,14 +447,27 @@ void CPlayScene::CheckForCollisonWithItems()
 	}
 }
 
-void CPlayScene::GetCollidableObject(LPGAMEOBJECT obj, vector<LPGAMEOBJECT>& coObjects)
+void CPlayScene::GetCollidableObject(LPGAMEOBJECT obj, vector<LPGAMEOBJECT>& staticCoObjects, vector<LPGAMEOBJECT>& dynamicCoObjects)
 {
-	if (dynamic_cast<Item*>(obj) || dynamic_cast<CZombie*>(obj) || dynamic_cast<Simon*>(obj))
+	for (int i = 0; i < staticObjectList.size(); i++)
 	{
-		for (int i = 0; i < staticObjectList.size(); i++)
+		if (dynamic_cast<Ground*>(staticObjectList[i]))
+			staticCoObjects.push_back(staticObjectList[i]);			//hien tai tat ca object deu tuong tac voi ground
+	}
+	
+	if (dynamic_cast<SubWeapon*>(obj))
+	{
+
+		for (int i = 0; i < dynamicObjectList.size(); i++)
 		{
-			if (dynamic_cast<Ground*>(staticObjectList[i]))
-				coObjects.push_back(staticObjectList[i]);
+			if(dynamicObjectList[i]->isEnabled)
+				if (dynamic_cast<Candle*>(dynamicObjectList[i]))
+					dynamicCoObjects.push_back(dynamicObjectList[i]);
+		}
+		for (int i = 0; i < enemyList.size(); i++)
+		{
+			if (enemyList[i]->isEnabled)
+				dynamicCoObjects.push_back(enemyList[i]);
 		}
 	}
 

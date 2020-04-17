@@ -11,9 +11,9 @@ SubWeapon::~SubWeapon()
 {
 }
 
-void SubWeapon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
+void SubWeapon::Update(DWORD dt, vector<LPGAMEOBJECT>* staticCoObjects , vector<LPGAMEOBJECT>* dynamicCoObjects )
 {
-	CGameObject::Update(dt);
+	CGameObject::Update(dt, staticCoObjects, dynamicCoObjects);
 	x += dx;
 	y += dy;
 	switch (state)
@@ -38,6 +38,7 @@ void SubWeapon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 void SubWeapon::Render()
 {
 	animation_set->at(state)->Render( x, y,nx);
+	RenderBoundingBox();
 }
 
 void SubWeapon::GetBoundingBox(float& left, float& top, float& right, float& bottom)
