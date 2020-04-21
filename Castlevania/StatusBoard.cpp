@@ -1,11 +1,13 @@
 #include "StatusBoard.h"
 #include"Define.h"
 #include"time.h"
+#include "Sprites.h"
 StatusBoard::StatusBoard(Simon* simon)
 {
 	time = 0;
 	this->simon = simon;
 	simonbar = new HealthBar(100, 30, simon,SIMON_HEALTH);
+	supweaponRectSprite = CSprites::GetInstance()->Get(SUB_WEAPON_RECT_TEX_ID);
 }
 
 StatusBoard::~StatusBoard()
@@ -39,8 +41,9 @@ void StatusBoard::Render()
 		font->DrawTextA(NULL, info.c_str(), -1, &rect, DT_LEFT, D3DCOLOR_XRGB(255, 255, 255));
 
 	simonbar->Render();
+	supweaponRectSprite->Draw(290, 32,1,255,false);
 	if (subweaponSprite!= NULL)
-		subweaponSprite->Draw(300, 30,1,255 ,false);
+		subweaponSprite->Draw(305, 40,1,255 ,false);
 
 }
 

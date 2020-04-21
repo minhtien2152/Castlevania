@@ -4,7 +4,7 @@
 #include "SubWeapon.h"
 #define SIMON_WALKING_SPEED		0.2f
 #define SIMON_JUMP_SPEED_Y		0.5f
-#define SIMON_GRAVITY			0.002f
+#define SIMON_GRAVITY			0.0022f
 #define SIMON_DEFLECT_SPEED_X	0.05
 #define SIMON_DEFLECT_SPEED_Y	0.5
 #define SIMON_INVULNERABLE_TIME 3000

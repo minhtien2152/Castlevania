@@ -158,9 +158,6 @@ void CIntroScene::_ParseSection_OBJECTS(string line)
 
 	// General object setup
 	obj->SetPosition(x, y);
-
-
-
 	LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
 	obj->SetAnimationSet(ani_set);
 }

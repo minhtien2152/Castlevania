@@ -3,13 +3,15 @@
 #include "Define.h"
 #include "Zombie.h"
 #include "Game.h"
+#include "Portal.h"
 Simon::Simon()
 {
-	//if (CGame::GetInstance()->GetState() == GAME_STATE_PLAYSCENE)
+	if (CGame::GetInstance()->GetState() == GAME_STATE_PLAYSCENE)
 		mainWeapon = new Whip();
-//	else mainWeapon = NULL;
-	hp = SIMON_DEFAULT_HEALTH;
+	else mainWeapon = NULL;
+	hp = 2;/*SIMON_DEFAULT_HEALTH;*/
 	heartsCollected = 5;
+	subWeapon = NULL;
 }
 
 Simon::~Simon()
@@ -22,14 +24,16 @@ bool Simon::IsAttacking()
 }
 void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* staticCoObjects , vector<LPGAMEOBJECT>* dynamicCoObjects)
 {
-	CGameObject::Update(dt, staticCoObjects,dynamicCoObjects);
+	
 
 	if (CGame::GetInstance()->GetState() == GAME_STATE_INTROWALK)
 	{
+		CGameObject::Update(dt);
 		x += dx* 0.5;	//di cham lai
 		y += dy;
 		return;
 	}
+	CGameObject::Update(dt, staticCoObjects, dynamicCoObjects);
 	// simple fall down
 	vy += SIMON_GRAVITY*dt;
 
@@ -84,6 +88,17 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* staticCoObjects , vector<LPGA
 				vx = 0;
 		}
 
+		for (UINT i = 0; i < staticCoEventsResult.size(); i++)
+		{
+			LPCOLLISIONEVENT e = staticCoEventsResult[i];
+
+			if (dynamic_cast<CPortal*>(e->obj))
+			{
+				CPortal* p = dynamic_cast<CPortal*>(e->obj);
+				CGame::GetInstance()->SwitchScene(p->GetSceneId());
+				break;
+			}
+		}
 	}
 	
 
@@ -98,6 +113,9 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* staticCoObjects , vector<LPGA
 		}
 	
 	}
+
+	if (hp == 0)
+		SetState(SIMON_DEAD);
 	//DebugOut(L"can use sub %d\n", canUseSubWeapon);
 	// clean up collision events
 	for (UINT i = 0; i < staticCoEvents.size(); i++) delete staticCoEvents[i];
@@ -181,6 +199,10 @@ void Simon::SetState(int state)
 		vx = 0;
 		vy = 0;
 		break;
+	case SIMON_DEAD:
+		vx = 0;
+	
+		break;
 	default:
 		break;
 	}
@@ -198,21 +220,6 @@ void Simon::PullUp()
 
 void Simon::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
-	/*if (isSitting)
-	{
-		left = x + 16;
-		top = y+18;
-		right = left + SIMON_BBOX_WIDTH;
-		bottom = y + SIMON_BBOX_HEIGHT;
-	}
-	else
-	{
-		left = x + 16;
-		top = y+2;
-		right = left + SIMON_BBOX_WIDTH;
-		bottom = y + SIMON_BBOX_HEIGHT;
-	
-	}*/
 
 		left = x + 16;
 		top = y + 2;
@@ -239,6 +246,7 @@ void Simon::AttackWithSubWeapon()
 		subWeapon->isEnabled = true;
 		//isUsingSubWeapon = true;
 		subWeapon->Attack();
+		heartsCollected--;
 		//DebugOut(L" simon = %d , weapon = %d ", nx, subWeapon->nx);
 	/*}
 	DebugOut(L"state %d\n", state);*/

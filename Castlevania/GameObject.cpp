@@ -43,11 +43,11 @@ void CGameObject::Update(DWORD dt, vector<LPGAMEOBJECT>* staticCoObjects, vector
 	dx = vx * dt;
 	dy = vy * dt;
 
-	vector<LPCOLLISIONEVENT> coEventsResult;
-
 	staticCoEvents.clear();
 	dynamicCoEvents.clear();
+	if(staticCoObjects != NULL)
 	CalcPotentialCollisions(staticCoObjects, staticCoEvents);
+	if (dynamicCoObjects != NULL)
 	CalcPotentialCollisions(dynamicCoObjects, dynamicCoEvents);
 }
 /*

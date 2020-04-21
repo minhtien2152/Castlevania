@@ -10,7 +10,7 @@
 
 #include "Effect.h"
 #include "Map.h"
-
+#include "Portal.h"
 class CPlayScene : public CScene
 {
 protected:
@@ -25,7 +25,7 @@ protected:
 	vector<LPGAMEOBJECT> enemyList;
 	vector<LPEFFECT> effectList;
 	Map* tileMap;
-	
+	LPGAMEOBJECT portal;
 
 	void _ParseSection_OBJECTS(string line);
 	void _ParseSection_TILEMAP_DATA(string line);

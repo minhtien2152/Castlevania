@@ -30,7 +30,8 @@ void Candle::GetBoundingBox(float& left, float& top, float& right, float& bottom
 
 void Candle::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
-
+	if (state == CANDLE_DESTROYED)
+		this->isEnabled = false;
 }
 
 void Candle::Render()

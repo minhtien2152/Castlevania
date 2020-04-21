@@ -19,8 +19,9 @@ void CZombie::Update(DWORD dt, vector<LPGAMEOBJECT>* staticCoObjects , vector<LP
 	vector<LPCOLLISIONEVENT> coEventsResult;
 
 
-	if(state!= ZOMBIE_STATE_DIE)
+	if (state != ZOMBIE_STATE_DIE)
 		CalcPotentialCollisions(staticCoObjects, staticCoEvents);
+	else this->isEnabled = false;
 	
 
 	if (staticCoEvents.size() == 0)

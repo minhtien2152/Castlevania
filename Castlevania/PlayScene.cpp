@@ -64,10 +64,9 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 	case Object_Type::PORTAL:
 	{	
-		float r = atof(tokens[4].c_str());
-		float b = atof(tokens[5].c_str());
-		int scene_id = atoi(tokens[6].c_str());
-		obj = new CPortal(x, y, r, b, scene_id);
+		int scene_id = atoi(tokens[3].c_str());
+
+		obj = portal = new CPortal(scene_id);
 	}
 		break;
 	default:
@@ -82,8 +81,10 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 	LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
 	obj->SetAnimationSet(ani_set);
+	if(obj != NULL)
 	switch (object_type)
 	{
+	case Object_Type::PORTAL:
 	case Object_Type::GROUND:
 		staticObjectList.push_back(obj);
 		break;
@@ -94,6 +95,8 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case Object_Type::ZOMBIE:
 		enemyList.push_back(obj);
 		break;
+	
+		
 	}
 }
 
@@ -184,17 +187,11 @@ void CPlayScene::LoadScene()
 void CPlayScene::Update(DWORD dt)
 {
 	// We know that Mario is the first object in the list hence we won't add him into the colliable object list
-	// TO-DO: This is a "dirty" way, need a more organized way 
+
 	
-	//update objects
-	for (UINT i = 0; i < dynamicObjectList.size(); i++)
-	{
-		LPGAMEOBJECT object = dynamicObjectList[i];
-		vector<LPGAMEOBJECT> staticCoObjects;
-		vector<LPGAMEOBJECT> dynamicCoObjects;
-		GetCollidableObject(object, staticCoObjects, dynamicCoObjects);
-		object->Update(dt, &staticCoObjects,& dynamicCoObjects);
-	}
+
+
+	
 	//update item
 	for (UINT i = 0; i < itemList.size(); i++)
 	{
@@ -233,9 +230,7 @@ void CPlayScene::Update(DWORD dt)
 		}
 		if (camera->IsInCam(player->GetSubWeapon()) == false)
 		{
-			
 			player->GetSubWeapon()->isEnabled = false;
-			//player->isUsingSubWeapon == false;
 		}
 
 	}
@@ -243,22 +238,31 @@ void CPlayScene::Update(DWORD dt)
 	CheckForWeaponCollision();
 	CheckForEnemyCollison();
 	CheckForCollisonWithItems();
-	// Update camera
-	float cx, cy;
-	player->GetPosition(cx, cy);
-
+	// Update camer
 
 	camera->Update(player);
 
 	//DebugOut(L"Cx = %d , Cy = %d\n", cx, cy);
 
 	statusboard->Update(dt);
+
+	//update objects
+	for (UINT i = 0; i < dynamicObjectList.size(); i++)
+	{
+		LPGAMEOBJECT object = dynamicObjectList[i];
+		vector<LPGAMEOBJECT> staticCoObjects;
+		vector<LPGAMEOBJECT> dynamicCoObjects;
+		GetCollidableObject(object, staticCoObjects, dynamicCoObjects);
+		object->Update(dt, &staticCoObjects, &dynamicCoObjects);
+	}
 }
 
 void CPlayScene::Render()
 {
 	tileMap->Render();
 
+	for (int i = 0; i < staticObjectList.size(); i++)
+			staticObjectList[i]->Render();
 	for (int i = 0; i < dynamicObjectList.size(); i++)
 		if(dynamicObjectList[i]->isEnabled)
 			dynamicObjectList[i]->Render();
@@ -331,6 +335,7 @@ void CPlayScene::CheckForWeaponCollision()
 
 			LPGAMEOBJECT obj = dynamicObjectList[i];
 			if (obj->isEnabled)
+			{
 				if (this->player->GetMainWeapon()->IsColiding(obj) == true)
 				{
 					if (dynamic_cast<Candle*>(obj))
@@ -341,24 +346,29 @@ void CPlayScene::CheckForWeaponCollision()
 						CreateEffect(e);
 
 					}
+					
 				}
+				
+			}
 		}
 		for (UINT i = 0; i < enemyList.size(); i++)
 		{
 			LPGAMEOBJECT obj = enemyList[i];
 			if (obj->isEnabled)
 			{
-				if (dynamic_cast<CZombie*>(obj))
+				if (this->player->GetMainWeapon()->IsColiding(obj) == true)
 				{
-					CZombie* e = dynamic_cast<CZombie*> (obj);
-					if (this->player->GetMainWeapon()->IsColiding(e) == true)
+					if (dynamic_cast<CZombie*>(obj))
 					{
+						CZombie* e = dynamic_cast<CZombie*> (obj);
+
 						e->SetState(ZOMBIE_STATE_DIE);
 						SpawnItem(e);
 						CreateEffect(e);
 					}
+					
 				}
-				obj->isEnabled = false;
+				
 			}
 		}
 	}
@@ -381,7 +391,7 @@ void CPlayScene::CheckForWeaponCollision()
 				SpawnItem(e);
 				CreateEffect(e);
 			}
-			obj->isEnabled = false;
+			
 			player->GetSubWeapon()->isEnabled = false;
 		}
 	}
@@ -452,7 +462,13 @@ void CPlayScene::GetCollidableObject(LPGAMEOBJECT obj, vector<LPGAMEOBJECT>& sta
 	for (int i = 0; i < staticObjectList.size(); i++)
 	{
 		if (dynamic_cast<Ground*>(staticObjectList[i]))
-			staticCoObjects.push_back(staticObjectList[i]);			//hien tai tat ca object deu tuong tac voi ground
+			staticCoObjects.push_back(staticObjectList[i]);	
+	//	hien tai tat ca object deu tuong tac voi ground
+		if (dynamic_cast<Simon*>(obj))
+		{
+			if (dynamic_cast<CPortal*>(staticObjectList[i]))
+				staticCoObjects.push_back(staticObjectList[i]);
+		}
 	}
 	
 	if (dynamic_cast<SubWeapon*>(obj))
@@ -470,7 +486,7 @@ void CPlayScene::GetCollidableObject(LPGAMEOBJECT obj, vector<LPGAMEOBJECT>& sta
 				dynamicCoObjects.push_back(enemyList[i]);
 		}
 	}
-
+	
 }
 
 
@@ -480,8 +496,20 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 
 	Simon* simon = ((CPlayScene*)scence)->player;
 	CGame* game = CGame::GetInstance();
+
+	if (simon->GetState() == SIMON_DEAD)
+		return;
 	switch (KeyCode)
 	{
+	case DIK_1:
+		game->SwitchScene(1);
+		break;
+	case DIK_2:
+		game->SwitchScene(2);
+		break;
+	case DIK_0:
+		game->SwitchScene(0);
+		break;
 	case DIK_SPACE:
 		if (simon->isJumping || simon->IsAttacking() || simon->GetState() == SIMON_SIT)
 			return;
@@ -514,7 +542,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		else
 			simon->canUseSubWeapon = false;
 
-		if (simon->GetSubWeapon() != NULL && simon->canUseSubWeapon)
+		if (simon->GetSubWeapon() != NULL && simon->canUseSubWeapon && simon->GetHeartsCollected()>0)
 			simon->AttackWithSubWeapon();
 		else simon->AttackWithWhip();
 
@@ -532,6 +560,8 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	CGame* game = CGame::GetInstance();
 	Simon* simon = ((CPlayScene*)scence)->player;
 
+	if (simon->GetState() == SIMON_DEAD)
+		return;
 	if (simon->GetState() == SIMON_STAND_ATTACK && simon->animation_set->at(SIMON_STAND_ATTACK)->IsOver() == false)
 		return;
 	if (simon->GetState() == SIMON_SIT_ATTACK && simon->animation_set->at(SIMON_SIT_ATTACK)->IsOver() == false)

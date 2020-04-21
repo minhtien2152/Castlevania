@@ -1,15 +1,18 @@
 #include "HealthBar.h"
 #include"Define.h"
 
-
+#define HEALTH_CELL_ID 9
 HealthBar::HealthBar(float x, float y, LPGAMEOBJECT object,int type)
 {
 	this->x = x;
 	this->y = y;
 	this->object = object;
-	currHP = defaultHP = this->object->GetHP();
+	currHP =  this->object->GetHP();
+	
 	this->type = type;
-	animation_set = CAnimationSets::GetInstance()->Get(9);
+	if (type == SIMON_HEALTH)
+		defaultHP = SIMON_DEFAULT_HEALTH;
+	animation_set = CAnimationSets::GetInstance()->Get(HEALTH_CELL_ID);
 }
 
 HealthBar::~HealthBar()

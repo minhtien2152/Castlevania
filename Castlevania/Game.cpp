@@ -324,14 +324,18 @@ void CGame::SwitchScene(int scene_id)
 {
 	// IMPORTANT: has to implement "unload" previous scene assets to avoid duplicate resources
 	scenes[current_scene]->Unload();
-	current_scene = scene_id;
-	LPSCENE s = scenes[current_scene];
+	
 	
 	
 	CTextures::GetInstance()->Clear();
 	CSprites::GetInstance()->Clear();
 	CAnimations::GetInstance()->Clear();
-
+	if (scene_id == 0)
+		state = GAME_STATE_MENU;
+	else
+		state = GAME_STATE_PLAYSCENE;
+	current_scene = scene_id;
+	LPSCENE s = scenes[current_scene];
 	CGame::GetInstance()->SetKeyHandler(s->GetKeyEventHandler());
 	s->LoadScene();
 }

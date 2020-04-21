@@ -9,7 +9,7 @@ class CIntroScene:public CScene
 	Simon* simon;
 	ID3DXFont* font;
 	CGame* game;
-	vector<LPGAMEOBJECT> grounds;
+
 	int state;
 	LPDIRECT3DTEXTURE9 menuScreen;
 	LPDIRECT3DTEXTURE9 castleBackground;
