@@ -1,18 +1,15 @@
 #pragma once
 
-#include "GameObject.h"
-
-class Item : public CGameObject
+#include "Weapon.h"
+class Holywater:public CWeapon
 {
-	DWORD appearTime;   
-
+	DWORD brokeTime;
 public:
-	Item();
-
-	void Render();
+	Holywater();
+	~Holywater();
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = NULL);
+	void Break();
 	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
-	void SetState(int state);
-	LPSPRITE GetCurrentSprite();
+	virtual void Attack(LPGAMEOBJECT user);
 };
 

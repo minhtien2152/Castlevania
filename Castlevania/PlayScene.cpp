@@ -11,6 +11,11 @@
 #include "Zombie.h"
 #include "Candle.h"
 #include "Portal.h"
+#include "Weapon.h"
+#include "Axe.h"
+#include "Boomerang.h"
+#include "Dagger.h"
+#include "Holywater.h"
 using namespace std;
 
 CPlayScene::CPlayScene(int id, LPCWSTR filePath) :	CScene(id, filePath)
@@ -66,7 +71,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	{	
 		int scene_id = atoi(tokens[3].c_str());
 
-		obj = portal = new CPortal(scene_id);
+		obj  = new CPortal(scene_id);
 	}
 		break;
 	default:
@@ -78,7 +83,6 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	obj->SetPosition(x, y);
 	obj->isEnabled = true;
 
-
 	LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
 	obj->SetAnimationSet(ani_set);
 	if(obj != NULL)
@@ -86,16 +90,14 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	{
 	case Object_Type::PORTAL:
 	case Object_Type::GROUND:
-		staticObjectList.push_back(obj);
-		break;
-	case Object_Type::SIMON:
 	case Object_Type::CANDLE:
-		dynamicObjectList.push_back(obj);
+		objectList.push_back(obj);
 		break;
 	case Object_Type::ZOMBIE:
 		enemyList.push_back(obj);
 		break;
-	
+	default:
+		break;
 		
 	}
 }
@@ -172,7 +174,7 @@ void CPlayScene::LoadScene()
 
 	
 	CTextures::GetInstance()->Add(ID_TEX_BBOX, L"Resources\\bbox.png", D3DCOLOR_XRGB(255, 255, 255));
-	Effect::SetAnimationSet(CAnimationSets::GetInstance()->Get(8));
+
 	statusboard = new StatusBoard(player);
 	statusboard->SetFont(CGame::GetInstance()->GetFont());
 	camera = new Camera();
@@ -188,8 +190,17 @@ void CPlayScene::Update(DWORD dt)
 {
 	// We know that Mario is the first object in the list hence we won't add him into the colliable object list
 
-	
-
+	for (UINT i = 0; i < effectList.size(); i++)
+	{
+		if (!effectList[i]->isFinished)
+			effectList[i]->Update(dt);
+		else
+		{
+			free(effectList[i]); 
+			effectList[i] = NULL;
+			effectList.erase(effectList.begin()+i);
+		}
+	}
 
 	
 	//update item
@@ -197,35 +208,54 @@ void CPlayScene::Update(DWORD dt)
 	{
 		LPGAMEOBJECT item = itemList[i];
 		if (!item->isEnabled)
-			continue;
-		vector<LPGAMEOBJECT> staticCoObjects;
-		vector<LPGAMEOBJECT> dynamicCoObjects;
-		GetCollidableObject(item, staticCoObjects, dynamicCoObjects);
-		item->Update(dt, &staticCoObjects,&dynamicCoObjects);
+		
+		{
+			free(itemList[i]);
+			itemList[i] = NULL;
+			itemList.erase(itemList.begin() + i);
+		}
+		else
+		item->Update(dt, &objectList);
 	}
 	//update enemy
 	for (UINT i = 0; i < enemyList.size(); i++)
 	{
-		LPGAMEOBJECT enemy = enemyList[i];
-		vector<LPGAMEOBJECT> staticCoObjects;
-		vector<LPGAMEOBJECT> dynamicCoObjects;
-		GetCollidableObject(enemy, staticCoObjects, dynamicCoObjects);
-		enemy->Update(dt, &staticCoObjects, &dynamicCoObjects);
-	}
+		
+		if (enemyList[i]->isEnabled)
+		{
+			enemyList[i]->Update(dt, &objectList);
+			if (enemyList[i]->isDestroyed)
+			{
+				CreateEffect(enemyList[i], Effect_Type::FIRE_EFFECT);
+				enemyList[i]->isEnabled = false;
+				SpawnItem(enemyList[i]);
+			}
+		}
+		else
+		{
+		free(enemyList[i]);
+		enemyList[i] = NULL;
+		enemyList.erase(enemyList.begin() + i);
+		}
 
-	//update effect
-	for (auto effect : effectList)
-		if(!effect->isFinished)
-			effect->Update(dt);
+	}
+	player->Update(dt, &objectList);
+	if (player->GetMainWeapon()->isEnabled)
+	{
+		vector<LPGAMEOBJECT> coObjects;
+		GetCollidableObject(player->GetMainWeapon(), coObjects);
+		player->GetMainWeapon()->Update(dt, &coObjects);
+	}
 	
 	if (player->GetSubWeapon() != NULL)
 	{
+	//	DebugOut(L"IsEnabled %d\n", player->GetSubWeapon()->isEnabled);
 		if (player->GetSubWeapon()->isEnabled == true)
 		{
-			vector<LPGAMEOBJECT> staticCoObjects;
-			vector<LPGAMEOBJECT> dynamicCoObjects;
-			GetCollidableObject(player->GetSubWeapon(), staticCoObjects, dynamicCoObjects);
-			player->GetSubWeapon()->Update(dt, &staticCoObjects, &dynamicCoObjects);
+			
+			vector<LPGAMEOBJECT> coObjects;
+			GetCollidableObject(player->GetSubWeapon(), coObjects);
+			player->GetSubWeapon()->Update(dt, &coObjects);
 
 		}
 		if (camera->IsInCam(player->GetSubWeapon()) == false)
@@ -234,7 +264,7 @@ void CPlayScene::Update(DWORD dt)
 		}
 
 	}
-
+	
 	CheckForWeaponCollision();
 	CheckForEnemyCollison();
 	CheckForCollisonWithItems();
@@ -247,25 +277,34 @@ void CPlayScene::Update(DWORD dt)
 	statusboard->Update(dt);
 
 	//update objects
-	for (UINT i = 0; i < dynamicObjectList.size(); i++)
+	for (UINT i = 0; i < objectList.size(); i++)
 	{
-		LPGAMEOBJECT object = dynamicObjectList[i];
-		vector<LPGAMEOBJECT> staticCoObjects;
-		vector<LPGAMEOBJECT> dynamicCoObjects;
-		GetCollidableObject(object, staticCoObjects, dynamicCoObjects);
-		object->Update(dt, &staticCoObjects, &dynamicCoObjects);
+		if (objectList[i]->isEnabled)
+		{
+			objectList[i]->Update(dt, &objectList);
+			if (objectList[i]->isDestroyed)
+			{
+				CreateEffect(objectList[i], Effect_Type::FIRE_EFFECT);
+				objectList[i]->isEnabled = false;
+				SpawnItem(objectList[i]);
+			}
+		}
+		else
+		{
+			free(objectList[i]);
+			objectList[i] = NULL;
+			objectList.erase(objectList.begin() + i);
+		}
 	}
 }
 
 void CPlayScene::Render()
 {
 	tileMap->Render();
-
-	for (int i = 0; i < staticObjectList.size(); i++)
-			staticObjectList[i]->Render();
-	for (int i = 0; i < dynamicObjectList.size(); i++)
-		if(dynamicObjectList[i]->isEnabled)
-			dynamicObjectList[i]->Render();
+	player->Render();
+	for (int i = 0; i < objectList.size(); i++)
+		if(objectList[i]->isEnabled)
+			objectList[i]->Render();
 	for (auto item : itemList)
 		if (item->isEnabled)
 			item->Render();
@@ -273,8 +312,10 @@ void CPlayScene::Render()
 		if (enemyList[i]->isEnabled)
 			enemyList[i]->Render();
 	for (auto effect : effectList)
+	{
 		if (!effect->isFinished)
 			effect->Render();
+	}
 
 	if (player->GetSubWeapon() != NULL)
 	{
@@ -289,12 +330,10 @@ void CPlayScene::Render()
 */
 void CPlayScene::Unload()
 {
-	for (int i = 0; i < dynamicObjectList.size(); i++)
-		delete dynamicObjectList[i];
-	for (int i = 0; i < staticObjectList.size(); i++)
-		delete staticObjectList[i];
-	staticObjectList.clear();
-	dynamicObjectList.clear();
+
+	for (int i = 0; i < objectList.size(); i++)
+		delete objectList[i];
+	objectList.clear();
 	player = NULL;
 }
 
@@ -303,7 +342,7 @@ void CPlayScene::SpawnItem(LPGAMEOBJECT obj)
 	float x, y;
 	obj->GetPosition(x, y);
 	Item* item = new Item();
-	int type = Item_Type::DAGGER_ITEM;
+	int type = Item_Type::BOOMERANG_ITEM;
 	//if (player->GetMainWeapon()->GetState() < WHIP_LEVEL2)
 	//	type = Item_Type::CHAIN;
 	//else if (player->GetHeartsCollected() < 15)
@@ -317,18 +356,38 @@ void CPlayScene::SpawnItem(LPGAMEOBJECT obj)
 	itemList.push_back(item);
 }
 
-void CPlayScene::CreateEffect(LPGAMEOBJECT obj)
+void CPlayScene::CreateEffect(LPGAMEOBJECT obj,int type)
 {
 	DebugOut(L"create effect\n");
 	float x, y;
 	obj->GetPosition(x, y);
-	Effect* effect = new FireEffect(x, y);
-	effectList.push_back(effect);
+
+		Effect* effect = NULL;
+		switch (type)
+		{
+		case Effect_Type::FIRE_EFFECT:
+			effect = new FireEffect(x, y);
+			break;
+		case Effect_Type::SPARK_EFFECT:
+			effect = new SparkEffect(x, y);
+			break;
+		default:
+			break;
+		}
+		if (effect != NULL)
+		{
+			effect->SetAnimationSet(CAnimationSets::GetInstance()->Get(type));
+			effectList.push_back(effect);
+		}
+		else
+			DebugOut(L"[ERROR]Wrong effect type");
+	
+	
 }
 
 void CPlayScene::CheckForWeaponCollision()
 {
-	if (player->IsAttacking() && player->animation_set->at(player->state)->IsRenderingLastFrame())
+	/*if (player->IsAttacking() && player->animation_set->at(player->state)->IsRenderingLastFrame())
 	{
 		for (UINT i = 0; i < dynamicObjectList.size(); i++)
 		{
@@ -336,14 +395,14 @@ void CPlayScene::CheckForWeaponCollision()
 			LPGAMEOBJECT obj = dynamicObjectList[i];
 			if (obj->isEnabled)
 			{
-				if (this->player->GetMainWeapon()->IsColiding(obj) == true)
+				if (this->player->GetMainWeapon()->IsColidingAABB(obj) == true)
 				{
 					if (dynamic_cast<Candle*>(obj))
 					{
 						Candle* e = dynamic_cast<Candle*> (obj);
 						e->SetState(CANDLE_DESTROYED);
 						SpawnItem(e);
-						CreateEffect(e);
+						CreateEffect(e, Effect_Type::FIRE_EFFECT);
 
 					}
 					
@@ -356,7 +415,7 @@ void CPlayScene::CheckForWeaponCollision()
 			LPGAMEOBJECT obj = enemyList[i];
 			if (obj->isEnabled)
 			{
-				if (this->player->GetMainWeapon()->IsColiding(obj) == true)
+				if (this->player->GetMainWeapon()->IsColidingAABB(obj) == true)
 				{
 					if (dynamic_cast<CZombie*>(obj))
 					{
@@ -364,7 +423,7 @@ void CPlayScene::CheckForWeaponCollision()
 
 						e->SetState(ZOMBIE_STATE_DIE);
 						SpawnItem(e);
-						CreateEffect(e);
+						CreateEffect(e,Effect_Type::FIRE_EFFECT);
 					}
 					
 				}
@@ -382,19 +441,19 @@ void CPlayScene::CheckForWeaponCollision()
 			{
 				obj->SetState(ZOMBIE_STATE_DIE);
 				SpawnItem(obj);
-				CreateEffect(obj);
+				CreateEffect(obj, Effect_Type::FIRE_EFFECT);
 			}
 			else if (dynamic_cast<Candle*>(e->obj))
 			{
 				Candle* e = dynamic_cast<Candle*> (obj);
 				e->SetState(CANDLE_DESTROYED);
 				SpawnItem(e);
-				CreateEffect(e);
+				CreateEffect(e, Effect_Type::FIRE_EFFECT);
 			}
 			
 			player->GetSubWeapon()->isEnabled = false;
 		}
-	}
+	}*/
 }
 
 void CPlayScene::CheckForEnemyCollison()
@@ -403,11 +462,11 @@ void CPlayScene::CheckForEnemyCollison()
 		for (auto enemy : enemyList)
 		{
 			if(enemy->isEnabled)
-			if (player->IsColiding(enemy))
-			{
+				if (player->IsColidingAABB(enemy))
+				{
 				player->SetState(SIMON_DAMAGED);
 				player->AddHealth(-1);
-			}
+				}
 		}
 }
 
@@ -417,25 +476,27 @@ void CPlayScene::CheckForCollisonWithItems()
 	{
 		if (item->isEnabled)
 		{
-			if (player->IsColiding(item))
+			if (player->IsColidingAABB(item))
 			{
 				switch (item->GetState())
 				{
 				case Item_Type::AXE_ITEM:
 					statusboard->SetSupweaponSprite(item->GetCurrentSprite());
-					player->SetSubWeapon(Weapon_Type::AXE);
+					SetSubWeapon(Weapon_Type::AXE);
 					break;
 				case Item_Type::BOOMERANG_ITEM:
+					statusboard->SetSupweaponSprite(item->GetCurrentSprite());
+					SetSubWeapon(Weapon_Type::BOOMERANG);
 					break;
 				case Item_Type::CROSS:
 					break;
 				case Item_Type::DAGGER_ITEM:
 					statusboard->SetSupweaponSprite(item->GetCurrentSprite());
-					player->SetSubWeapon(Weapon_Type::DAGGER);
+					SetSubWeapon(Weapon_Type::DAGGER);
 					break;
 				case Item_Type::HOLYWATER_ITEM:
 					statusboard->SetSupweaponSprite(item->GetCurrentSprite());
-					player->SetSubWeapon(Weapon_Type::HOLYWATER);
+					SetSubWeapon(Weapon_Type::HOLYWATER);
 					break;
 				case Item_Type::CHAIN:
 					player->SetState(SIMON_POWERUP);
@@ -457,34 +518,54 @@ void CPlayScene::CheckForCollisonWithItems()
 	}
 }
 
-void CPlayScene::GetCollidableObject(LPGAMEOBJECT obj, vector<LPGAMEOBJECT>& staticCoObjects, vector<LPGAMEOBJECT>& dynamicCoObjects)
+void CPlayScene::SetSubWeapon(int type)
 {
-	for (int i = 0; i < staticObjectList.size(); i++)
+	if(weaponList[type]==NULL)
 	{
-		if (dynamic_cast<Ground*>(staticObjectList[i]))
-			staticCoObjects.push_back(staticObjectList[i]);	
-	//	hien tai tat ca object deu tuong tac voi ground
-		if (dynamic_cast<Simon*>(obj))
+		switch (type)
 		{
-			if (dynamic_cast<CPortal*>(staticObjectList[i]))
-				staticCoObjects.push_back(staticObjectList[i]);
+		case Weapon_Type::AXE:
+			weaponList[type] = new Axe();
+			break;
+		case Weapon_Type::BOOMERANG:
+			weaponList[type] = new Boomerang();
+			break;
+		case Weapon_Type::DAGGER:
+			weaponList[type] = new Dagger();
+			break;
+		/*case Weapon_Type::STOPWATCH:
+			weaponList[type] = new Axe();
+			break;*/
+		case Weapon_Type::HOLYWATER:
+			weaponList[type] = new Holywater();
+			break;
 		}
 	}
-	
-	if (dynamic_cast<SubWeapon*>(obj))
+	player->SetSubWeapon(weaponList[type]);
+}
+
+void CPlayScene::CleanUpObjects()
+{
+}
+
+void CPlayScene::GetCollidableObject(LPGAMEOBJECT obj, vector<LPGAMEOBJECT>& coObjects)
+{
+
+	if (dynamic_cast<CWeapon*>(obj))
 	{
 
-		for (int i = 0; i < dynamicObjectList.size(); i++)
+		for (int i = 0; i < objectList.size(); i++)
 		{
-			if(dynamicObjectList[i]->isEnabled)
-				if (dynamic_cast<Candle*>(dynamicObjectList[i]))
-					dynamicCoObjects.push_back(dynamicObjectList[i]);
+			if(objectList[i]->isEnabled)
+				coObjects.push_back(objectList[i]);
 		}
 		for (int i = 0; i < enemyList.size(); i++)
 		{
 			if (enemyList[i]->isEnabled)
-				dynamicCoObjects.push_back(enemyList[i]);
+				coObjects.push_back(enemyList[i]);
 		}
+		if(dynamic_cast<Boomerang*>(obj))
+			coObjects.push_back(player);
 	}
 	
 }
@@ -562,14 +643,8 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 
 	if (simon->GetState() == SIMON_DEAD)
 		return;
-	if (simon->GetState() == SIMON_STAND_ATTACK && simon->animation_set->at(SIMON_STAND_ATTACK)->IsOver() == false)
+	if (simon->isWaitingForAni)
 		return;
-	if (simon->GetState() == SIMON_SIT_ATTACK && simon->animation_set->at(SIMON_SIT_ATTACK)->IsOver() == false)
-		return;//
-	if (simon->GetState() == SIMON_DAMAGED && simon->animation_set->at(SIMON_DAMAGED)->IsOver() == false)
-		return;//
-	if (simon->GetState() == SIMON_POWERUP && simon->animation_set->at(SIMON_POWERUP)->IsOver() == false)
-		return;//
 	if (simon->isJumping)
 		return;
 

@@ -9,64 +9,23 @@ void CZombie::GetBoundingBox(float& left, float& top, float& right, float& botto
 
 }
 
-void CZombie::Update(DWORD dt, vector<LPGAMEOBJECT>* staticCoObjects , vector<LPGAMEOBJECT>* dynamicCoObjects )
+void CZombie::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 {
-	
-	CGameObject::Update(dt, staticCoObjects,  dynamicCoObjects);
-
-	
-	// Check collision between zombie and ground (falling on ground)
-	vector<LPCOLLISIONEVENT> coEventsResult;
+	if (!isEnabled) return;
+	CGameObject::Update(dt,coObjects);
+	vy += ZOMBIE_GRAVITY * dt;
 
 
-	if (state != ZOMBIE_STATE_DIE)
-		CalcPotentialCollisions(staticCoObjects, staticCoEvents);
-	else this->isEnabled = false;
-	
-
-	if (staticCoEvents.size() == 0)
-	{
-		x += dx;
-		y += dy;
-		vy += ZOMBIE_GRAVITY * dt;
-	}
-	else
-	{
-		float min_tx, min_ty, nx = 0, ny;
-		float rdx = 0;
-		float rdy = 0;
-
-		
-		FilterCollision(staticCoEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
-
-
-
-		x += min_tx * dx + nx * 0.4f;
-		y += min_ty * dy + ny * 0.4f;
-
-
-		if (nx != 0 && ny == 0)
-		{
-			this->nx *= -1;
-			this->vx *= -1;
-		}
-		else if (ny == -1.0f)
-		{
-			vy = 0;
-		}
-	}
-
-	// clean up collision events
-	for (int i = 0; i < staticCoEvents.size(); i++) delete  staticCoEvents[i];
 }
 
 void CZombie::Render()
 {
-	if (state != ZOMBIE_STATE_DIE)
-	{
-		animation_set->at(state)->Render(x, y, nx);
-		RenderBoundingBox();
-	}
+	if (!isEnabled) return;
+	
+	animation_set->at(state)->Render(x, y, nx);
+	RenderBoundingBox();
+	
+	
 	
 }
 

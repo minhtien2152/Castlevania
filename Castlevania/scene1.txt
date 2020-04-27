@@ -1,14 +1,9 @@
 # id	file_path			
 [RESOURCES]
-1	Simon.txt
-2	Ground.txt
-3	Zombie.txt
-4	Candle.txt
-5	MorningStar.txt
-6	Item.txt
-7	Effect.txt
-8	HP.txt
-9	SubWeapon.txt
+1	Resources/simon.txt
+2	Resources/PlaySceneResource.txt
+3	HP.txt
+
 
 [TILE_SET]
 -1	Resources\TileMap\scene1_bank.png	255	0	255
@@ -26,11 +21,11 @@ Resources\TileMap\scene1.txt
 
 #3	70	70	3
 #Candle
-4	160	335	4
-4	480	335	4
-4	672	335	4
-4	960	335	4
-4	1216	335	4
+20	160	335	20
+20	480	335	20
+20	672	335	20
+20	960	335	20
+20	1216	335	20
 
 #Ground				
 # --- platform (hint: I created the list using Excel!) ----			

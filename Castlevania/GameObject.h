@@ -3,7 +3,7 @@
 #include <d3dx9.h>
 #include <vector>
 #include "AnimationSets.h"
-
+#include "Effect.h"
 
 using namespace std;
 
@@ -56,11 +56,15 @@ public:
 	DWORD dt;
 
 	int state;
-	int type;		//0 : static  1: dynamic
+	bool isStatic;
+	bool isSolid;
+	bool isDestructable;
 	bool isEnabled;
+	bool isTouchingGround;
+	bool isColidingSideways;
+	bool isDestroyed;
 	LPANIMATION_SET animation_set;
-	vector<LPCOLLISIONEVENT> staticCoEvents;
-	vector<LPCOLLISIONEVENT> dynamicCoEvents;
+	vector<LPCOLLISIONEVENT> nonSolidObjCoEvents;
 	int hp;
 
 
@@ -90,16 +94,16 @@ public:
 		float& rdy);
 
 	CGameObject();
-	bool IsOverlapping(CGameObject* obj);
-	bool IsColiding(CGameObject* obj);
-	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom) = 0;
-	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* staticCoObjects = NULL, vector<LPGAMEOBJECT>* dynamicCoObjects = NULL);
-	virtual void Render() = 0;
-	virtual void SetState(int state) { this->state = state; }
+	bool IsColidingAABB(CGameObject* obj);
 	
-
+	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom) = 0;
+	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = NULL);
+	virtual void Render()=0;
+	virtual void SetState(int state) { this->state = state; }
+	void CleanUpCoEvents();
+	
 	int GetHP() { return hp; }
 	void AddHealth(int amount);
-
+	void ResetAni();
 	~CGameObject();
 };

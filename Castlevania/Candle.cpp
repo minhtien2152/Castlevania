@@ -3,6 +3,10 @@
 Candle::Candle()
 {
 	CGameObject::SetState(BIG_CANDLE);
+	isStatic = true;
+	isSolid = false;
+	isDestructable = true;
+	isDestroyed = false;
 }
 
 void Candle::GetBoundingBox(float& left, float& top, float& right, float& bottom)
@@ -30,12 +34,12 @@ void Candle::GetBoundingBox(float& left, float& top, float& right, float& bottom
 
 void Candle::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
-	if (state == CANDLE_DESTROYED)
-		this->isEnabled = false;
+	CGameObject::Update(dt, coObjects);
 }
 
 void Candle::Render()
 {
+
 	if (state != CANDLE_DESTROYED)
 	{
 		animation_set->at(state)->Render(x, y);

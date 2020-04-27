@@ -11,9 +11,8 @@ class CIntroScene:public CScene
 	CGame* game;
 
 	int state;
-	LPDIRECT3DTEXTURE9 menuScreen;
-	LPDIRECT3DTEXTURE9 castleBackground;
-	LPANIMATION_SET mainMenuAni;
+
+	LPANIMATION_SET animation_set;
 
 	DWORD timeAccumulated = 0;
 public:

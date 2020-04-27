@@ -19,13 +19,13 @@ protected:
 	
 	
 
-	vector<LPGAMEOBJECT> staticObjectList;
-	vector<LPGAMEOBJECT> dynamicObjectList;
+
+	vector<LPGAMEOBJECT> objectList;
 	vector<Item*> itemList;
 	vector<LPGAMEOBJECT> enemyList;
-	vector<LPEFFECT> effectList;
+	vector<Effect*> effectList;
 	Map* tileMap;
-	LPGAMEOBJECT portal;
+	unordered_map<int,CWeapon*> weaponList;
 
 	void _ParseSection_OBJECTS(string line);
 	void _ParseSection_TILEMAP_DATA(string line);
@@ -37,13 +37,15 @@ public:
 	virtual void Render();
 	virtual void Unload();
 	void SpawnItem(LPGAMEOBJECT obj);
-	void CreateEffect(LPGAMEOBJECT obj);
+	void CreateEffect(LPGAMEOBJECT obj,int type);
 	void CheckForWeaponCollision();
 	void CheckForEnemyCollison();
 	void CheckForCollisonWithItems();
-	void GetCollidableObject(LPGAMEOBJECT obj, vector<LPGAMEOBJECT>& staticCoObjects, vector<LPGAMEOBJECT>& dynamicCoObjects );
-	//void AqquireWeapon(Weapon_Type type);
+	void SetSubWeapon(int type);
+	void CleanUpObjects();
+	void GetCollidableObject(LPGAMEOBJECT obj, vector<LPGAMEOBJECT>& coObjects );
 	friend class CPlayScenceKeyHandler;
+
 };
 
 class CPlayScenceKeyHandler : public CScenceKeyHandler

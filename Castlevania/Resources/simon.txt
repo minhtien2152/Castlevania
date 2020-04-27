@@ -1,0 +1,65 @@
+# id	file_path	transparent_color_r	g	b				
+[TEXTURES]
+1	Resources\Simon.png	116	116	116
+
+# id	left	top	right	bottom	texture_id			
+[SPRITES]
+# Stand								
+10001	2	42	66	106	1
+#Walk								
+10002	68	42	132	106	1
+10003	134	42	198	106	1
+
+#Sit								
+10004	200	42	264	106	1
+#Sit_atk								
+10005	200	156	264	220	1
+10006	266	156	330	220	1
+10007	332	156	396	220	1
+#Stand_atk								
+10008	2	156	66	220	1
+10009	68	156	132	220	1
+10010	134	156	198	220	1
+
+#Power_up								
+10011	596	42	660	106	1
+10012	662	42	726	106	1
+10013	728	42	792	106	1
+#Stair_up								
+10014	266	42	330	106	1
+#Stair_down										
+10015	332	42	396	106	1
+#Stair_up_atk								
+10016	398	156	462	220	1
+10017	464	156	528	220	1
+10018	530	156	594	220	1
+#Stair_down_atk								
+10019	596	156	660	220	1
+10020	662	156	726	220	1
+10021	728	156	792	220	1
+#Deflect								
+10022	398	42	462	106	1
+#Dead								
+10023	464	42	528	106	1
+#Back								
+10024	530	42	594	106	1
+
+# ani_id	sprite1_id	time1	sprite2_id	time2	...			
+[ANIMATIONS]
+simon_stand	10001	100
+simon_walk	10001	100	10002	100	10003	100	10002	100
+simon_sit	10004	100
+simon_jump	10004	100
+simon_sit_atk	10005	100	10006	100	10007	150
+simon_stand_atk	10008	100	10009	100	10010	150
+simon_powerup	10011	100	10012	100	10013	100
+simon_stair_up	10014	100	10002	100
+simon_stair_down	10015	100	10002	100
+simon_stair_up_atk	10016	100	10017	100	10018	150
+simon_stair_down_atk	10019	100	10020	100	10021	150
+simon_deflect	10001	100	10022	400	10004	100
+simon_dead	10023	100
+simon_back	10024	100
+
+[ANIMATION_SETS]
+1	simon_stand	simon_walk	simon_sit	simon_jump	simon_sit_atk	simon_stand_atk	simon_powerup	simon_stair_up	simon_stair_down	simon_stair_up_atk	simon_stair_down_atk	simon_deflect	simon_dead	simon_back

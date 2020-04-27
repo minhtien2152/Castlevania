@@ -22,6 +22,9 @@
     <Filter Include="Map">
       <UniqueIdentifier>{d78c0387-b4a8-49d9-9ca5-6a58009c3164}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Weapon">
+      <UniqueIdentifier>{c8f7a7e9-cc18-4b78-a92a-640dbe011d04}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -72,9 +75,6 @@
     <ClCompile Include="Ground.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Whip.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Item.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -91,9 +91,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="HealthBar.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SubWeapon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Portal.cpp">
@@ -113,6 +110,24 @@
     </ClCompile>
     <ClCompile Include="Map.cpp">
       <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Axe.cpp">
+      <Filter>Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="Boomerang.cpp">
+      <Filter>Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="Dagger.cpp">
+      <Filter>Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="Holywater.cpp">
+      <Filter>Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="Weapon.cpp">
+      <Filter>Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="Whip.cpp">
+      <Filter>Weapon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -167,9 +182,6 @@
     <ClInclude Include="Sprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Whip.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Item.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -186,9 +198,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="HealthBar.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SubWeapon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Portal.h">
@@ -208,6 +217,24 @@
     </ClInclude>
     <ClInclude Include="Map.h">
       <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Weapon.h">
+      <Filter>Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="Holywater.h">
+      <Filter>Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="Dagger.h">
+      <Filter>Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="Boomerang.h">
+      <Filter>Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="Axe.h">
+      <Filter>Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="Whip.h">
+      <Filter>Weapon</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

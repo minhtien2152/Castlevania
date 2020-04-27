@@ -1,10 +1,9 @@
 #include "Whip.h"
 #include "Utils.h"
-#include "Zombie.h"
-#include "Candle.h"
+#include "Define.h"
 Whip::Whip()
 {
-	SetAnimationSet(CAnimationSets::GetInstance()->Get(Object_Type::WHIP));
+	SetAnimationSet(CAnimationSets::GetInstance()->Get(Weapon_Type::WHIP));
 	CGameObject::SetState(WHIP_LEVEL0);
 }
 
@@ -12,32 +11,26 @@ Whip::~Whip()
 {
 }
 
-void Whip::Attack( int nx, bool isSitting)
-{
-	
-	this->nx = nx;
-	animation_set->at(state)->Reset();
-}
-
-
 
 void Whip::SetPosition(float x, float y)
 {
-	this->x = x- 90;
+	this->x = x - 90;
 	this->y = y;
 }
 
 void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
-	
-}
 
-void Whip::Render()
-{
-	
-	animation_set->at(state)->Render(x,y,nx);
-
-	RenderBoundingBox();
+	for (int i = 0; i < coObjects->size(); i++)
+	{
+		LPGAMEOBJECT obj = coObjects->at(i);
+		if (obj->isDestructable)
+			if (this->IsColidingAABB(obj) && animation_set->at(state)->IsRenderingLastFrame())
+			{
+				obj->AddHealth(-1);
+				//DebugOut(L"health %d\n", obj->hp);
+			}
+	}
 }
 
 void Whip::GetBoundingBox(float& left, float& top, float& right, float& bottom)
@@ -48,14 +41,14 @@ void Whip::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 	{
 		if (state != WHIP_LEVEL2)
 			left = x + 80 + LONG_CHAIN_BBOX_WIDTH;
-		 left = x + 80+ NORMAL_WHIP_BBOX_WIDTH;
+		left = x + 80 + NORMAL_WHIP_BBOX_WIDTH;
 	}
 	else if (nx > 0)
 	{
 		if (state != WHIP_LEVEL2)
 			left = LONG_CHAIN_BBOX_WIDTH + x;
 		left = NORMAL_WHIP_BBOX_WIDTH + x;
-	
+
 	}
 
 	if (state != WHIP_LEVEL2)
@@ -67,3 +60,4 @@ void Whip::LevelUp()
 {
 	if (state < 2)	state++;
 }
+

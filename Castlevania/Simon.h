@@ -1,7 +1,7 @@
 #pragma once
 #include"GameObject.h"
 #include "Whip.h"
-#include "SubWeapon.h"
+
 #define SIMON_WALKING_SPEED		0.2f
 #define SIMON_JUMP_SPEED_Y		0.5f
 #define SIMON_GRAVITY			0.0022f
@@ -33,7 +33,7 @@ class Simon : public CGameObject
 	DWORD invulnerable_start;
 	DWORD invisibility_start;
 	Whip* mainWeapon;
-	SubWeapon* subWeapon;
+	CWeapon* subWeapon;
 public:
 	Simon();
 	~Simon();
@@ -43,7 +43,10 @@ public:
 	bool isInvisible = false;
 	bool canUseSubWeapon = false;
 	bool IsAttacking();
-	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* staticCoObjects = NULL, vector<LPGAMEOBJECT>* dynamicCoObjects = NULL);
+	bool isWaitingForAni = false;
+
+
+	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = NULL);
 	virtual void Render();
 	void SetState(int state);
 	void PullUp();
@@ -56,7 +59,7 @@ public:
 	void SetHeartsCollected(int heartNum);
 	int GetLife() { return life; }
 	void StartInvisibilityTimer();
-	void SetSubWeapon(Weapon_Type subwp);
-	SubWeapon* GetSubWeapon();
+	void SetSubWeapon(CWeapon * wp);
+	CWeapon* GetSubWeapon();
 };
 

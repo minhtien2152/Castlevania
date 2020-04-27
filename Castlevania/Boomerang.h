@@ -1,18 +1,13 @@
 #pragma once
-
-#include "GameObject.h"
-
-class Item : public CGameObject
+#include "Weapon.h"
+class Boomerang:public CWeapon
 {
-	DWORD appearTime;   
-
 public:
-	Item();
 
-	void Render();
+	Boomerang();
+	~Boomerang();
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = NULL);
 	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
-	void SetState(int state);
-	LPSPRITE GetCurrentSprite();
+	virtual void Attack(LPGAMEOBJECT user);
 };
 

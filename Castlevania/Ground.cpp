@@ -1,9 +1,19 @@
 #include "Ground.h"
 #include "Define.h"
 
+Ground::Ground()
+{
+	isStatic = true;
+	isSolid = true;
+}
+
+Ground::~Ground()
+{
+}
+
 void Ground::Render()
 {
-	animation_set->at(0)->Render(x, y);
+	//animation_set->at(0)->Render(x, y);
 	RenderBoundingBox();
 }
 

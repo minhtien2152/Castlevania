@@ -2,10 +2,12 @@
 #include "Textures.h"
 #include "Define.h"
 #include <fstream>
-#define MENU_BAT 0
-#define MENU_SCREEN_TEX_ID 4
-#define INTRO_ANIMATION_SET_ID 3
-#define CASTLE_TEX_ID 5
+
+#define INTRO_ANIMATION_SET_ID 2
+#define CASTLE_BACKGROUND_ID 2
+#define MENU_ID 0
+#define MENU_BAT_ID 1
+
 #define INTRO_CASTLE_WAIT_TIME 3000
 #include "Ground.h"
 CIntroScene::CIntroScene(int id, LPCWSTR filePath) :CScene(id, filePath)
@@ -58,9 +60,7 @@ void CIntroScene::LoadScene()
 	camera->SetMapWidth(CGame::GetInstance()->GetScreenWidth());
 	CGame::GetInstance()->SetCamera(camera);
 	font = CGame::GetInstance()->GetFont();
-	mainMenuAni = CAnimationSets::GetInstance()->Get(INTRO_ANIMATION_SET_ID);
-	menuScreen = CTextures::GetInstance()->Get(MENU_SCREEN_TEX_ID);
-	castleBackground = CTextures::GetInstance()->Get(CASTLE_TEX_ID);
+	animation_set = CAnimationSets::GetInstance()->Get(INTRO_ANIMATION_SET_ID);
 	DebugOut(L"[INFO] Done loading scene resources %s\n", sceneFilePath);
 }
 
@@ -73,7 +73,7 @@ void CIntroScene::Update(DWORD dt)
 		simon->Update(dt);
 		float posX, posY;
 		simon->GetPosition(posX, posY);
-		if (posX >= game->GetScreenWidth() /2-25)
+		if (posX >= game->GetScreenWidth() /2-20)
 		{
 			simon->SetDirection(1);
 			simon->SetState(SIMON_WALK);
@@ -98,7 +98,8 @@ void CIntroScene::Render()
 
 	if (game->GetState() == GAME_STATE_INTROWALK )
 	{
-		game->Draw(0, STATUS_BOARD_HEIGHT, 1, castleBackground, 0, 0, game->GetScreenWidth(), game->GetScreenHeight());
+
+		animation_set->at(CASTLE_BACKGROUND_ID)->Render(0, STATUS_BOARD_HEIGHT);	//background lau dai
 		simon->Render();
 		statusboard->Render();
 	
@@ -109,8 +110,9 @@ void CIntroScene::Render()
 		SetRect(&rect, 0, 220, SCREEN_WIDTH, 240);
 		font->DrawTextW(NULL, L"Press any key", -1, &rect, DT_NOCLIP, D3DCOLOR_XRGB(255, 255, 255));
 		
-		game->Draw(0, 0, 1, menuScreen, 0, 0, game->GetScreenWidth(), game->GetScreenHeight());
-		mainMenuAni->at(0)->Render(355, 225);
+		
+		animation_set->at(MENU_ID)->Render(0, 0);
+		animation_set->at(MENU_BAT_ID)->Render(368, 208);
 		
 
 	}

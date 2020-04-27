@@ -43,7 +43,7 @@ void StatusBoard::Render()
 	simonbar->Render();
 	supweaponRectSprite->Draw(290, 32,1,255,false);
 	if (subweaponSprite!= NULL)
-		subweaponSprite->Draw(305, 40,1,255 ,false);
+		subweaponSprite->Draw(305, 38,1,255 ,false);
 
 }
 

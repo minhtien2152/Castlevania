@@ -48,6 +48,11 @@ bool CAnimation::IsRenderingLastFrame()
 	return currentFrame == frames.size() - 1;
 }
 
+bool CAnimation::IsRenderingFirstFrame()
+{
+	return currentFrame == 0;
+}
+
 LPANIMATION_FRAME CAnimation::GetLPFirstFrame()
 {
 	return frames[0];

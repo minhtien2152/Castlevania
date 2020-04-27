@@ -4,17 +4,19 @@
 #include "Utils.h"
 #include "Game.h"
 #include "Textures.h"
-
-
+#include "FireEffect.h"
+#include "SparkEffect.h"
 CGameObject::CGameObject()
 {
 	x = y = 0;
 	vx = vy = 0;
 	nx = 1;
 	isEnabled = true;
+	state = 0;
+	hp = 1;
 }
 
-bool CGameObject::IsOverlapping(CGameObject* obj)
+bool CGameObject::IsColidingAABB(CGameObject* obj)
 {
 	float l, t, r, b;
 	float l1, t1, r1, b1;
@@ -27,29 +29,69 @@ bool CGameObject::IsOverlapping(CGameObject* obj)
 	return false;
 }
 
-bool CGameObject::IsColiding(CGameObject* obj)
-{
-	if (IsOverlapping(obj)) // ki?m tra va ch?m b?ng AABB tr??c
-		return true;
-
-	LPCOLLISIONEVENT e = SweptAABBEx(obj); // kt va ch?m gi?a 2 object b?ng sweptAABB
-	bool res = e->t > 0 && e->t <= 1.0f; // ?K va ch?m
-	return res;
-}
-
-void CGameObject::Update(DWORD dt, vector<LPGAMEOBJECT>* staticCoObjects, vector<LPGAMEOBJECT>* dynamicCoObjects)
+void CGameObject::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	this->dt = dt;
+	if (hp <= 0)
+		isDestroyed = true;
+	if (isStatic )	return;
+	
 	dx = vx * dt;
 	dy = vy * dt;
+	
+	vector<LPCOLLISIONEVENT> coEvents;
+	vector<LPCOLLISIONEVENT> coEventsResult;
+	coEvents.clear();
 
-	staticCoEvents.clear();
-	dynamicCoEvents.clear();
-	if(staticCoObjects != NULL)
-	CalcPotentialCollisions(staticCoObjects, staticCoEvents);
-	if (dynamicCoObjects != NULL)
-	CalcPotentialCollisions(dynamicCoObjects, dynamicCoEvents);
+	vector<LPGAMEOBJECT> solidObjects;
+	vector<LPGAMEOBJECT> nonSolidObjects;
+	for (int i = 0; i < coObjects->size(); i++)
+		if (coObjects->at(i)->isSolid)
+			solidObjects.push_back(coObjects->at(i));
+		else nonSolidObjects.push_back(coObjects->at(i));
+
+	CalcPotentialCollisions(&solidObjects, coEvents);
+	CalcPotentialCollisions(&nonSolidObjects, nonSolidObjCoEvents);
+	if (coEvents.size() == 0)
+	{
+		x += dx;
+		y += dy;
+		isColidingSideways = false;
+		isTouchingGround = false;
+	}
+	else
+	{
+
+		float min_tx, min_ty, nx = 0, ny;
+		float rdx = 0;
+		float rdy = 0;
+
+		// TODO: This is a very ugly designed function!!!!
+		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
+
+		x += min_tx * dx + nx * 0.4f;
+		y += min_ty * dy + ny * 0.4f;
+
+		if (nx != 0) {
+			vx = 0; 
+			isColidingSideways = true;
+		}
+		if (ny != 0) {
+			vy = 0;
+			isTouchingGround = true;
+		}
+	}
+	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
+
 }
+
+void CGameObject::CleanUpCoEvents()
+{
+	for (UINT i = 0; i < nonSolidObjCoEvents.size(); i++)
+		delete nonSolidObjCoEvents[i];
+	nonSolidObjCoEvents.clear();
+}
+
 /*
 	Extension of original SweptAABB to deal with two moving objects
 */
@@ -165,9 +207,20 @@ void CGameObject::RenderBoundingBox()
 
 
 
+
+
+
+
+
 void CGameObject::AddHealth(int amount)
 {
 	this->hp += amount;
+}
+
+void CGameObject::ResetAni()
+{
+	animation_set->at(state)->Reset();
+	animation_set->at(state)->SetAniStartTime(GetTickCount());
 }
 
 CGameObject::~CGameObject()

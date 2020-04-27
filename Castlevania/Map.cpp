@@ -24,7 +24,7 @@ void Map::Render()
 	camera->GetCamPosition(camX, camY);
 	float startingColumn = floor(camX / TILE_WIDTH);
 	float maxColumn = ceil( (screenWidth + camX)/ TILE_WIDTH);
-	DebugOut(L" start = %f, max = %f\n", startingColumn, maxColumn);
+	//DebugOut(L" start = %f, max = %f\n", startingColumn, maxColumn);
 
 	if (maxColumn >= columnMap) maxColumn = columnMap;
 	for (int currentRow =0; currentRow < rowMap; currentRow++)
