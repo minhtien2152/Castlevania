@@ -135,8 +135,8 @@ brick_effect	30072	100
 12	hit_effect
 13	fire_effect
 14	brick_effect
-20	candle
-21	torch
+20	torch	candle
+
 22	door
 23	platform
 24	bat_idle	bat_fly

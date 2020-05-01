@@ -26,7 +26,7 @@
 class Simon : public CGameObject
 {
 	int score;
-	int heartsCollected;
+	int heart;
 	int life;
 	
 
@@ -56,7 +56,7 @@ public:
 	Whip* GetMainWeapon();
 	int GetScore() { return score; }
 	void SetScore(int score);
-	int GetHeartsCollected() { return heartsCollected; }
+	int GetHeartsCollected() { return heart; }
 	void SetHeartsCollected(int heartNum);
 	int GetLife() { return life; }
 	void SetLife(int life);

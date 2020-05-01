@@ -9,7 +9,10 @@ Simon::Simon()
 	if (CGame::GetInstance()->GetState() == GAME_STATE_PLAYSCENE)
 		mainWeapon = new Whip();
 	else mainWeapon = NULL;
-	
+	hp= SIMON_DEFAULT_HEALTH;
+	score = 0;
+	life = SIMON_DEFAULT_LIFE;
+	heart = SIMON_DEFAULT_HEART;
 	subWeapon = NULL;
 }
 
@@ -208,7 +211,7 @@ void Simon::AttackWithSubWeapon()
 {
 
 	subWeapon->Attack(this);
-//	heartsCollected--;
+	heart--;
 }
 
 Whip* Simon::GetMainWeapon()
@@ -223,7 +226,7 @@ void Simon::SetScore(int score)
 
 void Simon::SetHeartsCollected(int heartNum)
 {
-	this->heartsCollected = heartNum;
+	this->heart = heartNum;
 }
 
 void Simon::SetLife(int life)
