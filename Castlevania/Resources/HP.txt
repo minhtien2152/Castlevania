@@ -1,8 +1,7 @@
-
 # id	file_path	transparent_color_r	g	b	
 [TEXTURES]
-10	Resources\HP.png	255	0	255
-11	Resources\Rect.png	255	0	255
+10	Resources\Texture\HP.png	255	0	255
+11	Resources\Texture\Rect.png	255	0	255
 
 # id	left	top	right	bottom	texture_id
 [SPRITES]
@@ -20,5 +19,7 @@
 simon_health	100001	100
 missing_health	100002	100
 enemy_health	100003	100
+subweapon_rect	110001	100
 [ANIMATION_SETS]
-9	simon_health	missing_health	enemy_health
+100	simon_health	missing_health	enemy_health
+101	subweapon_rect

@@ -55,9 +55,11 @@ public:
 	void AttackWithSubWeapon();
 	Whip* GetMainWeapon();
 	int GetScore() { return score; }
+	void SetScore(int score);
 	int GetHeartsCollected() { return heartsCollected; }
 	void SetHeartsCollected(int heartNum);
 	int GetLife() { return life; }
+	void SetLife(int life);
 	void StartInvisibilityTimer();
 	void SetSubWeapon(CWeapon * wp);
 	CWeapon* GetSubWeapon();

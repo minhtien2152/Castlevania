@@ -7,6 +7,7 @@
 #include "Animations.h"
 #include "StatusBoard.h"
 #include "Camera.h"
+#include "BackUp.h"
 #define SECTION_UNKNOWN					-1
 #define SCENE_SECTION_RESOURCES			0	
 #define SCENE_SECTION_OBJECTS			1
@@ -24,6 +25,7 @@ using namespace std;
 class CScene
 {
 protected:
+	Simon* player;
 	CKeyEventHandler* key_handler;
 	int id;
 	LPCWSTR sceneFilePath;
@@ -45,6 +47,10 @@ public:
 	virtual void _ParseSection_ANIMATIONS(string line);
 	virtual void _ParseSection_ANIMATION_SETS(string line);
 	virtual void _ParseSection_OBJECTS(string line)=0;
+
+	Simon* GetPlayer() 	{ return player; }
+	int GetId() { return id; }
+	DWORD GetTime() { return statusboard->GetTime(); }
 };
 typedef CScene* LPSCENE;
 

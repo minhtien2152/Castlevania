@@ -1,7 +1,7 @@
 # id	file_path	transparent_color_r	g	b				
 [TEXTURES]
-3	Resources\PlayScene.png	116	116	116
-4	Resources\WHIP.png	255	0	255
+3	Resources\Texture\PlayScene.png	116	116	116
+4	Resources\Texture\WHIP.png	255	0	255
 # id	left	top	right	bottom	texture_id			
 [SPRITES]
 30001	0	0	240	66	4
@@ -122,6 +122,7 @@ bone	30065	100	30066	100	30067	100
 zombie	30068	100	30069	100
 hunchback	30070	100	30071	100
 brick_effect	30072	100
+
 [ANIMATION_SETS]
 4	whiplv0	whiplv1	whiplv2
 5	dagger
@@ -129,7 +130,7 @@ brick_effect	30072	100
 7	axe
 8	holywater_thow	holywater_break
 9	stopwatch
-10	stopwatch	smallheart	largeheart	moneybag1	moneybag2	moneybag3	chain	dagger	cross	axe_item	invispotion	boomerang_item	holywater_item	chicken	doubleshot	tripleshot	magiccrystal	crown	chest
+10	stopwatch	smallheart	bigheart	moneybag1	moneybag2	moneybag3	chain	dagger	cross	axe_item	invispotion	boomerang_item	holywater_item	chicken	doubleshot	tripleshot	magiccrystal	crown	chest
 11	1up
 12	hit_effect
 13	fire_effect

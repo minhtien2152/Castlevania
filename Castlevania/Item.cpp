@@ -3,14 +3,14 @@
 
 Item::Item()
 {
-	appearTime = -1;
+	appearTime = GetTickCount();
 	animation_set = CAnimationSets::GetInstance()->Get(ITEM_ANI_SET_ID);
 	
 }
 
 void Item::Render()
 {
-	//if (GetTickCount() - appearTime > ITEM_APPEAR_TIME)
+	
 		animation_set->at(state)->Render(x, y);
 		RenderBoundingBox();
 }
@@ -19,7 +19,8 @@ void Item::	Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 {
 	CGameObject::Update(dt, coObjects);
 	vy += GRAVITY * dt;
-	
+	if (GetTickCount() - appearTime > ITEM_APPEAR_TIME)
+		this->isEnabled = false;
 	
 }
 
@@ -56,7 +57,7 @@ void Item::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 		break;
 	case LARGEHEART:
 		right = left + 24;
-		bottom = top + 20;
+		bottom = top + 32;
 		break;
 	case CROSS:
 		right = left + 32;
@@ -101,7 +102,7 @@ void Item::SetState(int state)
 	CGameObject::SetState(state);
 }
 
-LPSPRITE Item::GetCurrentSprite()
+LPANIMATION Item::GetCurrentAni()
 {
-	return animation_set->at(state)->GetLPFirstFrame()->GetSprite();
+	return animation_set->at(state);
 }

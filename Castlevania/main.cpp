@@ -21,10 +21,7 @@
 #include "Define.h"
 #include "Animations.h"
 #include "Sprites.h"
-#include "Simon.h"
-#include "Zombie.h"
-#include "Ground.h"
-
+#include "SceneMangager.h"
 CGame* game;
 
 
@@ -49,7 +46,7 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 */
 void Update(DWORD dt)
 {
-	CGame::GetInstance()->GetCurrentScene()->Update(dt);
+	CSceneMangager::GetInstance()->GetCurrentScene()->Update(dt);
 }
 
 /*
@@ -68,7 +65,7 @@ void Render()
 
 		spriteHandler->Begin(D3DXSPRITE_ALPHABLEND);
 
-		CGame::GetInstance()->GetCurrentScene()->Render();
+		CSceneMangager::GetInstance()->GetCurrentScene()->Render();
 
 		//
 		// TEST SPRITE DRAW
@@ -185,7 +182,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	game = CGame::GetInstance();
 	game->Init(hWnd);
 	game->InitKeyboard();
-	game->Load(L"Castlevania_scenes.txt");
+	game->Load(L"Resources/Scene/Castlevania_scenes.txt");
 
 	//SetWindowPos(hWnd, 0, 0, 0, SCREEN_WIDTH * 2, SCREEN_HEIGHT * 2, SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 

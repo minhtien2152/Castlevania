@@ -3,7 +3,7 @@
 #include "IntroScene.h"
 #include <iostream>
 #include <fstream>
-
+#include "SceneMangager.h"
 CGame* CGame::__instance = NULL;
 
 
@@ -267,12 +267,8 @@ void CGame::_ParseSection_SCENES(string line)
 	if (tokens.size() < 2) return;
 	int id = atoi(tokens[0].c_str());
 	LPCWSTR path = ToLPCWSTR(tokens[1]);
-	LPSCENE scene;
-	if(id == 0) 
-		scene = new CIntroScene(id, path);
-	else
-		scene = new CPlayScene(id, path);
-	scenes[id] = scene;
+	
+	CSceneMangager::GetInstance()->Add(id, path);
 }
 
 /*
@@ -316,29 +312,16 @@ void CGame::Load(LPCWSTR gameFile)
 	//scenes[2] = scene;
 
 	DebugOut(L"[INFO] Loading game file : %s has been loaded successfully\n", gameFile);
-
 	SwitchScene(current_scene);
 }
 
 void CGame::SwitchScene(int scene_id)
 {
-	// IMPORTANT: has to implement "unload" previous scene assets to avoid duplicate resources
-	scenes[current_scene]->Unload();
-	
-	
-	
-	CTextures::GetInstance()->Clear();
-	CSprites::GetInstance()->Clear();
-	CAnimations::GetInstance()->Clear();
-	if (scene_id == 0)
-		state = GAME_STATE_MENU;
-	else
-		state = GAME_STATE_PLAYSCENE;
-	current_scene = scene_id;
-	LPSCENE s = scenes[current_scene];
-	CGame::GetInstance()->SetKeyHandler(s->GetKeyEventHandler());
-	s->LoadScene();
+	FreeResources();
+	CSceneMangager::GetInstance()->SwitchScene(scene_id);
 }
+
+
 
 CGame::~CGame()
 {
@@ -474,6 +457,13 @@ void CGame::SetState(int state)
 int CGame::GetState()
 {
 	return state;
+}
+
+void CGame::FreeResources()
+{
+	CTextures::GetInstance()->Clear();
+	CSprites::GetInstance()->Clear();
+	CAnimations::GetInstance()->Clear();
 }
 
 CGame* CGame::GetInstance()

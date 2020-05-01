@@ -16,16 +16,22 @@ class StatusBoard
 
 	HealthBar* simonbar;
 	//HealthBar* bossbar;
-	LPSPRITE supweaponRectSprite;
-	LPSPRITE subweaponSprite;
+	LPANIMATION_SET animation_set;
+	LPANIMATION_SET item_animation_set;
+	int subWP;
+	int sceneId;
 public:
-	StatusBoard(Simon * simon);
+	StatusBoard(Simon* simon);
 	~StatusBoard();
 	void Update(DWORD dt);
 	void Render();
 	void SetFont(ID3DXFont* font);
 	string FillStringWithZeros(string str, int totalChar);
 	
-	void SetSupweaponSprite(LPSPRITE sprite);
+	void SetSupweapon(int type);
+	void Reset();
+	DWORD GetTime();
+	void SetTime(DWORD time);
+	void SetSceneId(int id);
 };
 

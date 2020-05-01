@@ -25,6 +25,9 @@
     <Filter Include="Weapon">
       <UniqueIdentifier>{c8f7a7e9-cc18-4b78-a92a-640dbe011d04}</UniqueIdentifier>
     </Filter>
+    <Filter Include="HUD">
+      <UniqueIdentifier>{888581f3-8c1f-42cc-ab3c-b17dc3fd3efe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -87,9 +90,6 @@
     <ClCompile Include="FireEffect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="StatusBoard.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="HealthBar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -128,6 +128,15 @@
     </ClCompile>
     <ClCompile Include="Whip.cpp">
       <Filter>Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="BackUp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StatusBoard.cpp">
+      <Filter>HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneMangager.cpp">
+      <Filter>Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -194,9 +203,6 @@
     <ClInclude Include="FireEffect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="StatusBoard.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="HealthBar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -235,6 +241,15 @@
     </ClInclude>
     <ClInclude Include="Whip.h">
       <Filter>Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="BackUp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StatusBoard.h">
+      <Filter>HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneMangager.h">
+      <Filter>Scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

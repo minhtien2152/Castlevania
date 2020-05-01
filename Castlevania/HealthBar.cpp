@@ -1,7 +1,7 @@
 #include "HealthBar.h"
 #include"Define.h"
 
-#define HEALTH_CELL_ID 9
+#define HEALTH_CELL_ID 100
 HealthBar::HealthBar(float x, float y, LPGAMEOBJECT object,int type)
 {
 	this->x = x;

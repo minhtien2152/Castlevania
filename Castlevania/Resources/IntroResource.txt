@@ -1,6 +1,6 @@
 # id	file_path	transparent_color_r	g	b				
 [TEXTURES]
-2	Resources/IntroScene.png	0	128	1
+2	Resources/Texture/IntroScene.png	0	128	1
 
 # id	left	top	right	bottom	texture_id			
 [SPRITES]

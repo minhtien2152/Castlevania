@@ -54,7 +54,8 @@ void CIntroScene::LoadScene()
 
 	f.close();
 
-	statusboard = new StatusBoard(simon);
+	statusboard = new StatusBoard(player);
+	statusboard->SetSceneId(id);
 	statusboard->SetFont(CGame::GetInstance()->GetFont());
 	camera = new Camera();
 	camera->SetMapWidth(CGame::GetInstance()->GetScreenWidth());
@@ -70,17 +71,17 @@ void CIntroScene::Update(DWORD dt)
 
 	if (game->GetState() == GAME_STATE_INTROWALK)
 	{
-		simon->Update(dt);
+		player->Update(dt);
 		float posX, posY;
-		simon->GetPosition(posX, posY);
+		player->GetPosition(posX, posY);
 		if (posX >= game->GetScreenWidth() /2-20)
 		{
-			simon->SetDirection(1);
-			simon->SetState(SIMON_WALK);
+			player->SetDirection(1);
+			player->SetState(SIMON_WALK);
 		}
 		else
 		{
-			simon->SetState(SIMON_WAIT);
+			player->SetState(SIMON_WAIT);
 			if (timeAccumulated >= INTRO_CASTLE_WAIT_TIME)
 			{
 				CGame::GetInstance()->SetState(GAME_STATE_PLAYSCENE);
@@ -100,7 +101,7 @@ void CIntroScene::Render()
 	{
 
 		animation_set->at(CASTLE_BACKGROUND_ID)->Render(0, STATUS_BOARD_HEIGHT);	//background lau dai
-		simon->Render();
+		player->Render();
 		statusboard->Render();
 	
 	}
@@ -120,7 +121,7 @@ void CIntroScene::Render()
 
 void CIntroScene::Unload()
 {
-	simon = NULL;
+	player = NULL;
 }
 
 void CIntroScene::_ParseSection_OBJECTS(string line)
@@ -144,13 +145,13 @@ void CIntroScene::_ParseSection_OBJECTS(string line)
 	switch (object_type)
 	{
 	case Object_Type::SIMON:
-		if (simon != NULL)
+		if (player != NULL)
 		{
 			DebugOut(L"[ERROR] Simon object was created before! ");
 			return;
 		}
 		obj = new Simon();
-		simon = (Simon*)obj;
+		player = (Simon*)obj;
 		break;
 	break;
 	default:

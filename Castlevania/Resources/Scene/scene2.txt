@@ -1,13 +1,8 @@
 # id	file_path			
 [RESOURCES]
-1	Simon.txt
-2	Ground.txt
-3	Zombie.txt
-5	MorningStar.txt
-6	Item.txt
-7	Effect.txt
-8	HP.txt
-9	SubWeapon.txt
+1	Resources/simon.txt
+2	Resources/PlaySceneResource.txt
+3	Resources/HP.txt
 
 [TILE_SET]
 -2	Resources\TileMap\scene2_bank.png	255	0	255
@@ -17,19 +12,25 @@ Resources\TileMap\scene2.txt
 # type	x	y	ani_set_id	extra_settings per object type
 # type: 1= Simon , 2 =Ground , 3 = Zombie				
 # Simon				
-1	50	0	1
+1	50	325	1
 
 
 #Ground				
 # --- platform (hint: I created the list using Excel!) ----				
-2	0	400	2
-2	32	400	2
-2	64	400	2
-2	96	400	2
-2	128	400	2
-2	160	400	2
-2	192	400	2
-2	224	400	2
-2	256	400	2
-2	288	400	2
-2	320	400	2
+2	0	432	2
+2	32	432	2
+2	64	432	2
+2	96	432	2
+2	128	432	2
+2	160	432	2
+2	192	432	2
+2	224	432	2
+2	256	432	2
+2	288	432	2
+2	320	432	2
+2	352	432	2
+2	384	432	2
+2	416	432	2
+2	448	432	2
+2	480	432	2
+

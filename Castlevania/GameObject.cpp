@@ -38,7 +38,8 @@ void CGameObject::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	
 	dx = vx * dt;
 	dy = vy * dt;
-	
+	if (CGame::GetInstance()->GetState() == GAME_STATE_INTROWALK)
+		return;
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
 	coEvents.clear();
@@ -211,6 +212,11 @@ void CGameObject::RenderBoundingBox()
 
 
 
+
+void CGameObject::SetHP(int hp)
+{
+	this->hp = hp;
+}
 
 void CGameObject::AddHealth(int amount)
 {

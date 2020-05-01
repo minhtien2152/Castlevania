@@ -1,6 +1,6 @@
 # id	file_path	transparent_color_r	g	b				
 [TEXTURES]
-1	Resources\Simon.png	116	116	116
+1	Resources\Texture\Simon.png	116	116	116
 
 # id	left	top	right	bottom	texture_id			
 [SPRITES]
@@ -52,7 +52,7 @@ simon_sit	10004	100
 simon_jump	10004	100
 simon_sit_atk	10005	100	10006	100	10007	150
 simon_stand_atk	10008	100	10009	100	10010	150
-simon_powerup	10011	100	10012	100	10013	100
+simon_powerup	10011	150	10012	150	10013	150
 simon_stair_up	10014	100	10002	100
 simon_stair_down	10015	100	10002	100
 simon_stair_up_atk	10016	100	10017	100	10018	150

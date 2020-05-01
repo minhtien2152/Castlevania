@@ -9,8 +9,7 @@ Simon::Simon()
 	if (CGame::GetInstance()->GetState() == GAME_STATE_PLAYSCENE)
 		mainWeapon = new Whip();
 	else mainWeapon = NULL;
-	hp = 2;/*SIMON_DEFAULT_HEALTH;*/
-	heartsCollected = 5;
+	
 	subWeapon = NULL;
 }
 
@@ -27,7 +26,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 	if (isWaitingForAni)
 		if (animation_set->at(state)->IsOver())
 			isWaitingForAni = false;
-
+	DebugOut(L"waiting for ani %d\n", isWaitingForAni);
 	if (CGame::GetInstance()->GetState() == GAME_STATE_INTROWALK)
 	{
 		CGameObject::Update(dt);
@@ -79,7 +78,18 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 	if (hp == 0)
 		SetState(SIMON_DEAD);
 	//DebugOut(L"x = %f , y = %f \n", x, y);
+	for(UINT i =0; i<nonSolidObjCoEvents.size() ;i++)
+	{
+		LPCOLLISIONEVENT e = nonSolidObjCoEvents[i];
+
+		if (dynamic_cast<CPortal*>(e->obj))
+		{
+			CPortal* p = dynamic_cast<CPortal*>(e->obj);
+			CGame::GetInstance()->SwitchScene(p->GetSceneId());
+		}
+	}
 	
+	CleanUpCoEvents();
 }
 
 void Simon::Render()
@@ -145,9 +155,11 @@ void Simon::SetState(int state)
 		ResetAni();
 		break;
 	case SIMON_POWERUP:
+		ResetAni();
+		isWaitingForAni = true;
 		vx = 0;
 		mainWeapon->LevelUp();
-		isWaitingForAni = true;
+		
 		
 		break;
 	case SIMON_WAIT:
@@ -204,9 +216,19 @@ Whip* Simon::GetMainWeapon()
 	return mainWeapon;
 }
 
+void Simon::SetScore(int score)
+{
+	this->score = score;
+}
+
 void Simon::SetHeartsCollected(int heartNum)
 {
 	this->heartsCollected = heartNum;
+}
+
+void Simon::SetLife(int life)
+{
+	this->life = life;
 }
 
 void Simon::StartInvisibilityTimer()

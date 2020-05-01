@@ -103,6 +103,7 @@ public:
 	void CleanUpCoEvents();
 	
 	int GetHP() { return hp; }
+	void SetHP(int hp);
 	void AddHealth(int amount);
 	void ResetAni();
 	~CGameObject();

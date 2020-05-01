@@ -5,6 +5,7 @@ CScene::CScene(int id, LPCWSTR filePath)
 {
 	this->id = id;
 	this->sceneFilePath = filePath;
+	player = NULL;
 }
 
 void CScene::LoadObjectResourses(LPCWSTR filepath)
@@ -141,3 +142,4 @@ void CScene::_ParseSection_ANIMATION_SETS(string line)
 
 	CAnimationSets::GetInstance()->Add(ani_set_id, s);
 }
+

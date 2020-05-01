@@ -54,14 +54,8 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 	switch (object_type)
 	{
-	case Object_Type::SIMON:
-		if (player != NULL)
-		{
-			DebugOut(L"[ERROR] Simon object was created before! ");
-			return;
-		}
-		obj = new Simon();
-		player = (Simon*)obj;
+	case Object_Type::SIMON: 
+			obj = player = new Simon();
 		break;
 	case Object_Type::GROUND: obj = new Ground(); break;
 	case Object_Type::ZOMBIE: obj = new CZombie(); break;
@@ -173,14 +167,16 @@ void CPlayScene::LoadScene()
 	f.close();
 
 	
-	CTextures::GetInstance()->Add(ID_TEX_BBOX, L"Resources\\bbox.png", D3DCOLOR_XRGB(255, 255, 255));
+	CTextures::GetInstance()->Add(ID_TEX_BBOX, L"Resources\\Texture\\bbox.png", D3DCOLOR_XRGB(255, 255, 255));
 
 	statusboard = new StatusBoard(player);
 	statusboard->SetFont(CGame::GetInstance()->GetFont());
+	statusboard->SetSceneId(id);
 	camera = new Camera();
 	camera->SetMapWidth(tileMap->GetMapWidth());
 	tileMap->SetCamera(camera);
 	CGame::GetInstance()->SetCamera(camera);
+	LoadBackUpData();
 	DebugOut(L"[INFO] Done loading scene resources %s\n", sceneFilePath);
 }
 
@@ -239,7 +235,7 @@ void CPlayScene::Update(DWORD dt)
 		}
 
 	}
-	player->Update(dt, &objectList);
+	
 	if (player->GetMainWeapon()->isEnabled)
 	{
 		vector<LPGAMEOBJECT> coObjects;
@@ -296,6 +292,7 @@ void CPlayScene::Update(DWORD dt)
 			objectList.erase(objectList.begin() + i);
 		}
 	}
+	player->Update(dt, &objectList);
 }
 
 void CPlayScene::Render()
@@ -334,7 +331,21 @@ void CPlayScene::Unload()
 	for (int i = 0; i < objectList.size(); i++)
 		delete objectList[i];
 	objectList.clear();
-	player = NULL;
+	for (int i = 0; i < itemList.size(); i++)
+		delete itemList[i];
+	itemList.clear();
+	for (int i = 0; i < enemyList.size(); i++)
+		delete enemyList[i];
+	enemyList.clear();
+	for (int i = 0; i < effectList.size(); i++)
+		delete effectList[i];
+	effectList.clear();
+	for(auto x : weaponList)
+	{
+		CWeapon* wp = x.second;
+		delete wp;
+	}
+	weaponList.clear();
 }
 
 void CPlayScene::SpawnItem(LPGAMEOBJECT obj)
@@ -342,15 +353,15 @@ void CPlayScene::SpawnItem(LPGAMEOBJECT obj)
 	float x, y;
 	obj->GetPosition(x, y);
 	Item* item = new Item();
-	int type = Item_Type::BOOMERANG_ITEM;
-	//if (player->GetMainWeapon()->GetState() < WHIP_LEVEL2)
-	//	type = Item_Type::CHAIN;
-	//else if (player->GetHeartsCollected() < 15)
-	//	type = Item_Type::LARGEHEART;
-	//else if (player->GetSubWeapon() == NULL)
-	//	type = Item_Type::DAGGER_ITEM;
-	//else
-	//	type = rand() % 17;	//co 17 loai item
+	int type = Item_Type::DAGGER_ITEM;
+	if (player->GetMainWeapon()->GetState() < WHIP_LEVEL2)
+		type = Item_Type::CHAIN;
+	else if (player->GetHeartsCollected() < 15)
+		type = Item_Type::LARGEHEART;
+	else if (player->GetSubWeapon() == NULL)
+		type = Item_Type::DAGGER_ITEM;
+	else
+		type = rand() % 17;	//co 17 loai item
 	item->SetState(type);
 	item->SetPosition(x, y);
 	itemList.push_back(item);
@@ -478,43 +489,54 @@ void CPlayScene::CheckForCollisonWithItems()
 		{
 			if (player->IsColidingAABB(item))
 			{
-				switch (item->GetState())
-				{
-				case Item_Type::AXE_ITEM:
-					statusboard->SetSupweaponSprite(item->GetCurrentSprite());
-					SetSubWeapon(Weapon_Type::AXE);
-					break;
-				case Item_Type::BOOMERANG_ITEM:
-					statusboard->SetSupweaponSprite(item->GetCurrentSprite());
-					SetSubWeapon(Weapon_Type::BOOMERANG);
-					break;
-				case Item_Type::CROSS:
-					break;
-				case Item_Type::DAGGER_ITEM:
-					statusboard->SetSupweaponSprite(item->GetCurrentSprite());
-					SetSubWeapon(Weapon_Type::DAGGER);
-					break;
-				case Item_Type::HOLYWATER_ITEM:
-					statusboard->SetSupweaponSprite(item->GetCurrentSprite());
-					SetSubWeapon(Weapon_Type::HOLYWATER);
-					break;
-				case Item_Type::CHAIN:
-					player->SetState(SIMON_POWERUP);
-					break;
-				case Item_Type::INVISPOTION:
-					player->StartInvisibilityTimer();
-					break;
-				case Item_Type::LARGEHEART:
-					player->SetHeartsCollected(player->GetHeartsCollected() + 5);
-					break;
-				case Item_Type::SMALLHEART:
-					player->SetHeartsCollected(player->GetHeartsCollected() + 1);
-					break;
-				}
+				AccquireItem(item->GetState());
 				item->isEnabled = false;
 
 			}
 		}
+	}
+}
+
+void CPlayScene::AccquireItem(int type)
+{
+	BackUp* backup = BackUp::GetInstance();
+
+	switch (type)
+	{
+	case Item_Type::AXE_ITEM:
+		statusboard->SetSupweapon(type);
+		backup->SetSupWPItem(type);
+		SetSubWeapon(Weapon_Type::AXE);
+		break;
+	case Item_Type::BOOMERANG_ITEM:
+		statusboard->SetSupweapon(type);
+		backup->SetSupWPItem(type);
+		SetSubWeapon(Weapon_Type::BOOMERANG);
+		break;
+	case Item_Type::CROSS:
+		break;
+	case Item_Type::DAGGER_ITEM:
+		statusboard->SetSupweapon(type);
+		backup->SetSupWPItem(type);
+		SetSubWeapon(Weapon_Type::DAGGER);
+		break;
+	case Item_Type::HOLYWATER_ITEM:
+		statusboard->SetSupweapon(type);
+		backup->SetSupWPItem(type);
+		SetSubWeapon(Weapon_Type::HOLYWATER);
+		break;
+	case Item_Type::CHAIN:
+		player->SetState(SIMON_POWERUP);
+		break;
+	case Item_Type::INVISPOTION:
+		player->StartInvisibilityTimer();
+		break;
+	case Item_Type::LARGEHEART:
+		player->SetHeartsCollected(player->GetHeartsCollected() + 5);
+		break;
+	case Item_Type::SMALLHEART:
+		player->SetHeartsCollected(player->GetHeartsCollected() + 1);
+		break;
 	}
 }
 
@@ -568,6 +590,21 @@ void CPlayScene::GetCollidableObject(LPGAMEOBJECT obj, vector<LPGAMEOBJECT>& coO
 			coObjects.push_back(player);
 	}
 	
+}
+
+void CPlayScene::BackUpData()
+{
+	BackUp::GetInstance()->BackUpSimon(player);
+	BackUp::GetInstance()->SetTime(statusboard->GetTime());
+}
+
+
+void CPlayScene::LoadBackUpData()
+{
+	BackUp* backup = BackUp::GetInstance();
+	backup->LoadBackUp(player);
+	statusboard->SetTime(backup->GetTime());
+	AccquireItem(backup->GetSupWPItem());
 }
 
 

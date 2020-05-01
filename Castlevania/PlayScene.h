@@ -14,7 +14,7 @@
 class CPlayScene : public CScene
 {
 protected:
-	Simon* player;					// A play scene has to have player, right? 
+						
 
 	
 	
@@ -41,9 +41,12 @@ public:
 	void CheckForWeaponCollision();
 	void CheckForEnemyCollison();
 	void CheckForCollisonWithItems();
+	void AccquireItem(int type);
 	void SetSubWeapon(int type);
 	void CleanUpObjects();
 	void GetCollidableObject(LPGAMEOBJECT obj, vector<LPGAMEOBJECT>& coObjects );
+	void BackUpData();
+	void LoadBackUpData();
 	friend class CPlayScenceKeyHandler;
 
 };

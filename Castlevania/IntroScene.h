@@ -6,7 +6,7 @@
 #include "AnimationSets.h"
 class CIntroScene:public CScene
 {
-	Simon* simon;
+	
 	ID3DXFont* font;
 	CGame* game;
 

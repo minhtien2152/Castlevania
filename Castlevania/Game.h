@@ -57,7 +57,6 @@ public:
 	void ProcessKeyboard();
 
 	void Load(LPCWSTR gameFile);
-	LPSCENE GetCurrentScene() { return scenes[current_scene]; }
 	void SwitchScene(int scene_id);
 
 	int GetScreenWidth() { return screen_width; }
@@ -99,6 +98,9 @@ public:
 
 	void SetState(int state);
 	int GetState();
+
+	void FreeResources();
+
 	static CGame* GetInstance();
 	~CGame();
 };

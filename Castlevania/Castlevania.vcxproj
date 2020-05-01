@@ -145,6 +145,7 @@
     <ClCompile Include="Animations.cpp" />
     <ClCompile Include="AnimationSets.cpp" />
     <ClCompile Include="Axe.cpp" />
+    <ClCompile Include="BackUp.cpp" />
     <ClCompile Include="Bat.cpp" />
     <ClCompile Include="Boomerang.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -161,6 +162,7 @@
     <ClCompile Include="IntroScene.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Portal.cpp" />
+    <ClCompile Include="SceneMangager.cpp" />
     <ClCompile Include="SparkEffect.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="main.cpp" />
@@ -181,6 +183,7 @@
     <ClInclude Include="Animations.h" />
     <ClInclude Include="AnimationSets.h" />
     <ClInclude Include="Axe.h" />
+    <ClInclude Include="BackUp.h" />
     <ClInclude Include="Bat.h" />
     <ClInclude Include="Boomerang.h" />
     <ClInclude Include="Camera.h" />
@@ -198,6 +201,7 @@
     <ClInclude Include="IntroScene.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="Portal.h" />
+    <ClInclude Include="SceneMangager.h" />
     <ClInclude Include="SparkEffect.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="KeyHandler.h" />
