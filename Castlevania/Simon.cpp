@@ -4,6 +4,7 @@
 #include "Zombie.h"
 #include "Game.h"
 #include "Portal.h"
+#include "StairBottom.h"
 Simon::Simon()
 {
 	if (CGame::GetInstance()->GetState() == GAME_STATE_PLAYSCENE)
@@ -22,14 +23,18 @@ Simon::~Simon()
 
 bool Simon::IsAttacking()
 {
-	return state == SIMON_SIT_ATTACK || state == SIMON_STAND_ATTACK;
+	return state == SIMON_SIT_ATTACK || state == SIMON_STAND_ATTACK || state == SIMON_STAIR_UP_ATK ||state == SIMON_STAIR_DOWN_ATK;
 }
 void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 {
 	if (isWaitingForAni)
 		if (animation_set->at(state)->IsOver())
 			isWaitingForAni = false;
-	DebugOut(L"waiting for ani %d\n", isWaitingForAni);
+	//DebugOut(L"waiting for ani %d\n", isWaitingForAni);
+	isCollidingStairObject = false;
+		isAllowToGoDown = false;
+		isAllowToGoUp = false;
+	
 	if (CGame::GetInstance()->GetState() == GAME_STATE_INTROWALK)
 	{
 		CGameObject::Update(dt);
@@ -37,9 +42,18 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 		y += dy;
 		return;
 	}
-	CGameObject::Update(dt, coObjects);
+	
 	// simple fall down
-	vy += SIMON_GRAVITY*dt;
+	if (stairState ==0)
+	{
+		CGameObject::Update(dt, coObjects);
+		vy += SIMON_GRAVITY * dt;
+	}
+	else
+	{
+		x += vx * dt;
+		y += vy * dt;
+	}
 	if (isTouchingGround)
 	{
 		isJumping = false;
@@ -81,7 +95,40 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 	if (hp == 0)
 		SetState(SIMON_DEAD);
 	//DebugOut(L"x = %f , y = %f \n", x, y);
-	for(UINT i =0; i<nonSolidObjCoEvents.size() ;i++)
+	
+	DebugOut(L"NonsolidObject size %d\n", nonSolidObjects.size());
+	for (UINT i = 0; i < nonSolidObjects.size(); i++)
+	{
+		LPGAMEOBJECT obj = nonSolidObjects[i];
+
+		if (dynamic_cast<StairObject*>(obj))
+		{
+			if (this->IsColidingAABB(obj))
+			{
+				
+				currentStairDirection = obj->nx;
+				currentStairType = ((StairObject*)obj)->GetType();
+				isCollidingStairObject = true;
+				stairEnterX = ((StairObject*)obj)->GetEnterPosX();
+				if (((StairObject*)obj)->IsInRightPosToEnterStair(x))
+				{
+					if (currentStairType == -1)
+						isAllowToGoUp = true;
+
+					else if (currentStairType == 1)
+
+						isAllowToGoDown = true;
+				}
+				if (stairState !=0)
+				
+					SetState(SIMON_STAND);
+				
+			}
+		
+		
+		}
+	}
+	for (UINT i = 0; i < nonSolidObjCoEvents.size(); i++)
 	{
 		LPCOLLISIONEVENT e = nonSolidObjCoEvents[i];
 
@@ -90,8 +137,10 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 			CPortal* p = dynamic_cast<CPortal*>(e->obj);
 			CGame::GetInstance()->SwitchScene(p->GetSceneId());
 		}
+
 	}
-	
+	//DebugOut(L"x= %f,y= %f\n",x, y);
+	//DebugOut(L"stairEnterX = %f, isCollidingStairObject %d,currentStairType %d\n", stairEnterX, isCollidingStairObject,currentStairType);
 	CleanUpCoEvents();
 }
 
@@ -119,7 +168,7 @@ void Simon::SetState(int state)
 	case SIMON_STAND:
 		vx = 0;
 		PullUp();
-	
+		stairState = STAIR_STATE_NONE;
 		break;
 	case SIMON_WALK:
 		PullUp();
@@ -128,6 +177,8 @@ void Simon::SetState(int state)
 		
 		break;
 	case SIMON_JUMP:
+		if (isColidingSideways)
+			vx = 0;
 		vy = -SIMON_JUMP_SPEED_Y;
 		isJumping = true;
 		isSitting = true;
@@ -145,6 +196,8 @@ void Simon::SetState(int state)
 	case SIMON_STAND_ATTACK:
 		isSitting = false;
 	case SIMON_SIT_ATTACK:	
+	case SIMON_STAIR_UP_ATK:
+	case SIMON_STAIR_DOWN_ATK:
 		isWaitingForAni = true;
 		ResetAni();
 		break;
@@ -173,6 +226,27 @@ void Simon::SetState(int state)
 		vx = 0;
 	
 		break;
+	case SIMON_STAIR_UP:
+		ResetAni();
+		isWaitingForAni = true;
+		vx = -nx*SIMON_STAIR_SPEED;
+		vy = -SIMON_STAIR_SPEED;
+		stairState = STAIR_STATE_GOING_UP;
+		break;
+	case SIMON_STAIR_UP_IDLE:
+		vx = vy = 0;
+		break;
+	case SIMON_STAIR_DOWN:
+		ResetAni();
+		isWaitingForAni = true;
+		vx = -nx * SIMON_STAIR_SPEED;
+		vy = SIMON_STAIR_SPEED;
+		stairState = STAIR_STATE_GOING_DOWN;
+		break;
+	case SIMON_STAIR_DOWN_IDLE:
+		vx = vy = 0;
+		break;
+
 	default:
 		break;
 	}
@@ -252,4 +326,37 @@ void Simon::SetSubWeapon(CWeapon* wp)
 CWeapon* Simon::GetSubWeapon()
 {
 	return subWeapon;
+}
+
+int Simon::GetCurrentStairDirection()
+{
+	return currentStairDirection;
+}
+
+int Simon::GetCurrentStairType()
+{
+	return currentStairType;
+}
+
+float Simon::GetStairEnterPosX()
+{
+	return stairEnterX;
+}
+
+void Simon::GoToStairEnterPos()
+{
+	if (x - stairEnterX > 0)
+		SetDirection(1);
+	else
+		SetDirection(-1);
+	SetState(SIMON_WALK);
+}
+
+void Simon::GoIntoStair(int upOrDown, int direction)
+{
+	SetDirection(direction);
+	if (upOrDown == 1)
+		SetState(SIMON_STAIR_DOWN);
+	else 
+		SetState(SIMON_STAIR_UP);
 }

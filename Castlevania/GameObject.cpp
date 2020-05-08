@@ -43,9 +43,9 @@ void CGameObject::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
 	coEvents.clear();
-
+	nonSolidObjects.clear();
 	vector<LPGAMEOBJECT> solidObjects;
-	vector<LPGAMEOBJECT> nonSolidObjects;
+	
 	for (int i = 0; i < coObjects->size(); i++)
 		if (coObjects->at(i)->isSolid)
 			solidObjects.push_back(coObjects->at(i));
@@ -70,16 +70,27 @@ void CGameObject::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		// TODO: This is a very ugly designed function!!!!
 		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
 
-		x += min_tx * dx + nx * 0.4f;
-		y += min_ty * dy + ny * 0.4f;
+		x += min_tx * dx + nx * 0.5f;
+		
+		
 
 		if (nx != 0) {
-			vx = 0; 
+			vx = 0;
 			isColidingSideways = true;
 		}
-		if (ny != 0) {
+		else
+			isColidingSideways = false;
+		if (ny < 0) {
+
 			vy = 0;
+			y += min_ty * dy + ny * 0.5f;
 			isTouchingGround = true;
+			
+		}
+		else
+		{
+			isTouchingGround = false;
+			y += dy;
 		}
 	}
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
@@ -91,6 +102,12 @@ void CGameObject::CleanUpCoEvents()
 	for (UINT i = 0; i < nonSolidObjCoEvents.size(); i++)
 		delete nonSolidObjCoEvents[i];
 	nonSolidObjCoEvents.clear();
+	
+}
+
+int CGameObject::GetPosX()
+{
+	return x;
 }
 
 /*

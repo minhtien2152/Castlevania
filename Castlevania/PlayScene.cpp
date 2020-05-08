@@ -16,6 +16,9 @@
 #include "Boomerang.h"
 #include "Dagger.h"
 #include "Holywater.h"
+#include "Knight.h"
+#include "Bumper.h"
+#include "StairBottom.h"
 using namespace std;
 
 CPlayScene::CPlayScene(int id, LPCWSTR filePath) :	CScene(id, filePath)
@@ -43,8 +46,8 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	if (tokens.size() < 3) return; // skip invalid lines - an object set must have at least id, x, y
 
 	int object_type = atoi(tokens[0].c_str());
-	float x = atof(tokens[1].c_str());
-	float y = atof(tokens[2].c_str());
+	float x = atof(tokens[1].c_str()) * TILE_WIDTH;
+	float y = atof(tokens[2].c_str())*TILE_HEIGHT + STATUS_BOARD_HEIGHT;
 
 	int ani_set_id = atoi(tokens[3].c_str());
 
@@ -59,8 +62,16 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		break;
 	case Object_Type::GROUND: obj = new Ground(); break;
 	case Object_Type::ZOMBIE: obj = new CZombie(); break;
+	case Object_Type::KNIGHT:	obj = new Knight(); break;
 	case Object_Type::CANDLE: obj = new Candle(); break;
-
+	case Object_Type::BUMPER: obj = new Bumper();	break;
+	case Object_Type::STAIR_BOTTOM: 
+	{
+		int stair_dir = atoi(tokens[4].c_str());
+		int stair_type = atoi(tokens[5].c_str());
+		obj = new StairObject(stair_dir,stair_type); 
+	}
+		break;
 	case Object_Type::PORTAL:
 	{	
 		int scene_id = atoi(tokens[3].c_str());
@@ -76,18 +87,23 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	// General object setup
 	obj->SetPosition(x, y);
 	obj->isEnabled = true;
-
-	LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
-	obj->SetAnimationSet(ani_set);
+	if (ani_set_id != 0)
+	{
+		LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
+		obj->SetAnimationSet(ani_set);
+	}
 	if(obj != NULL)
 	switch (object_type)
 	{
 	case Object_Type::PORTAL:
 	case Object_Type::GROUND:
 	case Object_Type::CANDLE:
+	case Object_Type::BUMPER:
+	case Object_Type::STAIR_BOTTOM:
 		objectList.push_back(obj);
 		break;
 	case Object_Type::ZOMBIE:
+	case Object_Type::KNIGHT:
 		enemyList.push_back(obj);
 		break;
 	default:
@@ -475,8 +491,9 @@ void CPlayScene::CheckForEnemyCollison()
 			if(enemy->isEnabled)
 				if (player->IsColidingAABB(enemy))
 				{
-				player->SetState(SIMON_DAMAGED);
-				player->AddHealth(-1);
+					if(player->stairState ==0)
+						player->SetState(SIMON_DAMAGED);
+					player->AddHealth(-1);
 				}
 		}
 }
@@ -629,7 +646,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		game->SwitchScene(0);
 		break;
 	case DIK_SPACE:
-		if (simon->isJumping || simon->IsAttacking() || simon->GetState() == SIMON_SIT)
+		if (simon->isJumping || simon->IsAttacking() || simon->GetState() == SIMON_SIT || simon->stairState !=0)
 			return;
 		simon->SetState(SIMON_JUMP);
 		break;
@@ -638,14 +655,18 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 			return;
 		if (simon->GetState() == SIMON_WALK)
 			simon->SetState(SIMON_STAND);
-		if (simon->GetState() == SIMON_STAND || simon->GetState() == SIMON_JUMP || simon->GetState() == SIMON_WALK)
-		{
+		if (simon->GetState() == SIMON_STAND || simon->GetState() == SIMON_JUMP || simon->GetState() == SIMON_WALK)	
 			simon->SetState(SIMON_STAND_ATTACK);
-		}
+		
 		else if (simon->GetState() == SIMON_SIT)
-		{
 			simon->SetState(SIMON_SIT_ATTACK);
-		}
+		
+		else if (simon->GetState() == SIMON_STAIR_UP_IDLE)
+			simon->SetState(SIMON_STAIR_UP_ATK);
+		
+		else if (simon->GetState() == SIMON_STAIR_DOWN_IDLE)
+			simon->SetState(SIMON_STAIR_DOWN_ATK);
+
 		if (game->IsKeyDown(DIK_UP))
 		{
 			if (simon->GetSubWeapon() != NULL)
@@ -655,7 +676,6 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 				else
 					simon->canUseSubWeapon = false;
 			}
-
 		}
 		else
 			simon->canUseSubWeapon = false;
@@ -684,30 +704,92 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		return;
 	if (simon->isJumping)
 		return;
-
-
+	
 	if (game->IsKeyDown(DIK_DOWN))
 	{
-		simon->SetState(SIMON_SIT);
-		if (game->IsKeyDown(DIK_RIGHT))
+		if (simon->isCollidingStairObject&& simon->isTouchingGround && !simon->isAllowToGoDown && simon->GetCurrentStairType() == 1)
 		{
-			simon->SetDirection(-1);
-
+			simon->GoToStairEnterPos();
 		}
-		else if (game->IsKeyDown(DIK_LEFT))
+
+		else if (simon->isAllowToGoDown || simon->GetCurrentStairType() == 1 && simon->stairState != 0)
 		{
-			simon->SetDirection(1);
+			simon->SetDirection(simon->GetCurrentStairDirection());
+			simon->SetState(SIMON_STAIR_DOWN);
+		}
+		else if(simon->GetCurrentStairType() == -1 && simon->stairState != 0)
+		{
+			simon->SetDirection(-simon->GetCurrentStairDirection());
+			simon->SetState(SIMON_STAIR_DOWN);
+		}
+
+		else {
+			simon->SetState(SIMON_SIT);
+			if (game->IsKeyDown(DIK_RIGHT))
+			{
+				simon->SetDirection(-1);
+
+			}
+			else if (game->IsKeyDown(DIK_LEFT))
+			{
+				simon->SetDirection(1);
+			}
 		}
 	}
 	else if (game->IsKeyDown(DIK_RIGHT))
 	{
-		simon->SetDirection(-1);
-		simon->SetState(SIMON_WALK);
+		if (simon->stairState != 0)
+		{
+			if (simon->GetCurrentStairDirection() == -1)
+			{
+				simon->GoIntoStair(simon->GetCurrentStairType(), -1);
+			}
+			else
+				simon->GoIntoStair(-simon->GetCurrentStairType(), -1);
+		}
+		else
+		{
+			simon->SetDirection(-1);
+			simon->SetState(SIMON_WALK);
+		}
 	}
 	else if (game->IsKeyDown(DIK_LEFT))
 	{
-		simon->SetDirection(1);
-		simon->SetState(SIMON_WALK);
+		if (simon->stairState != 0)
+		{
+			if (simon->GetCurrentStairDirection() == 1)
+			{
+				simon->GoIntoStair(simon->GetCurrentStairType(), 1);
+			}
+			else
+				simon->GoIntoStair(-simon->GetCurrentStairType(), 1);
+		}
+		else
+		{
+			simon->SetDirection(1);
+			simon->SetState(SIMON_WALK);
+		}
 	}
-	else simon->SetState(SIMON_STAND);
+	else {
+		if (simon->stairState == STAIR_STATE_GOING_DOWN)
+			simon->SetState(SIMON_STAIR_DOWN_IDLE);
+		else if (simon->stairState == STAIR_STATE_GOING_UP)
+			simon->SetState(SIMON_STAIR_UP_IDLE);
+		else simon->SetState(SIMON_STAND);
+	}
+	if (game->IsKeyDown(DIK_UP))
+	{
+		if (simon->isCollidingStairObject && simon->isTouchingGround&& !simon->isAllowToGoUp && simon->GetCurrentStairType() == -1)
+		{
+			simon->GoToStairEnterPos();
+		}
+		else if (simon->isAllowToGoUp || simon->GetCurrentStairType() == -1 && simon->stairState != 0)
+			simon->GoIntoStair(STAIR_STATE_GOING_UP, simon->GetCurrentStairDirection());
+
+		else if (simon->GetCurrentStairType() == 1 && simon->stairState != 0)
+			simon->GoIntoStair(STAIR_STATE_GOING_UP, -simon->GetCurrentStairDirection());
+
+
+
+	}
 }

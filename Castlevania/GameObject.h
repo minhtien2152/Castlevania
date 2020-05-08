@@ -65,6 +65,7 @@ public:
 	bool isDestroyed;
 	LPANIMATION_SET animation_set;
 	vector<LPCOLLISIONEVENT> nonSolidObjCoEvents;
+	vector<LPGAMEOBJECT> nonSolidObjects;
 	int hp;
 
 
@@ -101,7 +102,7 @@ public:
 	virtual void Render()=0;
 	virtual void SetState(int state) { this->state = state; }
 	void CleanUpCoEvents();
-	
+	int GetPosX();
 	int GetHP() { return hp; }
 	void SetHP(int hp);
 	void AddHealth(int amount);

@@ -1,7 +1,9 @@
 [SETTINGS]
-start	1
+start	4
 #scene list	
 [SCENES]
 0	Resources\Scene\sceneIntro.txt
 1	Resources\Scene\scene1.txt
 2	Resources\Scene\scene2.txt
+3	Resources\Scene\scene3.txt
+4	Resources\Scene\scene4.txt

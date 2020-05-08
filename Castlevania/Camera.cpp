@@ -13,9 +13,13 @@ void Camera::Update(Simon* simon)
 {
 	float simon_x, simon_y;
 	simon->GetPosition(simon_x, simon_y);
-	if (simon_x >= CGame::GetInstance()->GetScreenWidth() / 2 //ria map trai
-		&& simon_x + CGame::GetInstance()->GetScreenWidth() / 2 <= mapWidth) //ria map phai
+	if (simon_x >= CGame::GetInstance()->GetScreenWidth() / 2 //ria trai
+		&& simon_x + CGame::GetInstance()->GetScreenWidth() / 2 <= mapWidth) //ria phai
 		cam_x = simon_x - CGame::GetInstance()->GetScreenWidth() / 2;
+	else if (simon_x < CGame::GetInstance()->GetScreenWidth() / 2)
+		cam_x = 0;
+	else if (simon_x + CGame::GetInstance()->GetScreenWidth() / 2 > mapWidth)
+		cam_x = mapWidth - CGame::GetInstance()->GetScreenWidth()+1;
 }
 
 void Camera::GetCamPosition(float& x, float& y)

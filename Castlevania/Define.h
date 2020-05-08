@@ -56,7 +56,9 @@ enum Object_Type
 	SKELETON,
 	BONE,
 	ZOMBIE,
-	HUNCHBACK
+	HUNCHBACK,
+	BUMPER,
+	STAIR_BOTTOM
 };
 
 
