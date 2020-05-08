@@ -31,9 +31,12 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 		if (animation_set->at(state)->IsOver())
 			isWaitingForAni = false;
 	//DebugOut(L"waiting for ani %d\n", isWaitingForAni);
+	if (stairState != 0)
+		isTouchingGround = false;
+
 	isCollidingStairObject = false;
-		isAllowToGoDown = false;
-		isAllowToGoUp = false;
+	isAllowToGoDown = false;
+	isAllowToGoUp = false;
 	
 	if (CGame::GetInstance()->GetState() == GAME_STATE_INTROWALK)
 	{
@@ -105,12 +108,34 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 		{
 			if (this->IsColidingAABB(obj))
 			{
+			/*	isCollidingStairObject = true;
 				
+				
+				if (((StairObject*)obj)->IsInRightPosToEnterStair(x,y) && isTouchingGround)
+				{
+					if (currentStairType == -1)
+						isAllowToGoUp = true;
+
+					else if (currentStairType == 1)
+
+						isAllowToGoDown = true;
+					currentStairType = ((StairObject*)obj)->GetType();
+					if (stairState == 0)
+					{
+						currentStairId = ((StairObject*)obj)->GetId();
+						currentStairDirection = obj->nx;
+						
+						
+						stairEnterX = ((StairObject*)obj)->GetEnterPosX();
+					}
+				}
+				if (stairState !=0 && ((StairObject*)obj)->GetId() == currentStairId)
+					SetState(SIMON_STAND);*/
 				currentStairDirection = obj->nx;
 				currentStairType = ((StairObject*)obj)->GetType();
 				isCollidingStairObject = true;
 				stairEnterX = ((StairObject*)obj)->GetEnterPosX();
-				if (((StairObject*)obj)->IsInRightPosToEnterStair(x))
+				if (((StairObject*)obj)->IsInRightPosToEnterStair(x,y))
 				{
 					if (currentStairType == -1)
 						isAllowToGoUp = true;
@@ -119,9 +144,11 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 
 						isAllowToGoDown = true;
 				}
-				if (stairState !=0)
-				
+				if (stairState != 0)
+
 					SetState(SIMON_STAND);
+			
+				
 				
 			}
 		
@@ -139,7 +166,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 		}
 
 	}
-	//DebugOut(L"x= %f,y= %f\n",x, y);
+	DebugOut(L"x= %f,y= %f\n",x, y);
 	//DebugOut(L"stairEnterX = %f, isCollidingStairObject %d,currentStairType %d\n", stairEnterX, isCollidingStairObject,currentStairType);
 	CleanUpCoEvents();
 }
@@ -233,8 +260,7 @@ void Simon::SetState(int state)
 		vy = -SIMON_STAIR_SPEED;
 		stairState = STAIR_STATE_GOING_UP;
 		break;
-	case SIMON_STAIR_UP_IDLE:
-		vx = vy = 0;
+	
 		break;
 	case SIMON_STAIR_DOWN:
 		ResetAni();
@@ -243,6 +269,7 @@ void Simon::SetState(int state)
 		vy = SIMON_STAIR_SPEED;
 		stairState = STAIR_STATE_GOING_DOWN;
 		break;
+	case SIMON_STAIR_UP_IDLE:
 	case SIMON_STAIR_DOWN_IDLE:
 		vx = vy = 0;
 		break;
@@ -285,7 +312,7 @@ void Simon::AttackWithSubWeapon()
 {
 
 	subWeapon->Attack(this);
-	heart--;
+	//heart--;
 }
 
 Whip* Simon::GetMainWeapon()

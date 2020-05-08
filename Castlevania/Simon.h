@@ -45,6 +45,7 @@ class Simon : public CGameObject
 	CWeapon* subWeapon;
 	int currentStairDirection;
 	int currentStairType;
+	int currentStairId;
 	float stairEnterX;
 public:
 	Simon();

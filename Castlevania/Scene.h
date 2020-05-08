@@ -57,11 +57,11 @@ typedef CScene* LPSCENE;
 class CScenceKeyHandler : public CKeyEventHandler
 {
 protected:
-	CScene* scence;
+	CScene* scene;
 
 public:
 	virtual void KeyState(BYTE* states) = 0;
 	virtual void OnKeyDown(int KeyCode) = 0;
 	virtual void OnKeyUp(int KeyCode) = 0;
-	CScenceKeyHandler(CScene* s) :CKeyEventHandler() { scence = s; }
+	CScenceKeyHandler(CScene* s) :CKeyEventHandler() { scene = s; }
 };

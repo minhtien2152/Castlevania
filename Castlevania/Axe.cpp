@@ -13,7 +13,7 @@ void Axe::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CGameObject::Update(dt, coObjects);
 	vy += GRAVITY * dt;
-	if (isTouchingGround || isColidingSideways)
+	if (isTouchingGround)
 	{
 		isEnabled = false;
 		return;

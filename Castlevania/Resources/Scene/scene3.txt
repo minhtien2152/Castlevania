@@ -21,8 +21,8 @@ Resources\TileMap\scene2-2.txt
 #stair
 #dir : 1 = left, -1 = right
 #-1 = up, 1= down
-#	x	y	ani_set	dir	Up/down
-30	29	5	0	1	1
+#	x	y	ani_set	dir	Up/down	id
+30	29	5	0	1	1	0
 #Knight
 24	20	4	24
 #Ground			

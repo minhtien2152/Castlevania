@@ -69,7 +69,8 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	{
 		int stair_dir = atoi(tokens[4].c_str());
 		int stair_type = atoi(tokens[5].c_str());
-		obj = new StairObject(stair_dir,stair_type); 
+		int id = atoi(tokens[6].c_str());
+		obj = new StairObject(stair_dir,stair_type,id); 
 	}
 		break;
 	case Object_Type::PORTAL:
@@ -369,7 +370,7 @@ void CPlayScene::SpawnItem(LPGAMEOBJECT obj)
 	float x, y;
 	obj->GetPosition(x, y);
 	Item* item = new Item();
-	int type = Item_Type::DAGGER_ITEM;
+	int type = Item_Type::CHICKEN;
 	if (player->GetMainWeapon()->GetState() < WHIP_LEVEL2)
 		type = Item_Type::CHAIN;
 	else if (player->GetHeartsCollected() < 15)
@@ -553,6 +554,13 @@ void CPlayScene::AccquireItem(int type)
 		break;
 	case Item_Type::SMALLHEART:
 		player->SetHeartsCollected(player->GetHeartsCollected() + 1);
+	case Item_Type::REDMONEYBAG:
+	case Item_Type::WHITEMONEYBAG:
+	case Item_Type::BLUEMONEYBAG:
+		player->SetScore(player->GetScore() + 100);
+		break;
+	case Item_Type::CHICKEN:
+		player->SetHP(SIMON_DEFAULT_HEALTH);
 		break;
 	}
 }
@@ -629,21 +637,40 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 {
 	//DebugOut(L"[INFO] KeyDown: %d\n", KeyCode);
 
-	Simon* simon = ((CPlayScene*)scence)->player;
+	Simon* simon = ((CPlayScene*)scene)->player;
 	CGame* game = CGame::GetInstance();
 
 	if (simon->GetState() == SIMON_DEAD)
 		return;
 	switch (KeyCode)
 	{
+
 	case DIK_1:
 		game->SwitchScene(1);
 		break;
 	case DIK_2:
 		game->SwitchScene(2);
 		break;
+	case DIK_3:
+		game->SwitchScene(3);
+		break;
+	case DIK_4:
+		game->SwitchScene(4);
+		break;
 	case DIK_0:
 		game->SwitchScene(0);
+		break;
+	case DIK_Q:
+		((CPlayScene*)scene)->AccquireItem(Item_Type::AXE_ITEM);
+		break;
+	case DIK_W:
+		((CPlayScene*)scene)->AccquireItem(Item_Type::DAGGER_ITEM);
+		break;
+	case DIK_E:
+		((CPlayScene*)scene)->AccquireItem(Item_Type::BOOMERANG_ITEM);
+		break;
+	case DIK_R:
+		((CPlayScene*)scene)->AccquireItem(Item_Type::HOLYWATER_ITEM);
 		break;
 	case DIK_SPACE:
 		if (simon->isJumping || simon->IsAttacking() || simon->GetState() == SIMON_SIT || simon->stairState !=0)
@@ -696,7 +723,7 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 void CPlayScenceKeyHandler::KeyState(BYTE* states)
 {
 	CGame* game = CGame::GetInstance();
-	Simon* simon = ((CPlayScene*)scence)->player;
+	Simon* simon = ((CPlayScene*)scene)->player;
 
 	if (simon->GetState() == SIMON_DEAD)
 		return;

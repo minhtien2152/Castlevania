@@ -21,8 +21,8 @@ Resources\TileMap\scene3-1.txt
 #stair
 #dir : 1 = left, -1 = right
 #-1 = up, 1= down
-#	x	y	ani_set	dir	Up/down
-30	10	5	0	1	-1
+#	x	y	ani_set	dir	Up/down	id
+30	10	5	0	1	-1	1
 #Ground
 2	0	0	0
 2	0	1	0

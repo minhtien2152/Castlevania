@@ -2,9 +2,10 @@
 #include "Define.h"
 
 
-StairObject::StairObject(int dir, int type)
+StairObject::StairObject(int dir, int type,int id)
 {
 	nx = dir;
+	this->id = id;
 	this->type = type;
 	isStatic = true;
 	isSolid = false;
@@ -32,14 +33,23 @@ void StairObject::Render()
 
 float StairObject::GetEnterPosX()
 {
-	return x - 32;
+	/*if(nx ==-1)*/
+	//if (type == -1)
+	//	return x + 16;
+	return x - TILE_WIDTH;
+	//return x + TILE_WIDTH;
 }
 
-bool StairObject::IsInRightPosToEnterStair(float simonX)
+bool StairObject::IsInRightPosToEnterStair(float simonX, float simonY)
 {
-	if (simonX >= x - TILE_WIDTH -2 && simonX <= x - TILE_WIDTH +2)
+	if (simonX >= GetEnterPosX() -2 && simonX <= GetEnterPosX() +2 )
 		return true;
 	return false;
+}
+
+int StairObject::GetId()
+{
+	return id;
 }
 
 int StairObject::GetType()
