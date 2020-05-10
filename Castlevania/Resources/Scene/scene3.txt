@@ -15,9 +15,11 @@ Resources\TileMap\scene2-2.txt
 # type	l	t	
 0	0	4	4			
 # Simon				
-1	28	5	1
+#1	28	5	1
+1	5	4	1
 #Candle
-#Bumper
+#Platform
+22	3	5	22
 #stair
 #dir : 1 = left, -1 = right
 #-1 = up, 1= down

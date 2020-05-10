@@ -27,6 +27,13 @@ bool Simon::IsAttacking()
 }
 void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 {
+	if (CGame::GetInstance()->GetState() == GAME_STATE_INTROWALK)
+	{
+		CGameObject::Update(dt);
+		x += dx * 0.5;	//di cham lai
+		y += dy;
+		return;
+	}
 	if (isWaitingForAni)
 		if (animation_set->at(state)->IsOver())
 			isWaitingForAni = false;
@@ -38,14 +45,8 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 	isAllowToGoDown = false;
 	isAllowToGoUp = false;
 	
-	if (CGame::GetInstance()->GetState() == GAME_STATE_INTROWALK)
-	{
-		CGameObject::Update(dt);
-		x += dx* 0.5;	//di cham lai
-		y += dy;
-		return;
-	}
 	
+	//DebugOut(L"touchingGround %d\n", isTouchingGround);
 	// simple fall down
 	if (stairState ==0)
 	{
@@ -61,7 +62,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 	{
 		isJumping = false;
 		if (IsAttacking())
-			vx = 0;
+			vx = onFeetObjVx;
 	}
 
 	if (isJumping && IsAttacking() && animation_set->at(state)->IsOver())
@@ -99,7 +100,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 		SetState(SIMON_DEAD);
 	//DebugOut(L"x = %f , y = %f \n", x, y);
 	
-	DebugOut(L"NonsolidObject size %d\n", nonSolidObjects.size());
+//	DebugOut(L"NonsolidObject size %d\n", nonSolidObjects.size());
 	for (UINT i = 0; i < nonSolidObjects.size(); i++)
 	{
 		LPGAMEOBJECT obj = nonSolidObjects[i];
@@ -166,7 +167,9 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 		}
 
 	}
-	DebugOut(L"x= %f,y= %f\n",x, y);
+	
+//	DebugOut(L"x= %f,y= %f\n",x, y);
+	DebugOut(L"vx= %f,vy= %f\n",vx, vy);
 	//DebugOut(L"stairEnterX = %f, isCollidingStairObject %d,currentStairType %d\n", stairEnterX, isCollidingStairObject,currentStairType);
 	CleanUpCoEvents();
 }
@@ -193,7 +196,8 @@ void Simon::SetState(int state)
 	switch (state)
 	{
 	case SIMON_STAND:
-		vx = 0;
+		//DebugOut(L"onFeetObjVx %f", onFeetObjVx);
+		vx = onFeetObjVx;
 		PullUp();
 		stairState = STAIR_STATE_NONE;
 		break;
@@ -216,7 +220,7 @@ void Simon::SetState(int state)
 			y = y + SIMON_PULL_UP;
 		}
 		isSitting = true;
-		vx = 0;
+		vx = onFeetObjVx;
 
 		
 		break;
@@ -226,6 +230,7 @@ void Simon::SetState(int state)
 	case SIMON_STAIR_UP_ATK:
 	case SIMON_STAIR_DOWN_ATK:
 		isWaitingForAni = true;
+		
 		ResetAni();
 		break;
 	case SIMON_DAMAGED:

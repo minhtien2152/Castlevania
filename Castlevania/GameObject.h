@@ -67,7 +67,7 @@ public:
 	vector<LPCOLLISIONEVENT> nonSolidObjCoEvents;
 	vector<LPGAMEOBJECT> nonSolidObjects;
 	int hp;
-
+	float onFeetObjVx;
 
 public:
 	
@@ -104,6 +104,7 @@ public:
 	void CleanUpCoEvents();
 	int GetPosX();
 	int GetHP() { return hp; }
+	float GetVx() { return vx; }
 	void SetHP(int hp);
 	void AddHealth(int amount);
 	void ResetAni();

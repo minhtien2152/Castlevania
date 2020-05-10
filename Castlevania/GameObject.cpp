@@ -43,6 +43,7 @@ void CGameObject::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
 	coEvents.clear();
+	coEventsResult.clear();
 	nonSolidObjects.clear();
 	vector<LPGAMEOBJECT> solidObjects;
 	
@@ -69,7 +70,8 @@ void CGameObject::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 		// TODO: This is a very ugly designed function!!!!
 		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
-
+		/*if (rdx != 0 && rdx != dx)
+			x += nx * abs(rdx);*/
 		x += min_tx * dx + nx * 0.5f;
 		
 		
@@ -86,12 +88,26 @@ void CGameObject::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			y += min_ty * dy + ny * 0.5f;
 			isTouchingGround = true;
 			
+
 		}
 		else
 		{
 			isTouchingGround = false;
 			y += dy;
 		}
+		DebugOut(L"coeventResult %d\n", coEventsResult.size());
+		for (UINT i = 0; i < coEventsResult.size(); i++)
+		{
+			LPCOLLISIONEVENT e = coEventsResult[0];
+		
+				onFeetObjVx = e->obj->GetVx();
+
+
+		}
+			
+			
+
+		
 	}
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 

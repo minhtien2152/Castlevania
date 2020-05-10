@@ -150,6 +150,9 @@
     <ClCompile Include="HealthBar.cpp">
       <Filter>HUD</Filter>
     </ClCompile>
+    <ClCompile Include="MovingPlatform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -271,6 +274,9 @@
     </ClInclude>
     <ClInclude Include="HealthBar.h">
       <Filter>HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="MovingPlatform.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

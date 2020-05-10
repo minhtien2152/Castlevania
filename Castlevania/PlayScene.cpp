@@ -19,6 +19,7 @@
 #include "Knight.h"
 #include "Bumper.h"
 #include "StairBottom.h"
+#include "MovingPlatform.h"
 using namespace std;
 
 CPlayScene::CPlayScene(int id, LPCWSTR filePath) :	CScene(id, filePath)
@@ -65,6 +66,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case Object_Type::KNIGHT:	obj = new Knight(); break;
 	case Object_Type::CANDLE: obj = new Candle(); break;
 	case Object_Type::BUMPER: obj = new Bumper();	break;
+	case Object_Type::PLATFORM: obj = new MovingPlatform();	break;
 	case Object_Type::STAIR_BOTTOM: 
 	{
 		int stair_dir = atoi(tokens[4].c_str());
@@ -101,6 +103,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case Object_Type::CANDLE:
 	case Object_Type::BUMPER:
 	case Object_Type::STAIR_BOTTOM:
+	case Object_Type::PLATFORM:
 		objectList.push_back(obj);
 		break;
 	case Object_Type::ZOMBIE:
@@ -682,7 +685,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 			return;
 		if (simon->GetState() == SIMON_WALK)
 			simon->SetState(SIMON_STAND);
-		if (simon->GetState() == SIMON_STAND || simon->GetState() == SIMON_JUMP || simon->GetState() == SIMON_WALK)	
+		if (simon->GetState() == SIMON_STAND || simon->GetState() == SIMON_JUMP)	
 			simon->SetState(SIMON_STAND_ATTACK);
 		
 		else if (simon->GetState() == SIMON_SIT)
