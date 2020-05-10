@@ -737,6 +737,10 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	
 	if (game->IsKeyDown(DIK_DOWN))
 	{
+		simon->ProcessStair(STAIR_STATE_GOING_DOWN);
+		
+			
+		
 		if (simon->isCollidingStairObject&& simon->isTouchingGround && !simon->isAllowToGoDown && simon->GetCurrentStairType() == 1)
 		{
 			simon->GoToStairEnterPos();
@@ -768,6 +772,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	}
 	else if (game->IsKeyDown(DIK_RIGHT))
 	{
+
 		if (simon->stairState != 0)
 		{
 			if (simon->GetCurrentStairDirection() == -1)
@@ -785,6 +790,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	}
 	else if (game->IsKeyDown(DIK_LEFT))
 	{
+	
 		if (simon->stairState != 0)
 		{
 			if (simon->GetCurrentStairDirection() == 1)
@@ -800,16 +806,11 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 			simon->SetState(SIMON_WALK);
 		}
 	}
-	else {
-		if (simon->stairState == STAIR_STATE_GOING_DOWN)
-			simon->SetState(SIMON_STAIR_DOWN_IDLE);
-		else if (simon->stairState == STAIR_STATE_GOING_UP)
-			simon->SetState(SIMON_STAIR_UP_IDLE);
-		else simon->SetState(SIMON_STAND);
-	}
-	if (game->IsKeyDown(DIK_UP))
+	else if (game->IsKeyDown(DIK_UP))
 	{
-		if (simon->isCollidingStairObject && simon->isTouchingGround&& !simon->isAllowToGoUp && simon->GetCurrentStairType() == -1)
+		simon->ProcessStair(STAIR_STATE_GOING_UP);
+
+		if (simon->isCollidingStairObject && simon->isTouchingGround && !simon->isAllowToGoUp && simon->GetCurrentStairType() == -1)
 		{
 			simon->GoToStairEnterPos();
 		}
@@ -822,4 +823,13 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 
 
 	}
+	else {
+		if (simon->stairState == STAIR_STATE_GOING_DOWN)
+			simon->SetState(SIMON_STAIR_DOWN_IDLE);
+		else if (simon->stairState == STAIR_STATE_GOING_UP)
+			simon->SetState(SIMON_STAIR_UP_IDLE);
+		else simon->SetState(SIMON_STAND);
+		simon->stairLock = 0;
+	}
+	
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include"GameObject.h"
+#include "StairBottom.h"
 #include "Whip.h"
 
 #define SIMON_WALKING_SPEED		0.2f
@@ -47,6 +48,7 @@ class Simon : public CGameObject
 	int currentStairType;
 	int currentStairId;
 	float stairEnterX;
+	vector<LPGAMEOBJECT> stairObjects;
 public:
 	Simon();
 	~Simon();
@@ -61,7 +63,7 @@ public:
 	bool isAllowToGoUp;
 	bool isAllowToGoDown;
 	bool isCollidingStairObject;
-
+	int stairLock;
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = NULL);
 	virtual void Render();
 	void SetState(int state);
@@ -84,6 +86,7 @@ public:
 	float GetStairEnterPosX();
 	void GoToStairEnterPos();
 	void GoIntoStair(int upOrDown,int direction);
-
+	void ProcessStair(int type);
+	void CheckGetOffStair();
 };
 

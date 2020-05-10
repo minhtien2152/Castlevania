@@ -36,8 +36,10 @@ float StairObject::GetEnterPosX()
 	/*if(nx ==-1)*/
 	//if (type == -1)
 	//	return x + 16;
+	//return x - TILE_WIDTH;
+	if(nx == -1)
+	return x;
 	return x - TILE_WIDTH;
-	//return x + TILE_WIDTH;
 }
 
 bool StairObject::IsInRightPosToEnterStair(float simonX, float simonY)

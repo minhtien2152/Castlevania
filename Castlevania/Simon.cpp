@@ -40,12 +40,11 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 	//DebugOut(L"waiting for ani %d\n", isWaitingForAni);
 	if (stairState != 0)
 		isTouchingGround = false;
-
 	isCollidingStairObject = false;
 	isAllowToGoDown = false;
 	isAllowToGoUp = false;
-	
-	
+
+
 	//DebugOut(L"touchingGround %d\n", isTouchingGround);
 	// simple fall down
 	if (stairState ==0)
@@ -101,61 +100,18 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 	//DebugOut(L"x = %f , y = %f \n", x, y);
 	
 //	DebugOut(L"NonsolidObject size %d\n", nonSolidObjects.size());
+	DebugOut(L"Stairlock %d\n", stairLock);
+	DebugOut(L"stairState %d\n", stairState);
+	stairObjects.clear();
 	for (UINT i = 0; i < nonSolidObjects.size(); i++)
 	{
 		LPGAMEOBJECT obj = nonSolidObjects[i];
 
 		if (dynamic_cast<StairObject*>(obj))
-		{
-			if (this->IsColidingAABB(obj))
-			{
-			/*	isCollidingStairObject = true;
-				
-				
-				if (((StairObject*)obj)->IsInRightPosToEnterStair(x,y) && isTouchingGround)
-				{
-					if (currentStairType == -1)
-						isAllowToGoUp = true;
-
-					else if (currentStairType == 1)
-
-						isAllowToGoDown = true;
-					currentStairType = ((StairObject*)obj)->GetType();
-					if (stairState == 0)
-					{
-						currentStairId = ((StairObject*)obj)->GetId();
-						currentStairDirection = obj->nx;
-						
-						
-						stairEnterX = ((StairObject*)obj)->GetEnterPosX();
-					}
-				}
-				if (stairState !=0 && ((StairObject*)obj)->GetId() == currentStairId)
-					SetState(SIMON_STAND);*/
-				currentStairDirection = obj->nx;
-				currentStairType = ((StairObject*)obj)->GetType();
-				isCollidingStairObject = true;
-				stairEnterX = ((StairObject*)obj)->GetEnterPosX();
-				if (((StairObject*)obj)->IsInRightPosToEnterStair(x,y))
-				{
-					if (currentStairType == -1)
-						isAllowToGoUp = true;
-
-					else if (currentStairType == 1)
-
-						isAllowToGoDown = true;
-				}
-				if (stairState != 0)
-
-					SetState(SIMON_STAND);
-			
-				
-				
-			}
-		
-		
-		}
+			stairObjects.push_back(obj);
 	}
+	if(stairState!=0)
+		CheckGetOffStair();
 	for (UINT i = 0; i < nonSolidObjCoEvents.size(); i++)
 	{
 		LPCOLLISIONEVENT e = nonSolidObjCoEvents[i];
@@ -391,4 +347,59 @@ void Simon::GoIntoStair(int upOrDown, int direction)
 		SetState(SIMON_STAIR_DOWN);
 	else 
 		SetState(SIMON_STAIR_UP);
+}
+
+void Simon::ProcessStair(int type)
+{
+	for (UINT i = 0; i < stairObjects.size(); i++)
+	{
+		StairObject* obj = dynamic_cast<StairObject*>(stairObjects[i]);
+		if (this->IsColidingAABB(obj))
+		{
+
+
+			if(stairState ==0)
+				if (obj->GetType()  == type)
+				{
+					isCollidingStairObject = true;
+					currentStairDirection = obj->nx;
+					currentStairType = ((StairObject*)obj)->GetType();
+
+					stairEnterX = ((StairObject*)obj)->GetEnterPosX();
+					if (obj->IsInRightPosToEnterStair(x, y))
+					{
+						if (currentStairType == -1)
+							isAllowToGoUp = true;
+
+						else if (currentStairType == 1)
+
+							isAllowToGoDown = true;
+					}
+				}
+				
+			
+
+
+
+		}
+
+
+		
+	}
+}
+
+void Simon::CheckGetOffStair()
+{
+	for (UINT i = 0; i < stairObjects.size(); i++)
+	{
+		StairObject* obj = dynamic_cast<StairObject*>(stairObjects[i]);
+		if (this->IsColidingAABB(obj))
+		{
+			if (stairState != 0)
+			{
+				if (((StairObject*)obj)->nx == currentStairDirection && ((StairObject*)obj)->GetType() == currentStairType || ((StairObject*)obj)->nx == -currentStairDirection && ((StairObject*)obj)->GetType() == -currentStairType)
+					SetState(SIMON_STAND);
+			}
+		}
+	}
 }
