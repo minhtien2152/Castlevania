@@ -33,12 +33,18 @@ bool Camera::IsInCam(LPGAMEOBJECT obj)
 	float obj_x, obj_y;
 	obj->GetPosition(obj_x, obj_y);
 	
-	return obj_x>cam_x && obj_x < cam_x + CGame::GetInstance()->GetScreenWidth();
+	return obj_x>cam_x && obj_x < cam_x + CGame::GetInstance()->GetScreenWidth()
+		&& obj_y - STATUS_BOARD_HEIGHT> cam_y && obj_y - STATUS_BOARD_HEIGHT < cam_y + mapHeight ;
 }
 
 void Camera::SetMapWidth(int width)
 {
 	mapWidth = width;
+}
+
+void Camera::SetMapHeight(int height)
+{
+	mapHeight = height;
 }
 
 int Camera::GetMapWidth()

@@ -60,3 +60,8 @@ int Map::GetMapWidth()
 {
 	return columnMap * TILE_WIDTH;
 }
+
+int Map::GetMapHeight()
+{
+	return rowMap * TILE_HEIGHT;
+}

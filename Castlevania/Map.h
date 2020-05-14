@@ -23,5 +23,6 @@ public:
 	void SetCamera(Camera* cam);
 	void ExtractTileFromTileSet();
 	int GetMapWidth();
+	int GetMapHeight();
 };
 

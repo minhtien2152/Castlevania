@@ -13,10 +13,6 @@ Knight::Knight()
 	isDestroyed = false;
 }
 
-Knight::~Knight()
-{
-}
-
 void Knight::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	

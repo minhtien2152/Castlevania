@@ -29,6 +29,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 {
 	if (CGame::GetInstance()->GetState() == GAME_STATE_INTROWALK)
 	{
+		isPhysicEnabled == false;
 		CGameObject::Update(dt);
 		x += dx * 0.5;	//di cham lai
 		y += dy;
@@ -100,8 +101,8 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 	//DebugOut(L"x = %f , y = %f \n", x, y);
 	
 //	DebugOut(L"NonsolidObject size %d\n", nonSolidObjects.size());
-	DebugOut(L"Stairlock %d\n", stairLock);
-	DebugOut(L"stairState %d\n", stairState);
+	//DebugOut(L"Stairlock %d\n", stairLock);
+	//DebugOut(L"stairState %d\n", stairState);
 	stairObjects.clear();
 	for (UINT i = 0; i < nonSolidObjects.size(); i++)
 	{
@@ -125,7 +126,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 	}
 	
 //	DebugOut(L"x= %f,y= %f\n",x, y);
-	DebugOut(L"vx= %f,vy= %f\n",vx, vy);
+	//DebugOut(L"vx= %f,vy= %f\n",vx, vy);
 	//DebugOut(L"stairEnterX = %f, isCollidingStairObject %d,currentStairType %d\n", stairEnterX, isCollidingStairObject,currentStairType);
 	CleanUpCoEvents();
 }
@@ -351,40 +352,30 @@ void Simon::GoIntoStair(int upOrDown, int direction)
 
 void Simon::ProcessStair(int type)
 {
+	if (stairState == 0)
 	for (UINT i = 0; i < stairObjects.size(); i++)
 	{
 		StairObject* obj = dynamic_cast<StairObject*>(stairObjects[i]);
 		if (this->IsColidingAABB(obj))
 		{
+			if (obj->GetType() == type)
+			{
+				isCollidingStairObject = true;
+				currentStairDirection = obj->nx;
+				currentStairType = ((StairObject*)obj)->GetType();
 
-
-			if(stairState ==0)
-				if (obj->GetType()  == type)
+				stairEnterX = ((StairObject*)obj)->GetEnterPosX();
+				if (obj->IsInRightPosToEnterStair(x, y))
 				{
-					isCollidingStairObject = true;
-					currentStairDirection = obj->nx;
-					currentStairType = ((StairObject*)obj)->GetType();
+					if (currentStairType == -1)
+						isAllowToGoUp = true;
 
-					stairEnterX = ((StairObject*)obj)->GetEnterPosX();
-					if (obj->IsInRightPosToEnterStair(x, y))
-					{
-						if (currentStairType == -1)
-							isAllowToGoUp = true;
+					else if (currentStairType == 1)
 
-						else if (currentStairType == 1)
-
-							isAllowToGoDown = true;
-					}
+						isAllowToGoDown = true;
 				}
-				
-			
-
-
-
-		}
-
-
-		
+			}
+		}	
 	}
 }
 

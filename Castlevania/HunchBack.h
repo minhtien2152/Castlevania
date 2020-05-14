@@ -1,12 +1,13 @@
 #pragma once
-#include "GameObject.h"
-
-class Knight:public CGameObject
+#include "SmartEnemy.h"
+class HunchBack:public SmartEnemy
 {
+	int duplicateState;
 public:
-	Knight();
+	HunchBack();
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = NULL);
-	virtual void Render();
 	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
+	virtual void SetState(int state);
+	void RandomizeState();
 };
 

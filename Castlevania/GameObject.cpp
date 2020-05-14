@@ -14,6 +14,7 @@ CGameObject::CGameObject()
 	isEnabled = true;
 	state = 0;
 	hp = 1;
+	isPhysicEnabled = true;
 }
 
 bool CGameObject::IsColidingAABB(CGameObject* obj)
@@ -34,12 +35,11 @@ void CGameObject::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	this->dt = dt;
 	if (hp <= 0)
 		isDestroyed = true;
-	if (isStatic )	return;
+	if (isStatic || isDestroyed)	return;
 	
 	dx = vx * dt;
 	dy = vy * dt;
-	if (CGame::GetInstance()->GetState() == GAME_STATE_INTROWALK)
-		return;
+	
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
 	coEvents.clear();
@@ -51,7 +51,8 @@ void CGameObject::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		if (coObjects->at(i)->isSolid)
 			solidObjects.push_back(coObjects->at(i));
 		else nonSolidObjects.push_back(coObjects->at(i));
-
+	if (isPhysicEnabled == false)
+		return;
 	CalcPotentialCollisions(&solidObjects, coEvents);
 	CalcPotentialCollisions(&nonSolidObjects, nonSolidObjCoEvents);
 	if (coEvents.size() == 0)
@@ -95,7 +96,7 @@ void CGameObject::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			isTouchingGround = false;
 			y += dy;
 		}
-		DebugOut(L"coeventResult %d\n", coEventsResult.size());
+		//DebugOut(L"coeventResult %d\n", coEventsResult.size());
 		for (UINT i = 0; i < coEventsResult.size(); i++)
 		{
 			LPCOLLISIONEVENT e = coEventsResult[0];

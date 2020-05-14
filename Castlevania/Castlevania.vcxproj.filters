@@ -153,6 +153,21 @@
     <ClCompile Include="MovingPlatform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="HunchBack.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Ghost.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="SmartEnemy.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Skeleton.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Grid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -276,6 +291,21 @@
       <Filter>HUD</Filter>
     </ClInclude>
     <ClInclude Include="MovingPlatform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HunchBack.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Ghost.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="SmartEnemy.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Skeleton.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Grid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

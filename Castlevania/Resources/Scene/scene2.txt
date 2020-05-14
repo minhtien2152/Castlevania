@@ -16,14 +16,14 @@ Resources\TileMap\scene2.txt
 #Candle
 20	12	8	20
 #Bumper
-29	10	4	0
+31	10	4	0
 #stair_bottom
 #dir : 1 = left, -1 = right
 #-1 = up, 1= down
 #	x	y	ani_set	dir	Up/down	id
-30	6	10	0	-1	-1	1
-30	11	5	0	1	1	1
-30	5	4	0	-1	-1	2
+32	6	10	0	-1	-1	1
+32	11	5	0	1	1	1
+32	5	4	0	-1	-1	2
 #Knight
 24	4	3	24
 #Ground				

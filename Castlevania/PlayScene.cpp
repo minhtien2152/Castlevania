@@ -20,11 +20,15 @@
 #include "Bumper.h"
 #include "StairBottom.h"
 #include "MovingPlatform.h"
+#include "HunchBack.h"
+#include "Ghost.h"
+#include "Skeleton.h"
 using namespace std;
 
 CPlayScene::CPlayScene(int id, LPCWSTR filePath) :	CScene(id, filePath)
 {
 	key_handler = new CPlayScenceKeyHandler(this);
+	id_counter = 0;
 }
 
 /*
@@ -40,6 +44,7 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :	CScene(id, filePath)
 */
 void CPlayScene::_ParseSection_OBJECTS(string line)
 {
+	
 	vector<string> tokens = split(line);
 
 	DebugOut(L"--> %s\n", ToWSTR(line).c_str());
@@ -55,23 +60,26 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	CAnimationSets* animation_sets = CAnimationSets::GetInstance();
 
 	CGameObject* obj = NULL;
-
+	int id = 0;
 	switch (object_type)
 	{
 	case Object_Type::SIMON: 
-			obj = player = new Simon();
+			obj= player = new Simon();
 		break;
 	case Object_Type::GROUND: obj = new Ground(); break;
 	case Object_Type::ZOMBIE: obj = new CZombie(); break;
 	case Object_Type::KNIGHT:	obj = new Knight(); break;
 	case Object_Type::CANDLE: obj = new Candle(); break;
 	case Object_Type::BUMPER: obj = new Bumper();	break;
+	case Object_Type::HUNCHBACK:obj = new HunchBack();	break;
 	case Object_Type::PLATFORM: obj = new MovingPlatform();	break;
-	case Object_Type::STAIR_BOTTOM: 
+	case Object_Type::GHOST:	obj = new Ghost();	break;
+	case Object_Type::SKELETON: obj = new Skeleton();	break;
+	case Object_Type::RAVEN:	break;
+	case Object_Type::STAIR_OBJECT: 
 	{
 		int stair_dir = atoi(tokens[4].c_str());
 		int stair_type = atoi(tokens[5].c_str());
-		int id = atoi(tokens[6].c_str());
 		obj = new StairObject(stair_dir,stair_type,id); 
 	}
 		break;
@@ -88,32 +96,24 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	}
 
 	// General object setup
-	obj->SetPosition(x, y);
-	obj->isEnabled = true;
-	if (ani_set_id != 0)
+	if (obj != NULL)
 	{
-		LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
-		obj->SetAnimationSet(ani_set);
+		obj->SetPosition(x, y);
+		obj->tag = object_type;
+		obj->id = id_counter++;
+		if (ani_set_id != 0)
+		{
+			LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
+			obj->SetAnimationSet(ani_set);
+		}
+		if (obj->isStatic)
+			static_obj_grid->AddObject(obj);
+		else
+			dynamic_obj_grid->AddObject(obj);
 	}
-	if(obj != NULL)
-	switch (object_type)
-	{
-	case Object_Type::PORTAL:
-	case Object_Type::GROUND:
-	case Object_Type::CANDLE:
-	case Object_Type::BUMPER:
-	case Object_Type::STAIR_BOTTOM:
-	case Object_Type::PLATFORM:
-		objectList.push_back(obj);
-		break;
-	case Object_Type::ZOMBIE:
-	case Object_Type::KNIGHT:
-		enemyList.push_back(obj);
-		break;
-	default:
-		break;
-		
-	}
+	
+	
+	
 }
 
 void CPlayScene::_ParseSection_TILEMAP_DATA(string line)
@@ -168,6 +168,8 @@ void CPlayScene::LoadScene()
 
 
 		if (line == "[OBJECTS]") {
+			static_obj_grid = new Grid(tileMap->GetMapWidth(), tileMap->GetMapHeight());
+			dynamic_obj_grid = new Grid(tileMap->GetMapWidth(), tileMap->GetMapHeight());
 			section = SCENE_SECTION_OBJECTS; continue;
 		}
 		if (line[0] == '[') { section = SECTION_UNKNOWN; continue; }
@@ -194,9 +196,12 @@ void CPlayScene::LoadScene()
 	statusboard->SetSceneId(id);
 	camera = new Camera();
 	camera->SetMapWidth(tileMap->GetMapWidth());
+	camera->SetMapHeight(tileMap->GetMapHeight());
 	tileMap->SetCamera(camera);
 	CGame::GetInstance()->SetCamera(camera);
 	LoadBackUpData();
+	static_obj_grid->Update();
+
 	DebugOut(L"[INFO] Done loading scene resources %s\n", sceneFilePath);
 }
 
@@ -204,7 +209,9 @@ void CPlayScene::LoadScene()
 
 void CPlayScene::Update(DWORD dt)
 {
-	// We know that Mario is the first object in the list hence we won't add him into the colliable object list
+	dynamic_obj_grid->Update();
+	UpdateListsAccordingGrid();
+
 
 	for (UINT i = 0; i < effectList.size(); i++)
 	{
@@ -239,19 +246,21 @@ void CPlayScene::Update(DWORD dt)
 		
 		if (enemyList[i]->isEnabled)
 		{
-			enemyList[i]->Update(dt, &objectList);
-			if (enemyList[i]->isDestroyed)
+			if (camera->IsInCam(enemyList[i]))
 			{
-				CreateEffect(enemyList[i], Effect_Type::FIRE_EFFECT);
-				enemyList[i]->isEnabled = false;
-				SpawnItem(enemyList[i]);
+				vector<LPGAMEOBJECT> coObject;
+				for (UINT i = 0; i < objectList.size(); i++)
+					coObject.push_back(objectList[i]);
+				coObject.push_back(player);
+				enemyList[i]->Update(dt, &coObject);
+				if (enemyList[i]->isDestroyed)
+				{
+					CreateEffect(enemyList[i], Effect_Type::FIRE_EFFECT);
+					enemyList[i]->isEnabled = false;
+					SpawnItem(enemyList[i]);
+				}
+				coObject.clear();
 			}
-		}
-		else
-		{
-		free(enemyList[i]);
-		enemyList[i] = NULL;
-		enemyList.erase(enemyList.begin() + i);
 		}
 
 	}
@@ -297,20 +306,18 @@ void CPlayScene::Update(DWORD dt)
 	{
 		if (objectList[i]->isEnabled)
 		{
-			objectList[i]->Update(dt, &objectList);
-			if (objectList[i]->isDestroyed)
+			if (camera->IsInCam(objectList[i]))
 			{
-				CreateEffect(objectList[i], Effect_Type::FIRE_EFFECT);
-				objectList[i]->isEnabled = false;
-				SpawnItem(objectList[i]);
+				objectList[i]->Update(dt, &objectList);
+				if (objectList[i]->isDestroyed)
+				{
+					CreateEffect(objectList[i], Effect_Type::FIRE_EFFECT);
+					objectList[i]->isEnabled = false;
+					SpawnItem(objectList[i]);
+				}
 			}
 		}
-		else
-		{
-			free(objectList[i]);
-			objectList[i] = NULL;
-			objectList.erase(objectList.begin() + i);
-		}
+		
 	}
 	player->Update(dt, &objectList);
 }
@@ -319,6 +326,7 @@ void CPlayScene::Render()
 {
 	tileMap->Render();
 	player->Render();
+
 	for (int i = 0; i < objectList.size(); i++)
 		if(objectList[i]->isEnabled)
 			objectList[i]->Render();
@@ -327,7 +335,8 @@ void CPlayScene::Render()
 			item->Render();
 	for (int i = 0; i < enemyList.size(); i++)
 		if (enemyList[i]->isEnabled)
-			enemyList[i]->Render();
+			if(camera->IsInCam(enemyList[i]))
+				enemyList[i]->Render();
 	for (auto effect : effectList)
 	{
 		if (!effect->isFinished)
@@ -347,15 +356,10 @@ void CPlayScene::Render()
 */
 void CPlayScene::Unload()
 {
-
-	for (int i = 0; i < objectList.size(); i++)
-		delete objectList[i];
 	objectList.clear();
 	for (int i = 0; i < itemList.size(); i++)
 		delete itemList[i];
 	itemList.clear();
-	for (int i = 0; i < enemyList.size(); i++)
-		delete enemyList[i];
 	enemyList.clear();
 	for (int i = 0; i < effectList.size(); i++)
 		delete effectList[i];
@@ -366,6 +370,8 @@ void CPlayScene::Unload()
 		delete wp;
 	}
 	weaponList.clear();
+	static_obj_grid->Unload();
+	dynamic_obj_grid->Unload();
 }
 
 void CPlayScene::SpawnItem(LPGAMEOBJECT obj)
@@ -596,6 +602,8 @@ void CPlayScene::SetSubWeapon(int type)
 
 void CPlayScene::CleanUpObjects()
 {
+	objectList.clear();
+	enemyList.clear();
 }
 
 void CPlayScene::GetCollidableObject(LPGAMEOBJECT obj, vector<LPGAMEOBJECT>& coObjects)
@@ -633,6 +641,39 @@ void CPlayScene::LoadBackUpData()
 	backup->LoadBackUp(player);
 	statusboard->SetTime(backup->GetTime());
 	AccquireItem(backup->GetSupWPItem());
+}
+
+void CPlayScene::UpdateListsAccordingGrid()
+{
+	vector<LPGAMEOBJECT> temp_obj_list;
+	unordered_map<int, bool> duplicate_obj_checker;
+	
+	static_obj_grid->GetObjectsAccordingCam(camera, &temp_obj_list, &duplicate_obj_checker);
+	dynamic_obj_grid->GetObjectsAccordingCam(camera, &temp_obj_list, &duplicate_obj_checker);
+	CleanUpObjects();
+	for(auto obj : temp_obj_list)
+		switch (obj->tag)
+		{
+		case Object_Type::PORTAL:
+		case Object_Type::GROUND:
+		case Object_Type::CANDLE:
+		case Object_Type::BUMPER:
+		case Object_Type::STAIR_OBJECT:
+		case Object_Type::PLATFORM:
+			objectList.push_back(obj);
+			break;
+		case Object_Type::ZOMBIE:
+		case Object_Type::KNIGHT:
+		case Object_Type::HUNCHBACK:
+		case Object_Type::GHOST:
+		case Object_Type::RAVEN:
+		case Object_Type::SKELETON:
+			enemyList.push_back(obj);
+			break;
+		default:
+			break;
+		}
+
 }
 
 

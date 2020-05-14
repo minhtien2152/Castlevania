@@ -11,13 +11,16 @@
 #include "Effect.h"
 #include "Map.h"
 #include "Portal.h"
+#include "Grid.h"
 class CPlayScene : public CScene
 {
 protected:
 						
+	int id_counter;
+	
+	Grid* static_obj_grid;
+	Grid* dynamic_obj_grid;
 
-	
-	
 
 
 	vector<LPGAMEOBJECT> objectList;
@@ -47,6 +50,7 @@ public:
 	void GetCollidableObject(LPGAMEOBJECT obj, vector<LPGAMEOBJECT>& coObjects );
 	void BackUpData();
 	void LoadBackUpData();
+	void UpdateListsAccordingGrid();
 	friend class CPlayScenceKeyHandler;
 
 };

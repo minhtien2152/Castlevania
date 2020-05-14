@@ -42,6 +42,8 @@ struct CCollisionEvent
 class CGameObject
 {
 public:
+	int id;
+	int tag;
 	float x;
 	float y;
 
@@ -63,6 +65,7 @@ public:
 	bool isTouchingGround;
 	bool isColidingSideways;
 	bool isDestroyed;
+	bool isPhysicEnabled;
 	LPANIMATION_SET animation_set;
 	vector<LPCOLLISIONEVENT> nonSolidObjCoEvents;
 	vector<LPGAMEOBJECT> nonSolidObjects;
