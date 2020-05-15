@@ -47,6 +47,7 @@ void CGameObject::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	nonSolidObjects.clear();
 	vector<LPGAMEOBJECT> solidObjects;
 	
+	if (coObjects != NULL)
 	for (int i = 0; i < coObjects->size(); i++)
 		if (coObjects->at(i)->isSolid)
 			solidObjects.push_back(coObjects->at(i));

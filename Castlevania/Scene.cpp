@@ -143,3 +143,10 @@ void CScene::_ParseSection_ANIMATION_SETS(string line)
 	CAnimationSets::GetInstance()->Add(ani_set_id, s);
 }
 
+void CScene::LoadBackUpData()
+{
+	BackUp* backup = BackUp::GetInstance();
+	backup->LoadBackUp(player);
+	statusboard->SetTime(backup->GetTime());
+}
+

@@ -28,7 +28,9 @@ protected:
 	vector<LPGAMEOBJECT> enemyList;
 	vector<Effect*> effectList;
 	Map* tileMap;
-	unordered_map<int,CWeapon*> weaponList;
+	vector<CWeapon*> weaponList;
+
+	int weaponWaitingToBeProcess;
 
 	void _ParseSection_OBJECTS(string line);
 	void _ParseSection_TILEMAP_DATA(string line);
@@ -45,12 +47,14 @@ public:
 	void CheckForEnemyCollison();
 	void CheckForCollisonWithItems();
 	void AccquireItem(int type);
-	void SetSubWeapon(int type);
 	void CleanUpObjects();
 	void GetCollidableObject(LPGAMEOBJECT obj, vector<LPGAMEOBJECT>& coObjects );
 	void BackUpData();
 	void LoadBackUpData();
 	void UpdateListsAccordingGrid();
+	void SetWeaponToBeProcess(int type);
+	void CreateSubWeapon(int type);
+	int GetWeaponNum();
 	friend class CPlayScenceKeyHandler;
 
 };

@@ -11,6 +11,7 @@ class BackUp
 	int score;
 	int heart;
 	int whipLv;
+	int subWeaponCap;
 public:
 	static BackUp* GetInstance();
 	BackUp();
@@ -21,6 +22,7 @@ public:
 	DWORD GetTime();
 	void SetSupWPItem(int type);
 	int GetSupWPItem();
+	void ResetData();
 	
 };
 

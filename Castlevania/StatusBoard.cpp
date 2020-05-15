@@ -11,7 +11,7 @@ StatusBoard::StatusBoard(Simon* simon)
 	simonbar = new HealthBar(100, 30, simon, SIMON_HEALTH);
 	animation_set = CAnimationSets::GetInstance()->Get(STATUS_BOARD_ID);
 	item_animation_set = CAnimationSets::GetInstance()->Get(ITEM_ANI_SET_ID);
-	subWP = -1;
+	subWeaponType = -1;
 }
 
 StatusBoard::~StatusBoard()
@@ -22,6 +22,7 @@ void StatusBoard::Update(DWORD dt)
 {
 	time += dt;
 	simonbar->Update();
+	subWeaponCap = simon->GetSubWeaponCap();
 }
 
 void StatusBoard::Render()
@@ -46,8 +47,12 @@ void StatusBoard::Render()
 
 	simonbar->Render();
 	animation_set->at(SUB_WEAPON_RECT_TEX_ID)->Render(290, 32,1,false);
-	if (subWP!=-1)
-		item_animation_set->at(subWP)->Render(305, 38,1,false);
+	if (subWeaponType !=-1)
+		item_animation_set->at(subWeaponType)->Render(305, 38,1,false);
+	if(subWeaponCap ==2)
+		item_animation_set->at(Item_Type::DOUBLESHOT)->Render(450, 38, 1, false);
+	else if(subWeaponCap ==3)
+		item_animation_set->at(Item_Type::TRIPLESHOT)->Render(450, 38, 1, false);
 
 }
 
@@ -64,7 +69,7 @@ string StatusBoard::FillStringWithZeros(string str, int totalChar)
 
 void StatusBoard::SetSupweapon(int type)
 {
-	subWP = type;
+	subWeaponType = type;
 }
 
 

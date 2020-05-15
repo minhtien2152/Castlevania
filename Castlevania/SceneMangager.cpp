@@ -36,6 +36,7 @@ void CSceneMangager::SwitchScene(int idScene)
 	LPCWSTR path = scene_database[idScene];
 	if (idScene == INTRO_SCENE_ID)
 	{
+		BackUp::GetInstance()->ResetData();
 		game->SetState(GAME_STATE_MENU);
 		currentScene = new CIntroScene(idScene,path);
 	}

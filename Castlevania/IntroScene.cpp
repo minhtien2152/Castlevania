@@ -62,6 +62,7 @@ void CIntroScene::LoadScene()
 	CGame::GetInstance()->SetCamera(camera);
 	font = CGame::GetInstance()->GetFont();
 	animation_set = CAnimationSets::GetInstance()->Get(INTRO_ANIMATION_SET_ID);
+	LoadBackUpData();
 	DebugOut(L"[INFO] Done loading scene resources %s\n", sceneFilePath);
 }
 

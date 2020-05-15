@@ -43,12 +43,19 @@ class Simon : public CGameObject
 	DWORD invulnerable_start;
 	DWORD invisibility_start;
 	Whip* mainWeapon;
-	CWeapon* subWeapon;
+
+	int subWeaponType;
+	int subWeaponMaxCap;
+
+
+	//==all things stair related==
 	int currentStairDirection;
 	int currentStairType;
 	int currentStairId;
 	float stairEnterX;
 	vector<LPGAMEOBJECT> stairObjects;
+	int stateWaitingToBeRendered;
+	//=============================
 public:
 	Simon();
 	~Simon();
@@ -63,14 +70,14 @@ public:
 	bool isAllowToGoUp;
 	bool isAllowToGoDown;
 	bool isCollidingStairObject;
-	int stairLock;
+
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = NULL);
 	virtual void Render();
 	void SetState(int state);
 	void PullUp();
 	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 	void AttackWithWhip();
-	void AttackWithSubWeapon();
+
 	Whip* GetMainWeapon();
 	int GetScore() { return score; }
 	void SetScore(int score);
@@ -79,14 +86,23 @@ public:
 	int GetLife() { return life; }
 	void SetLife(int life);
 	void StartInvisibilityTimer();
-	void SetSubWeapon(CWeapon * wp);
-	CWeapon* GetSubWeapon();
+
+	void SetSubWeapon(int type);
+	int GetSubWeaponType();
+	void SetSupWeaponCap(int capacity);
+	int GetSubWeaponCap();
+	bool IsInRightFrameToUseSubWeapon();
+
 	int GetCurrentStairDirection();
 	int GetCurrentStairType();
+
+
 	float GetStairEnterPosX();
 	void GoToStairEnterPos();
 	void GoIntoStair(int upOrDown,int direction);
 	void ProcessStair(int type);
 	void CheckGetOffStair();
+	void TakeDamage(int damage);
+	void SetStateToBeRender(int state);
 };
 

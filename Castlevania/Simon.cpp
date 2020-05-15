@@ -10,11 +10,9 @@ Simon::Simon()
 	if (CGame::GetInstance()->GetState() == GAME_STATE_PLAYSCENE)
 		mainWeapon = new Whip();
 	else mainWeapon = NULL;
-	hp= SIMON_DEFAULT_HEALTH;
-	score = 0;
-	life = SIMON_DEFAULT_LIFE;
-	heart = SIMON_DEFAULT_HEART;
-	subWeapon = NULL;
+	stateWaitingToBeRendered = -1;
+	hp = 16;
+	subWeaponType = -1;
 }
 
 Simon::~Simon()
@@ -29,15 +27,22 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 {
 	if (CGame::GetInstance()->GetState() == GAME_STATE_INTROWALK)
 	{
-		isPhysicEnabled == false;
+		isPhysicEnabled = false;
 		CGameObject::Update(dt);
 		x += dx * 0.5;	//di cham lai
+
 		y += dy;
 		return;
 	}
+
 	if (isWaitingForAni)
 		if (animation_set->at(state)->IsOver())
+		{
 			isWaitingForAni = false;
+			if (stateWaitingToBeRendered != -1)
+				SetState(stateWaitingToBeRendered);
+			stateWaitingToBeRendered = -1;
+		}
 	//DebugOut(L"waiting for ani %d\n", isWaitingForAni);
 	if (stairState != 0)
 		isTouchingGround = false;
@@ -101,7 +106,6 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 	//DebugOut(L"x = %f , y = %f \n", x, y);
 	
 //	DebugOut(L"NonsolidObject size %d\n", nonSolidObjects.size());
-	//DebugOut(L"Stairlock %d\n", stairLock);
 	//DebugOut(L"stairState %d\n", stairState);
 	stairObjects.clear();
 	for (UINT i = 0; i < nonSolidObjects.size(); i++)
@@ -184,18 +188,21 @@ void Simon::SetState(int state)
 	case SIMON_STAND_ATTACK:
 		isSitting = false;
 	case SIMON_SIT_ATTACK:	
-	case SIMON_STAIR_UP_ATK:
-	case SIMON_STAIR_DOWN_ATK:
 		isWaitingForAni = true;
-		
+		ResetAni();
+		break;
+	case SIMON_STAIR_UP_ATK:
+	
+	case SIMON_STAIR_DOWN_ATK:
+		vx = 0;
+		vy = 0;
+		isWaitingForAni = true;
 		ResetAni();
 		break;
 	case SIMON_DAMAGED:
-		vx = nx*SIMON_DEFLECT_SPEED_X;
+		vx = nx * SIMON_DEFLECT_SPEED_X;
 		vy = -SIMON_DEFLECT_SPEED_Y;
-		isInvulnerable = true;
 		isJumping = true;
-		invulnerable_start = GetTickCount();
 		isWaitingForAni = true;
 		ResetAni();
 		break;
@@ -213,7 +220,7 @@ void Simon::SetState(int state)
 		break;
 	case SIMON_DEAD:
 		vx = 0;
-	
+		stairState = 0;
 		break;
 	case SIMON_STAIR_UP:
 		ResetAni();
@@ -270,12 +277,6 @@ void Simon::AttackWithWhip()
 	mainWeapon->Attack(this);
 }
 
-void Simon::AttackWithSubWeapon()
-{
-
-	subWeapon->Attack(this);
-	//heart--;
-}
 
 Whip* Simon::GetMainWeapon()
 {
@@ -304,17 +305,34 @@ void Simon::StartInvisibilityTimer()
 	isInvulnerable = true;
 }
 
-void Simon::SetSubWeapon(CWeapon* wp)
+void Simon::SetSubWeapon(int type)
 {
-	subWeapon = wp;
+	subWeaponType = type;
 }
 
 
 
 
-CWeapon* Simon::GetSubWeapon()
+int Simon::GetSubWeaponType()
 {
-	return subWeapon;
+	return subWeaponType;
+}
+
+void Simon::SetSupWeaponCap(int capacity)
+{
+	subWeaponMaxCap = capacity;
+}
+
+int Simon::GetSubWeaponCap()
+{
+	return subWeaponMaxCap;
+}
+
+bool Simon::IsInRightFrameToUseSubWeapon()
+{
+	if (IsAttacking() && animation_set->at(state)->IsRenderingLastFrame())
+		return true;
+	return false;
 }
 
 int Simon::GetCurrentStairDirection()
@@ -393,4 +411,16 @@ void Simon::CheckGetOffStair()
 			}
 		}
 	}
+}
+
+void Simon::TakeDamage(int damage)
+{
+	isInvulnerable = true;
+	invulnerable_start = GetTickCount();
+	AddHealth(-damage);
+}
+
+void Simon::SetStateToBeRender(int state)
+{
+	stateWaitingToBeRendered = state;
 }

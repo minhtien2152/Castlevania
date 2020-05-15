@@ -108,7 +108,7 @@ void CGame::Draw(float x, float y,int nx, LPDIRECT3DTEXTURE9 texture, int left, 
 	D3DXMATRIX finalTransform = newTransform * oldTransform;
 	spriteHandler->SetTransform(&finalTransform);
 
-	spriteHandler->Draw(texture, &r, NULL, &p, D3DCOLOR_ARGB(alpha, 255, 255, 255));
+	spriteHandler->Draw(texture, &r, NULL, &p, D3DCOLOR_ARGB(alpha, 255, 200, 200));
 
 	spriteHandler->SetTransform(&oldTransform);
 }

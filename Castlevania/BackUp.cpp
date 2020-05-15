@@ -10,13 +10,7 @@ BackUp* BackUp::GetInstance()
 
 BackUp::BackUp()
 {
-	health = SIMON_DEFAULT_HEALTH;
-	score = 0;
-	life = SIMON_DEFAULT_LIFE;
-	heart = SIMON_DEFAULT_HEART;
-	time = 0;
-	subWeaponItem = -1;
-	whipLv = 0;
+	ResetData();
 }
 
 BackUp::~BackUp()
@@ -30,6 +24,7 @@ void BackUp::BackUpSimon(Simon* simon)
 	score = simon->GetScore();
 	heart = simon->GetHeartsCollected();
 	whipLv = simon->GetMainWeapon()->GetState();
+	subWeaponCap = simon->GetSubWeaponCap();
 }
 
 void BackUp::LoadBackUp(Simon* simon)
@@ -38,7 +33,9 @@ void BackUp::LoadBackUp(Simon* simon)
 	simon->SetHP(health);
 	simon->SetLife(life);
 	simon->SetScore(score);
+	if(simon->GetMainWeapon()!= NULL)
 	simon->GetMainWeapon()->SetState(whipLv);
+	simon->SetSupWeaponCap(subWeaponCap);
 }
 
 void BackUp::SetTime(DWORD time)
@@ -59,4 +56,16 @@ void BackUp::SetSupWPItem(int type)
 int BackUp::GetSupWPItem()
 {
 	return subWeaponItem;
+}
+
+void BackUp::ResetData()
+{
+	health = SIMON_DEFAULT_HEALTH;
+	score = 0;
+	life = SIMON_DEFAULT_LIFE;
+	heart = SIMON_DEFAULT_HEART;
+	time = 0;
+	subWeaponItem = -1;
+	whipLv = 0;
+	subWeaponCap = 1;
 }

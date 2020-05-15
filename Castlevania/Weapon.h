@@ -16,3 +16,4 @@ public:
 	
 };
 
+typedef CWeapon* LPWEAPON;

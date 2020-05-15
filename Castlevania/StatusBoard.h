@@ -18,7 +18,8 @@ class StatusBoard
 	//HealthBar* bossbar;
 	LPANIMATION_SET animation_set;
 	LPANIMATION_SET item_animation_set;
-	int subWP;
+	int subWeaponType;
+	int subWeaponCap;
 	int sceneId;
 public:
 	StatusBoard(Simon* simon);
