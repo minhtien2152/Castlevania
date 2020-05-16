@@ -23,6 +23,7 @@
 #include "HunchBack.h"
 #include "Ghost.h"
 #include "Skeleton.h"
+#include "StopWatch.h"
 using namespace std;
 
 CPlayScene::CPlayScene(int id, LPCWSTR filePath) :	CScene(id, filePath)
@@ -30,6 +31,7 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :	CScene(id, filePath)
 	key_handler = new CPlayScenceKeyHandler(this);
 	id_counter = 0;
 	weaponWaitingToBeProcess = -1;
+
 }
 
 /*
@@ -215,7 +217,7 @@ void CPlayScene::Update(DWORD dt)
 
 	if (weaponWaitingToBeProcess != -1)
 	{
-		if (player->IsInRightFrameToUseSubWeapon())
+		if (player->IsInRightFrameToUseSubWeapon() || player->GetSubWeaponType() == Item_Type::STOPWATCH_ITEM)
 		{
 			CreateSubWeapon(weaponWaitingToBeProcess);
 			weaponWaitingToBeProcess = -1;
@@ -253,26 +255,28 @@ void CPlayScene::Update(DWORD dt)
 	//update enemy
 	for (UINT i = 0; i < enemyList.size(); i++)
 	{
-		
-		if (enemyList[i]->isEnabled)
-		{
-			if (camera->IsInCam(enemyList[i]))
+		enemyList[i]->isUpdatingFrame = !IsStopWatchEnabled();
+		if (IsStopWatchEnabled()) continue;
+		else
+			if (enemyList[i]->isEnabled)
 			{
-				vector<LPGAMEOBJECT> coObject;
-				for (UINT i = 0; i < objectList.size(); i++)
-					coObject.push_back(objectList[i]);
-				coObject.push_back(player);
-				enemyList[i]->Update(dt, &coObject);
-				if (enemyList[i]->isDestroyed)
+				if (camera->IsInCam(enemyList[i]))
 				{
-					CreateEffect(enemyList[i], Effect_Type::FIRE_EFFECT);
-					enemyList[i]->isEnabled = false;
-					SpawnItem(enemyList[i]);
+					vector<LPGAMEOBJECT> coObject;
+					for (UINT i = 0; i < objectList.size(); i++)
+						coObject.push_back(objectList[i]);
+					coObject.push_back(player);
+					enemyList[i]->Update(dt, &coObject);
+					if (enemyList[i]->isDestroyed)
+					{
+						CreateEffect(enemyList[i], Effect_Type::FIRE_EFFECT);
+						enemyList[i]->isEnabled = false;
+						SpawnItem(enemyList[i]);
+					}
+					coObject.clear();
 				}
-				coObject.clear();
-			}
 
-		}
+			}
 
 	}
 	
@@ -284,11 +288,16 @@ void CPlayScene::Update(DWORD dt)
 	}
 	for (UINT i = 0; i < weaponList.size(); i++)
 	{
-		if (camera->IsInCam(weaponList[i]) && weaponList[i]->isEnabled)
+		if (weaponList[i]->isEnabled)
 		{
-			vector<LPGAMEOBJECT> coObjects;
-			GetCollidableObject(weaponList[i], coObjects);
-			weaponList[i]->Update(dt, &coObjects);
+			if (weaponList[i]->tag == Weapon_Type::STOPWATCH)
+				weaponList[i]->Update(dt);
+			else if (camera->IsInCam(weaponList[i]))
+			{
+				vector<LPGAMEOBJECT> coObjects;
+				GetCollidableObject(weaponList[i], coObjects);
+				weaponList[i]->Update(dt, &coObjects);
+			}
 		}
 		else
 
@@ -298,8 +307,7 @@ void CPlayScene::Update(DWORD dt)
 			weaponList.erase(weaponList.begin() + i);
 		}
 	}
-
-	
+	DebugOut(L"weaponlist %d\n", weaponList.size());
 	CheckForWeaponCollision();
 	CheckForEnemyCollison();
 	CheckForCollisonWithItems();
@@ -334,7 +342,7 @@ void CPlayScene::Update(DWORD dt)
 
 void CPlayScene::Render()
 {
-	tileMap->Render();
+	//tileMap->Render();
 	player->Render();
 
 	for (int i = 0; i < objectList.size(); i++)
@@ -355,6 +363,7 @@ void CPlayScene::Render()
 
 	for (auto subweapon : weaponList)
 	{
+		if(subweapon->tag!= Weapon_Type::STOPWATCH)
 			subweapon->Render();
 	}
 	statusboard->Render();
@@ -533,32 +542,19 @@ void CPlayScene::CheckForCollisonWithItems()
 
 void CPlayScene::AccquireItem(int type)
 {
-	BackUp* backup = BackUp::GetInstance();
-
 	switch (type)
 	{
 	case Item_Type::AXE_ITEM:
-		statusboard->SetSupweapon(type);
-		backup->SetSupWPItem(type);
-		player->SetSubWeapon(Weapon_Type::AXE);
-		break;
 	case Item_Type::BOOMERANG_ITEM:
-		statusboard->SetSupweapon(type);
-		backup->SetSupWPItem(type);
-		player->SetSubWeapon(Weapon_Type::BOOMERANG);
+	case Item_Type::STOPWATCH_ITEM:
+	case Item_Type::DAGGER_ITEM:
+	case Item_Type::HOLYWATER_ITEM:
+		player->SetSubWeaponItem(type);
 		break;
 	case Item_Type::CROSS:
+		DestroyAllOnScreenEnemy();
 		break;
-	case Item_Type::DAGGER_ITEM:
-		statusboard->SetSupweapon(type);
-		backup->SetSupWPItem(type);
-		player->SetSubWeapon(Weapon_Type::DAGGER);
-		break;
-	case Item_Type::HOLYWATER_ITEM:
-		statusboard->SetSupweapon(type);
-		backup->SetSupWPItem(type);
-		player->SetSubWeapon(Weapon_Type::HOLYWATER);
-		break;
+
 	case Item_Type::CHAIN:
 		player->SetState(SIMON_POWERUP);
 		break;
@@ -584,6 +580,7 @@ void CPlayScene::AccquireItem(int type)
 	case Item_Type::TRIPLESHOT:
 		player->SetSupWeaponCap(3);
 		break;
+
 	}
 }
 
@@ -625,7 +622,6 @@ void CPlayScene::BackUpData()
 void CPlayScene::LoadBackUpData()
 {
 	CScene::LoadBackUpData();
-	AccquireItem(BackUp::GetInstance()->GetSupWPItem());
 }
 
 
@@ -674,19 +670,19 @@ void CPlayScene::CreateSubWeapon(int type)
 	LPWEAPON wp = NULL;
 	switch (type)
 	{
-	case Weapon_Type::AXE:
+	case Item_Type::AXE_ITEM:
 		wp = new Axe();
 		break;
-	case Weapon_Type::BOOMERANG:
+	case Item_Type::BOOMERANG_ITEM:
 		wp = new Boomerang();
 		break;
-	case Weapon_Type::DAGGER:
+	case  Item_Type::DAGGER_ITEM:
 		wp = new Dagger();
 		break;
-		/*case Weapon_Type::STOPWATCH:
-			weaponList[type] = new Axe();
-			break;*/
-	case Weapon_Type::HOLYWATER:
+	case  Item_Type::STOPWATCH_ITEM:
+		wp = new StopWatch();
+		break;
+	case Item_Type::HOLYWATER_ITEM:
 		wp = new Holywater();
 		break;
 	}
@@ -694,16 +690,33 @@ void CPlayScene::CreateSubWeapon(int type)
 	{
 		wp->Attack(player);
 		weaponList.push_back(wp);
-		DebugOut(L"weaponList size %d\n", weaponList.size());
+	
 	}
 	else
 		DebugOut(L"Wrong weapon type\n");
+}
+
+bool CPlayScene::IsStopWatchEnabled()
+{
+	for (auto weapon : weaponList)
+		if (weapon->tag == Weapon_Type::STOPWATCH)
+			return true;
+	return false;
 }
 
 
 int CPlayScene::GetWeaponNum()
 {
 	return weaponList.size();
+}
+
+void CPlayScene::DestroyAllOnScreenEnemy()
+{
+	for (auto enemy : enemyList)
+	{
+		if (camera->IsInCam(enemy))
+			enemy->isDestroyed = true;
+	}
 }
 
 
@@ -752,6 +765,12 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	case DIK_Y:
 		((CPlayScene*)scene)->AccquireItem(Item_Type::TRIPLESHOT);
 		break;
+	case DIK_U:
+		((CPlayScene*)scene)->AccquireItem(Item_Type::CROSS);
+		break;
+	case DIK_I:
+		((CPlayScene*)scene)->AccquireItem(Item_Type::STOPWATCH_ITEM);
+		break;
 	case DIK_SPACE:
 		if (simon->isJumping || simon->IsAttacking() || simon->GetState() == SIMON_SIT || simon->stairState !=0)
 			return;
@@ -760,6 +779,24 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	case DIK_X:
 		if (simon->IsAttacking())
 			return;
+
+		if (game->IsKeyDown(DIK_UP) && simon->GetSubWeaponType() != -1 && ((CPlayScene*)scene)->GetWeaponNum() < simon->GetSubWeaponCap() )
+		{
+			if (simon->GetSubWeaponType() == Item_Type::STOPWATCH_ITEM && simon->GetHeartsCollected() >= 5)
+			{
+				if(((CPlayScene*)scene)->IsStopWatchEnabled())
+					simon->AttackWithWhip();
+				else
+				{
+					((CPlayScene*)scene)->SetWeaponToBeProcess(simon->GetSubWeaponType());
+					return;
+				}
+			}
+			else if( simon->GetSubWeaponType() != Item_Type::STOPWATCH_ITEM  && simon->GetHeartsCollected() > 0)
+				((CPlayScene*)scene)->SetWeaponToBeProcess(simon->GetSubWeaponType());
+		}
+		else simon->AttackWithWhip();
+
 		switch (simon->GetState())
 		{
 		case SIMON_WALK:
@@ -787,16 +824,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		default:
 			break;
 		}
-		if(simon->GetSubWeaponType() != -1 && game->IsKeyDown(DIK_UP) && ((CPlayScene*)scene)->GetWeaponNum() < simon->GetSubWeaponCap())
-		{
-			simon->canUseSubWeapon = true;
-		}
-		else
-			simon->canUseSubWeapon = false;
-
-		if (simon->canUseSubWeapon && simon->GetHeartsCollected() > 0)
-			((CPlayScene*)scene)->SetWeaponToBeProcess(simon->GetSubWeaponType());
-		else simon->AttackWithWhip();
+		
 
 
 		//DebugOut(L"[INFO] Attack\n");
@@ -897,6 +925,8 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	
 	if (game->IsKeyDown(DIK_UP))
 	{
+		if (simon->isSitting)
+			return;
 		simon->ProcessStair(STAIR_STATE_GOING_UP);
 
 		if (simon->isCollidingStairObject && simon->isTouchingGround && !simon->isAllowToGoUp && simon->GetCurrentStairType() == -1)

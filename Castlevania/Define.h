@@ -106,12 +106,14 @@ enum Weapon_Type
 	
 };
 
+
 enum Effect_Type
 {
 	SPARK_EFFECT=12,
 	FIRE_EFFECT=13,
 	BROKEN_BRICK_EFFECT=14
 };
+
 
 #define DEFAULT_TIME_PLAY		300
 

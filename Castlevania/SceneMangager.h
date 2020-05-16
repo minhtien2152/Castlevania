@@ -1,6 +1,7 @@
 #pragma once
 #include "Scene.h"
 #include "Simon.h"
+#include "PlayScene.h"
 class CSceneMangager
 {
 	static CSceneMangager* __instance;

@@ -181,6 +181,7 @@
     <ClCompile Include="Sprites.cpp" />
     <ClCompile Include="StairBottom.cpp" />
     <ClCompile Include="StatusBoard.cpp" />
+    <ClCompile Include="StopWatch.cpp" />
     <ClCompile Include="Textures.cpp" />
     <ClCompile Include="Ultis.cpp" />
     <ClCompile Include="Weapon.cpp" />
@@ -229,6 +230,7 @@
     <ClInclude Include="Sprites.h" />
     <ClInclude Include="StairBottom.h" />
     <ClInclude Include="StatusBoard.h" />
+    <ClInclude Include="StopWatch.h" />
     <ClInclude Include="Textures.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Weapon.h" />

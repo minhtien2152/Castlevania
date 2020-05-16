@@ -1,5 +1,5 @@
 #include "Animation.h"
-
+#include "SceneMangager.h"
 
 CAnimation::CAnimation(int defaultTime)
 {
@@ -19,7 +19,7 @@ void CAnimation::Add(int spriteId, DWORD time)
 	totalFrameTime += time;
 }
 
-void CAnimation::Render(float x, float y, int nx,bool accordingCam, int alpha)
+void CAnimation::Render(float x, float y, int nx, bool isUpdatingFrame, bool accordingCam, int alpha)
 {
 	DWORD now = GetTickCount();
 	if (currentFrame == -1)
@@ -27,7 +27,7 @@ void CAnimation::Render(float x, float y, int nx,bool accordingCam, int alpha)
 		currentFrame = 0;
 		lastFrameTime = now;
 	}
-	else
+	if(isUpdatingFrame)
 	{
 		DWORD t = frames[currentFrame]->GetTime();
 		if (now - lastFrameTime > t)
@@ -39,7 +39,6 @@ void CAnimation::Render(float x, float y, int nx,bool accordingCam, int alpha)
 		}
 
 	}
-
 	frames[currentFrame]->GetSprite()->Draw(x, y, nx, alpha,accordingCam);
 }
 

@@ -23,6 +23,7 @@ void StatusBoard::Update(DWORD dt)
 	time += dt;
 	simonbar->Update();
 	subWeaponCap = simon->GetSubWeaponCap();
+	subWeaponType = simon->GetSubWeaponType();
 }
 
 void StatusBoard::Render()
@@ -46,13 +47,13 @@ void StatusBoard::Render()
 		font->DrawTextA(NULL, info.c_str(), -1, &rect, DT_LEFT, D3DCOLOR_XRGB(255, 255, 255));
 
 	simonbar->Render();
-	animation_set->at(SUB_WEAPON_RECT_TEX_ID)->Render(290, 32,1,false);
+	animation_set->at(SUB_WEAPON_RECT_TEX_ID)->Render(290, 32,1, 1, false);
 	if (subWeaponType !=-1)
-		item_animation_set->at(subWeaponType)->Render(305, 38,1,false);
+		item_animation_set->at(subWeaponType)->Render(305, 38,1, 1, false);
 	if(subWeaponCap ==2)
-		item_animation_set->at(Item_Type::DOUBLESHOT)->Render(450, 38, 1, false);
+		item_animation_set->at(Item_Type::DOUBLESHOT)->Render(450, 38, 1, 1, false);
 	else if(subWeaponCap ==3)
-		item_animation_set->at(Item_Type::TRIPLESHOT)->Render(450, 38, 1, false);
+		item_animation_set->at(Item_Type::TRIPLESHOT)->Render(450, 38, 1, 1, false);
 
 }
 

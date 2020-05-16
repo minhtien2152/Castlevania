@@ -54,7 +54,9 @@ public:
 	void UpdateListsAccordingGrid();
 	void SetWeaponToBeProcess(int type);
 	void CreateSubWeapon(int type);
+	bool IsStopWatchEnabled();
 	int GetWeaponNum();
+	void DestroyAllOnScreenEnemy();
 	friend class CPlayScenceKeyHandler;
 
 };

@@ -5,6 +5,7 @@ class CWeapon : public CGameObject
 {
 protected:
 	int damage;
+	int cost;
 public:
 	CWeapon();
 	~CWeapon();

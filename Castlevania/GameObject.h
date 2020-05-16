@@ -66,6 +66,7 @@ public:
 	bool isColidingSideways;
 	bool isDestroyed;
 	bool isPhysicEnabled;
+	bool isUpdatingFrame;
 	LPANIMATION_SET animation_set;
 	vector<LPCOLLISIONEVENT> nonSolidObjCoEvents;
 	vector<LPGAMEOBJECT> nonSolidObjects;

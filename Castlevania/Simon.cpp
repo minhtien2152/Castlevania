@@ -71,10 +71,8 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 	}
 
 	if (isJumping && IsAttacking() && animation_set->at(state)->IsOver())
-	{
-		isSitting = false;
 		CGameObject::SetState(SIMON_STAND);									//ko co chan lai sau khi danh xong
-	}
+	
 	
 	if(!isInvisible && isInvulnerable)
 		if (GetTickCount() - invulnerable_start > SIMON_INVULNERABLE_TIME)
@@ -94,12 +92,13 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 	
 	
 
-	if (IsAttacking() && !canUseSubWeapon)
+	if (IsAttacking() && mainWeapon->isEnabled)
 	{
 		mainWeapon->SetPosition(x, y);
 		mainWeapon->SetSpeed(vx, vy);
+		if (animation_set->at(state)->IsOver())
+			mainWeapon->isEnabled = false;
 	}
-	else mainWeapon->isEnabled = false;
 	
 	if (hp == 0)
 		SetState(SIMON_DEAD);
@@ -142,10 +141,10 @@ void Simon::Render()
 	if (isInvulnerable  || isInvisible)
 		alpha /= 2;
 
-		animation_set->at(state)->Render(x, y, nx, 1, alpha);
+		animation_set->at(state)->Render(x, y, nx, 1, 1, alpha);
 	if (IsAttacking())
 	{
-		if (!canUseSubWeapon)
+		if (mainWeapon->isEnabled)
 			mainWeapon->Render();
 	}
 	RenderBoundingBox();
@@ -224,15 +223,16 @@ void Simon::SetState(int state)
 		break;
 	case SIMON_STAIR_UP:
 		ResetAni();
+		isSitting = false;
 		isWaitingForAni = true;
 		vx = -nx*SIMON_STAIR_SPEED;
 		vy = -SIMON_STAIR_SPEED;
 		stairState = STAIR_STATE_GOING_UP;
 		break;
 	
-		break;
 	case SIMON_STAIR_DOWN:
 		ResetAni();
+		isSitting = false;
 		isWaitingForAni = true;
 		vx = -nx * SIMON_STAIR_SPEED;
 		vy = SIMON_STAIR_SPEED;
@@ -273,7 +273,7 @@ void Simon::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 
 void Simon::AttackWithWhip()
 {
-	canUseSubWeapon = false;
+
 	mainWeapon->Attack(this);
 }
 
@@ -305,7 +305,7 @@ void Simon::StartInvisibilityTimer()
 	isInvulnerable = true;
 }
 
-void Simon::SetSubWeapon(int type)
+void Simon::SetSubWeaponItem(int type)
 {
 	subWeaponType = type;
 }

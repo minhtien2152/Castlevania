@@ -4,6 +4,7 @@
 Whip::Whip()
 {
 	SetAnimationSet(CAnimationSets::GetInstance()->Get(Weapon_Type::WHIP));
+	tag = Weapon_Type::WHIP;
 	CGameObject::SetState(WHIP_LEVEL0);
 }
 
@@ -20,7 +21,6 @@ void Whip::SetPosition(float x, float y)
 
 void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
-
 	for (int i = 0; i < coObjects->size(); i++)
 	{
 		LPGAMEOBJECT obj = coObjects->at(i);

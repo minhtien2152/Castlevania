@@ -13,6 +13,10 @@
 #define KEYBOARD_BUFFER_SIZE 1024
 using namespace std;
 
+struct CUSTOMVERTEX { FLOAT X, Y, Z; D3DVECTOR NORMAL; };
+#define CUSTOMFVF (D3DFVF_XYZ | D3DFVF_NORMAL)
+
+
 typedef CKeyEventHandler * LPKEYEVENTHANDLER;
 class CGame
 {
@@ -100,7 +104,8 @@ public:
 	int GetState();
 
 	void FreeResources();
-
+	LPDIRECT3DVERTEXBUFFER9 v_buffer = NULL;
+	LPDIRECT3DINDEXBUFFER9 i_buffer = NULL;
 	static CGame* GetInstance();
 	~CGame();
 };

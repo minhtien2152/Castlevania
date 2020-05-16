@@ -46,7 +46,7 @@ void Knight::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 void Knight::Render()
 {
-	animation_set->at(state)->Render(x, y, nx);
+	animation_set->at(state)->Render(x, y, nx,isUpdatingFrame);
 }
 
 void Knight::GetBoundingBox(float& left, float& top, float& right, float& bottom)

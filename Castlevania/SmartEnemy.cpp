@@ -23,7 +23,7 @@ void SmartEnemy::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 void SmartEnemy::Render()
 {
-	animation_set->at(state)->Render(x, y, nx);
+	animation_set->at(state)->Render(x, y, nx,isUpdatingFrame);
 	RenderBoundingBox();
 }
 

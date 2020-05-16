@@ -37,7 +37,7 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	return 0;
 }
-
+#define GRAY_COLOR  0x00bfbfbf
 
 
 /*
@@ -64,10 +64,9 @@ void Render()
 		d3ddv->ColorFill(bb, NULL, BACKGROUND_COLOR);
 
 		spriteHandler->Begin(D3DXSPRITE_ALPHABLEND);
-
+		
 		CSceneMangager::GetInstance()->GetCurrentScene()->Render();
 
-		//
 		// TEST SPRITE DRAW
 		//
 
@@ -84,6 +83,7 @@ void Render()
 		*/
 
 		spriteHandler->End();
+
 		d3ddv->EndScene();
 	}
 

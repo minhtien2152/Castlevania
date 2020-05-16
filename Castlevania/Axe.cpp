@@ -4,7 +4,8 @@
 Axe::Axe()
 {
 	animation_set = CAnimationSets::GetInstance()->Get(Weapon_Type::AXE);
-
+	tag = Weapon_Type::AXE;
+	cost = 1;
 }
 Axe::~Axe()
 {

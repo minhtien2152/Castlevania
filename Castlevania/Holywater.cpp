@@ -8,6 +8,8 @@ Holywater::Holywater()
 {
 	brokeTime = 0;
 	animation_set = CAnimationSets::GetInstance()->Get(Weapon_Type::HOLYWATER);
+	tag = Weapon_Type::HOLYWATER;
+	cost = 1;
 }
 Holywater::~Holywater()
 {

@@ -109,7 +109,7 @@ candle	30033	100	30034	100
 torch	30035	100	30036	100
 door	30037	150	30038	150
 holywater_item	30039	100
-stopwatch	30040 100
+stopwatch	30040	100
 doubleshot	30041	100
 tripleshot	30042	100
 chicken	30043	100

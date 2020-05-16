@@ -5,6 +5,7 @@ CWeapon::CWeapon()
 	damage = 1;
 	isEnabled = false;
 	isStatic = false;
+	cost = 0;
 }
 
 CWeapon::~CWeapon()

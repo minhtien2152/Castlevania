@@ -5,7 +5,7 @@
 #include <fstream>
 #include "SceneMangager.h"
 CGame* CGame::__instance = NULL;
-
+#define GRAY_COLOR  0x00bfbfbf
 
 void CGame::Init(HWND hWnd)
 {
@@ -47,6 +47,8 @@ void CGame::Init(HWND hWnd)
 
 	d3ddv->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &backBuffer);
 
+	//
+	
 	// Initialize sprite helper from Direct3DX helper library
 	D3DXCreateSprite(d3ddv, &spriteHandler);
 
@@ -65,6 +67,8 @@ void CGame::Init(HWND hWnd)
 	}
 	state = GAME_STATE_MENU;
 	OutputDebugString(L"[INFO] InitGame done;\n");
+	
+	
 }
 
 /*
@@ -108,7 +112,7 @@ void CGame::Draw(float x, float y,int nx, LPDIRECT3DTEXTURE9 texture, int left, 
 	D3DXMATRIX finalTransform = newTransform * oldTransform;
 	spriteHandler->SetTransform(&finalTransform);
 
-	spriteHandler->Draw(texture, &r, NULL, &p, D3DCOLOR_ARGB(alpha, 255, 200, 200));
+	spriteHandler->Draw(texture, &r, NULL, &p, D3DCOLOR_ARGB(alpha, 255, 255, 255));
 
 	spriteHandler->SetTransform(&oldTransform);
 }

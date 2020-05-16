@@ -25,6 +25,7 @@ void BackUp::BackUpSimon(Simon* simon)
 	heart = simon->GetHeartsCollected();
 	whipLv = simon->GetMainWeapon()->GetState();
 	subWeaponCap = simon->GetSubWeaponCap();
+	subWeaponItem = simon->GetSubWeaponType();
 }
 
 void BackUp::LoadBackUp(Simon* simon)
@@ -36,6 +37,7 @@ void BackUp::LoadBackUp(Simon* simon)
 	if(simon->GetMainWeapon()!= NULL)
 	simon->GetMainWeapon()->SetState(whipLv);
 	simon->SetSupWeaponCap(subWeaponCap);
+	simon->SetSubWeaponItem(subWeaponItem);
 }
 
 void BackUp::SetTime(DWORD time)

@@ -87,7 +87,7 @@ public:
 	void SetLife(int life);
 	void StartInvisibilityTimer();
 
-	void SetSubWeapon(int type);
+	void SetSubWeaponItem(int type);
 	int GetSubWeaponType();
 	void SetSupWeaponCap(int capacity);
 	int GetSubWeaponCap();

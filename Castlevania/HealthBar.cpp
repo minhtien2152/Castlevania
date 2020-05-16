@@ -32,10 +32,10 @@ void HealthBar::Render()
 		int i, j;
 	
 		for (i = 0; i < currHP; i++)
-			animation_set->at(type)->Render(x + i * HEALTH_FRAME_WIDTH , y, 1,false);//always stay on screen -> accordingCam = false
+			animation_set->at(type)->Render(x + i * HEALTH_FRAME_WIDTH, y, 1, 1, false);//always stay on screen -> accordingCam = false
 
 		for (j = i; j < defaultHP; j++)
-			animation_set->at(MISSING_HEALTH)->Render(x + j * HEALTH_FRAME_WIDTH, y, 1,false);
+			animation_set->at(MISSING_HEALTH)->Render(x + j * HEALTH_FRAME_WIDTH, y, 1, 1, false);
 		
 	
 }

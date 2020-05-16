@@ -3,7 +3,8 @@
 Dagger::Dagger()
 {
 	animation_set = CAnimationSets::GetInstance()->Get(Weapon_Type::DAGGER);
-
+	tag = Weapon_Type::DAGGER;
+	cost = 1;
 }
 Dagger::~Dagger()
 {

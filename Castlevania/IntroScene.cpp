@@ -14,6 +14,7 @@ CIntroScene::CIntroScene(int id, LPCWSTR filePath) :CScene(id, filePath)
 {
 	key_handler = new CIntroScenceKeyHandler(this);
 	game = CGame::GetInstance();
+
 }
 void CIntroScene::LoadScene()
 {

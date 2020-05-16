@@ -4,7 +4,8 @@
 Boomerang::Boomerang()
 {
 	animation_set = CAnimationSets::GetInstance()->Get(Weapon_Type::BOOMERANG);
-
+	tag = Weapon_Type::BOOMERANG;
+	cost = 1;
 }
 Boomerang::~Boomerang()
 {
