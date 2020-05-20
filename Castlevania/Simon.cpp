@@ -406,8 +406,10 @@ void Simon::CheckGetOffStair()
 		{
 			if (stairState != 0)
 			{
-				if (((StairObject*)obj)->nx == currentStairDirection && ((StairObject*)obj)->GetType() == currentStairType || ((StairObject*)obj)->nx == -currentStairDirection && ((StairObject*)obj)->GetType() == -currentStairType)
+				if (obj->nx == currentStairDirection && ((StairObject*)obj)->GetType() == currentStairType || obj->nx == -currentStairDirection && ((StairObject*)obj)->GetType() == -currentStairType)
 					SetState(SIMON_STAND);
+				if (((StairObject*)obj)->GetType() == -1)
+					y -= 2;
 			}
 		}
 	}

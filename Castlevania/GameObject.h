@@ -56,7 +56,7 @@ public:
 	int nx;
 
 	DWORD dt;
-
+	int damage;
 	int state;
 	bool isStatic;
 	bool isSolid;
@@ -112,5 +112,6 @@ public:
 	void SetHP(int hp);
 	void AddHealth(int amount);
 	void ResetAni();
+	void SetDamage(int damage) { this->damage = damage; }
 	~CGameObject();
 };

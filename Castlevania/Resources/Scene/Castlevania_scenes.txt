@@ -8,3 +8,4 @@ start	5
 3	Resources\Scene\scene3.txt
 4	Resources\Scene\scene4.txt
 5	Resources\Scene\scene5.txt
+6	Resources\Scene\scene6.txt

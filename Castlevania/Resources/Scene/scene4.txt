@@ -17,13 +17,13 @@ Resources\TileMap\scene3-1.txt
 # Simon				
 1	28	5	1
 #Hunch back
-28	11	4	28
-28	19	6	28
-28	27	6	28
+28	11	4	28	3
+28	19	6	28	3
+28	27	6	28	3
 #Ghost
-#29	40	7	29
+#29	40	7	29	3
 #skeleton
-25	30	6	25
+25	30	6	25	3
 #Candle
 #stair
 #dir : 1 = left, -1 = right

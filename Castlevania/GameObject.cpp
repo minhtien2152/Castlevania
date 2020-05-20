@@ -53,16 +53,17 @@ void CGameObject::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		if (coObjects->at(i)->isSolid)
 			solidObjects.push_back(coObjects->at(i));
 		else nonSolidObjects.push_back(coObjects->at(i));
-	if (isPhysicEnabled == false)
-		return;
+
 	CalcPotentialCollisions(&solidObjects, coEvents);
 	CalcPotentialCollisions(&nonSolidObjects, nonSolidObjCoEvents);
-	if (coEvents.size() == 0)
+	if (coEvents.size() == 0 || !isPhysicEnabled )
 	{
 		x += dx;
 		y += dy;
 		isColidingSideways = false;
 		isTouchingGround = false;
+		if (isPhysicEnabled == false)
+			return;
 	}
 	else
 	{

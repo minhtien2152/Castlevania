@@ -1,7 +1,7 @@
 #include "PlayScene.h"
 #include <iostream>
 #include <fstream>
-
+#include<time.h>
 #include "Utils.h"
 #include"Define.h"
 #include <stdlib.h> 
@@ -24,6 +24,8 @@
 #include "Ghost.h"
 #include "Skeleton.h"
 #include "StopWatch.h"
+#include "Raven.h"
+
 using namespace std;
 
 CPlayScene::CPlayScene(int id, LPCWSTR filePath) :	CScene(id, filePath)
@@ -31,6 +33,7 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :	CScene(id, filePath)
 	key_handler = new CPlayScenceKeyHandler(this);
 	id_counter = 0;
 	weaponWaitingToBeProcess = -1;
+	srand(time(NULL));
 
 }
 
@@ -72,13 +75,13 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case Object_Type::GROUND: obj = new Ground(); break;
 	case Object_Type::ZOMBIE: obj = new CZombie(); break;
 	case Object_Type::KNIGHT:	obj = new Knight(); break;
-	case Object_Type::CANDLE: obj = new Candle(); break;
-	case Object_Type::BUMPER: obj = new Bumper();	break;
 	case Object_Type::HUNCHBACK:obj = new HunchBack();	break;
-	case Object_Type::PLATFORM: obj = new MovingPlatform();	break;
 	case Object_Type::GHOST:	obj = new Ghost();	break;
 	case Object_Type::SKELETON: obj = new Skeleton();	break;
-	case Object_Type::RAVEN:	break;
+	case Object_Type::RAVEN:	obj = new Raven();	break;
+	case Object_Type::PLATFORM: obj = new MovingPlatform();	break;
+	case Object_Type::CANDLE: obj = new Candle(); break;
+	case Object_Type::BUMPER: obj = new Bumper();	break;
 	case Object_Type::STAIR_OBJECT: 
 	{
 		int stair_dir = atoi(tokens[4].c_str());
@@ -97,7 +100,23 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		DebugOut(L"[ERR] Invalid object type: %d\n", object_type);
 		return;
 	}
-
+	switch (object_type)
+	{
+	case Object_Type::ZOMBIE:
+	case Object_Type::KNIGHT:	
+	case Object_Type::HUNCHBACK:
+	case Object_Type::GHOST:	
+	case Object_Type::SKELETON:
+	case Object_Type::RAVEN:	
+	{
+		int dam= atoi(tokens[4].c_str());
+		obj->SetDamage(dam);
+	}
+		break;
+	default:
+		break;
+	}
+		
 	// General object setup
 	if (obj != NULL)
 	{
@@ -307,7 +326,7 @@ void CPlayScene::Update(DWORD dt)
 			weaponList.erase(weaponList.begin() + i);
 		}
 	}
-	DebugOut(L"weaponlist %d\n", weaponList.size());
+	//DebugOut(L"weaponlist %d\n", weaponList.size());
 	CheckForWeaponCollision();
 	CheckForEnemyCollison();
 	CheckForCollisonWithItems();
@@ -342,7 +361,7 @@ void CPlayScene::Update(DWORD dt)
 
 void CPlayScene::Render()
 {
-	//tileMap->Render();
+	tileMap->Render();
 	player->Render();
 
 	for (int i = 0; i < objectList.size(); i++)
@@ -518,7 +537,9 @@ void CPlayScene::CheckForEnemyCollison()
 				{
 					if (player->stairState == 0)
 						player->SetState(SIMON_DAMAGED);
-					player->TakeDamage(1);
+					player->TakeDamage(enemy->damage);
+					if (enemy->tag == Object_Type::RAVEN)
+						enemy->isDestroyed = true;
 					
 				}
 		}
@@ -743,6 +764,12 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		break;
 	case DIK_4:
 		game->SwitchScene(4);
+		break;
+	case DIK_5:
+		game->SwitchScene(5);
+		break;
+	case DIK_6:
+		game->SwitchScene(6);
 		break;
 	case DIK_0:
 		game->SwitchScene(0);

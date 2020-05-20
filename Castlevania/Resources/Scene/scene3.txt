@@ -26,7 +26,7 @@ Resources\TileMap\scene2-2.txt
 #	x	y	ani_set	dir	Up/down	id
 32	29	5	0	1	1	0
 #Knight
-24	20	4	24
+24	20	4	24	3
 #Ground			
 2	0	0	0
 2	0	1	0

@@ -171,6 +171,9 @@
     <ClCompile Include="StopWatch.cpp">
       <Filter>Weapon</Filter>
     </ClCompile>
+    <ClCompile Include="Raven.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -313,6 +316,9 @@
     </ClInclude>
     <ClInclude Include="StopWatch.h">
       <Filter>Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="Raven.h">
+      <Filter>GameObject</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

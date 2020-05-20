@@ -168,6 +168,7 @@
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="MovingPlatform.cpp" />
     <ClCompile Include="Portal.cpp" />
+    <ClCompile Include="Raven.cpp" />
     <ClCompile Include="SceneMangager.cpp" />
     <ClCompile Include="Skeleton.cpp" />
     <ClCompile Include="SmartEnemy.cpp" />
@@ -217,6 +218,7 @@
     <ClInclude Include="Map.h" />
     <ClInclude Include="MovingPlatform.h" />
     <ClInclude Include="Portal.h" />
+    <ClInclude Include="Raven.h" />
     <ClInclude Include="SceneMangager.h" />
     <ClInclude Include="Skeleton.h" />
     <ClInclude Include="SmartEnemy.h" />

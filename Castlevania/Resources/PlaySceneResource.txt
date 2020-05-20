@@ -82,7 +82,7 @@
 30074	1528	222	1560	254	3
 30075	1456	106	1488	138	3
 30076	1490	106	1522	138	3
-30077	1524	106	1566	138	3
+30077	1524	106	1556	138	3
 30078	1558	106	1590	138	3
 # ani_id	sprite1_id	time1	sprite2_id	time2	...			
 [ANIMATIONS]
@@ -155,4 +155,3 @@ raven_fly	30076	100	30077	100	30078	100
 28	hunchback_idle	hunchback_jump
 29	ghost
 30	raven_idle	raven_fly
-
