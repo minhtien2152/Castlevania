@@ -29,7 +29,7 @@ protected:
 	vector<Effect*> effectList;
 	Map* tileMap;
 	vector<CWeapon*> weaponList;
-
+	vector<CWeapon*> enemyProjectTile;
 	int weaponWaitingToBeProcess;
 
 	void _ParseSection_OBJECTS(string line);

@@ -77,7 +77,11 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case Object_Type::KNIGHT:	obj = new Knight(); break;
 	case Object_Type::HUNCHBACK:obj = new HunchBack();	break;
 	case Object_Type::GHOST:	obj = new Ghost();	break;
-	case Object_Type::SKELETON: obj = new Skeleton();	break;
+	case Object_Type::SKELETON: 
+		obj = new Skeleton();	
+		((Skeleton*)obj)->SetProjectTileList(&enemyProjectTile);
+		((Skeleton*)obj)->screen_height = CGame::GetInstance()->GetScreenHeight();
+		break;
 	case Object_Type::RAVEN:	obj = new Raven();	break;
 	case Object_Type::PLATFORM: obj = new MovingPlatform();	break;
 	case Object_Type::CANDLE: obj = new Candle(); break;
@@ -281,18 +285,22 @@ void CPlayScene::Update(DWORD dt)
 			{
 				if (camera->IsInCam(enemyList[i]))
 				{
-					vector<LPGAMEOBJECT> coObject;
-					for (UINT i = 0; i < objectList.size(); i++)
-						coObject.push_back(objectList[i]);
-					coObject.push_back(player);
-					enemyList[i]->Update(dt, &coObject);
+					
+					
 					if (enemyList[i]->isDestroyed)
 					{
 						CreateEffect(enemyList[i], Effect_Type::FIRE_EFFECT);
 						enemyList[i]->isEnabled = false;
 						SpawnItem(enemyList[i]);
 					}
-					coObject.clear();
+					else {
+						vector<LPGAMEOBJECT> coObject;
+						for (UINT i = 0; i < objectList.size(); i++)
+							coObject.push_back(objectList[i]);
+						coObject.push_back(player);
+						enemyList[i]->Update(dt, &coObject);
+						coObject.clear();
+					}
 				}
 
 			}
@@ -326,6 +334,20 @@ void CPlayScene::Update(DWORD dt)
 			weaponList.erase(weaponList.begin() + i);
 		}
 	}
+	for (UINT i = 0; i < enemyProjectTile.size(); i++)
+	{
+		if (camera->IsInCam(enemyProjectTile[i]))
+		{
+			enemyProjectTile[i]->Update(dt);
+		}
+		else
+
+		{
+			free(enemyProjectTile[i]);
+			enemyProjectTile[i] = NULL;
+			enemyProjectTile.erase(enemyProjectTile.begin() + i);
+		}
+	}
 	//DebugOut(L"weaponlist %d\n", weaponList.size());
 	CheckForWeaponCollision();
 	CheckForEnemyCollison();
@@ -337,7 +359,7 @@ void CPlayScene::Update(DWORD dt)
 	//DebugOut(L"Cx = %d , Cy = %d\n", cx, cy);
 
 	statusboard->Update(dt);
-
+	
 	//update objects
 	for (UINT i = 0; i < objectList.size(); i++)
 	{
@@ -385,6 +407,9 @@ void CPlayScene::Render()
 		if(subweapon->tag!= Weapon_Type::STOPWATCH)
 			subweapon->Render();
 	}
+	for (auto projectTile : enemyProjectTile)
+		projectTile->Render();
+	
 	statusboard->Render();
 }
 
@@ -650,12 +675,12 @@ void CPlayScene::LoadBackUpData()
 
 void CPlayScene::UpdateListsAccordingGrid()
 {
-	vector<LPGAMEOBJECT> temp_obj_list;
-	unordered_map<int, bool> duplicate_obj_checker;
-	
-	static_obj_grid->GetObjectsAccordingCam(camera, &temp_obj_list, &duplicate_obj_checker);
-	dynamic_obj_grid->GetObjectsAccordingCam(camera, &temp_obj_list, &duplicate_obj_checker);
 	CleanUpObjects();
+	vector<LPGAMEOBJECT> temp_obj_list;
+	
+	static_obj_grid->GetObjectsAccordingCam(camera, &temp_obj_list);
+	dynamic_obj_grid->GetObjectsAccordingCam(camera, &temp_obj_list);
+	
 	for(auto obj : temp_obj_list)
 		switch (obj->tag)
 		{

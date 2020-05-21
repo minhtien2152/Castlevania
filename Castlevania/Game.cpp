@@ -400,7 +400,7 @@ void CGame::SweptAABB(
 	}
 	else
 	{
-		tx_entry = dx_entry / dx;
+ 		tx_entry = dx_entry / dx;
 		tx_exit = dx_exit / dx;
 	}
 

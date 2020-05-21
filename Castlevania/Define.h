@@ -57,7 +57,6 @@ enum Object_Type
 	BAT,
 	KNIGHT,
 	SKELETON,
-	BONE,
 	ZOMBIE,
 	HUNCHBACK,
 	GHOST,
@@ -70,7 +69,7 @@ enum Object_Type
 
 #define ITEM_APPEAR_TIME 3000
 #define GRAVITY 0.001f
-#define	ITEM_ANI_SET_ID 10
+#define	ITEM_ANI_SET_ID 11
 enum Item_Type
 {
 	STOPWATCH_ITEM,
@@ -102,16 +101,17 @@ enum Weapon_Type
 	BOOMERANG,
 	AXE,
 	HOLYWATER,
-	STOPWATCH
+	STOPWATCH,
+	BONE
 	
 };
 
 
 enum Effect_Type
 {
-	SPARK_EFFECT=12,
-	FIRE_EFFECT=13,
-	BROKEN_BRICK_EFFECT=14
+	SPARK_EFFECT=13,
+	FIRE_EFFECT,
+	BROKEN_BRICK_EFFECT,
 };
 
 

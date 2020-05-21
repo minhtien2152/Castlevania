@@ -30,7 +30,6 @@ void Axe::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	}
 
 	//DebugOut(L"CoEvent size : %d\n", nonSolidObjCoEvents.size());
-	CleanUpCoEvents();
 }
 void Axe::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {

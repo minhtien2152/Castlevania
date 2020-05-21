@@ -44,9 +44,10 @@ void CGameObject::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
 	coEvents.clear();
+	CleanUpCoEvents();
 	coEventsResult.clear();
 	nonSolidObjects.clear();
-	vector<LPGAMEOBJECT> solidObjects;
+	solidObjects.clear();
 	
 	if (coObjects != NULL)
 	for (int i = 0; i < coObjects->size(); i++)
@@ -125,9 +126,14 @@ void CGameObject::CleanUpCoEvents()
 	
 }
 
-int CGameObject::GetPosX()
+float CGameObject::GetPosX()
 {
 	return x;
+}
+
+float CGameObject::GetPosY()
+{
+	return y;
 }
 
 /*

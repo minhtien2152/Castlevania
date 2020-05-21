@@ -138,8 +138,9 @@ raven_fly	30076	100	30077	100	30078	100
 7	axe
 8	holywater_thow	holywater_break
 9	stopwatch
-10	stopwatch	smallheart	bigheart	moneybag1	moneybag2	moneybag3	chain	dagger	cross	axe_item	invispotion	boomerang_item	holywater_item	chicken	doubleshot	tripleshot	magiccrystal	crown	chest
-11	1up
+10	bone
+11	stopwatch	smallheart	bigheart	moneybag1	moneybag2	moneybag3	chain	dagger	cross	axe_item	invispotion	boomerang_item	holywater_item	chicken	doubleshot	tripleshot	magiccrystal	crown	chest
+12	1up
 12	hit_effect
 13	fire_effect
 14	brick_effect
@@ -149,9 +150,8 @@ raven_fly	30076	100	30077	100	30078	100
 22	platform
 23	bat_idle	bat_fly
 24	knight
-25	skeleton
-26	bone
-27	zombie
-28	hunchback_idle	hunchback_jump
-29	ghost
-30	raven_idle	raven_fly
+25	skeleton	skeleton	skeleton
+26	zombie
+27	hunchback_idle	hunchback_jump
+28	ghost
+29	raven_idle	raven_fly

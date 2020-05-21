@@ -70,6 +70,7 @@ public:
 	LPANIMATION_SET animation_set;
 	vector<LPCOLLISIONEVENT> nonSolidObjCoEvents;
 	vector<LPGAMEOBJECT> nonSolidObjects;
+	vector<LPGAMEOBJECT> solidObjects;
 	int hp;
 	float onFeetObjVx;
 
@@ -106,7 +107,8 @@ public:
 	virtual void Render()=0;
 	virtual void SetState(int state) { this->state = state; }
 	void CleanUpCoEvents();
-	int GetPosX();
+	float GetPosX();
+	float GetPosY();
 	int GetHP() { return hp; }
 	float GetVx() { return vx; }
 	void SetHP(int hp);

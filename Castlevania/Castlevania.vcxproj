@@ -147,6 +147,7 @@
     <ClCompile Include="Axe.cpp" />
     <ClCompile Include="BackUp.cpp" />
     <ClCompile Include="Bat.cpp" />
+    <ClCompile Include="Bone.cpp" />
     <ClCompile Include="Boomerang.cpp" />
     <ClCompile Include="Bumper.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -196,6 +197,7 @@
     <ClInclude Include="Axe.h" />
     <ClInclude Include="BackUp.h" />
     <ClInclude Include="Bat.h" />
+    <ClInclude Include="Bone.h" />
     <ClInclude Include="Boomerang.h" />
     <ClInclude Include="Bumper.h" />
     <ClInclude Include="Camera.h" />

@@ -3,7 +3,7 @@
 class StairObject:public CGameObject
 {
 	int type;
-	int id;
+
 public:
 	StairObject(int dir,int type,int id);
 	void GetBoundingBox(float& left, float& top, float& right, float& bottom);

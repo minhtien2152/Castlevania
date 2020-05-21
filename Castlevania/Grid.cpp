@@ -4,17 +4,13 @@ Grid::Grid(int mapWidth, int mapHeight)
 {
 	
 	screen_width = CGame::GetInstance()->GetScreenWidth();
+	screen_height = CGame::GetInstance()->GetScreenHeight();
 	map_height = mapHeight;
 	cell_width = screen_width / 2 ;
-	cell_height = mapHeight / 2 ;
+	cell_height = screen_height/ 2 ;
 	this->column = mapWidth / cell_width;
 	this->row = mapHeight / cell_height;
-	grid_cells.resize(row);
-	for (UINT i = 0; i < grid_cells.size(); i++)
-		grid_cells[i].resize(column);
-	for (int i = 0; i < row; i++)
-		for (int j = 0; j < column; j++)
-			grid_cells[i][j] = new vector<LPGAMEOBJECT>;
+
 }
 
 void Grid::Update()
@@ -24,6 +20,7 @@ void Grid::Update()
 	for(UINT i = 0; i < object_list.size(); i++)
 		if (!object_list[i]->isEnabled)
 		{
+			DebugOut(L"deleted obj type %d\n", object_list[i]->tag);
 			free(object_list[i]);
 			object_list[i] = NULL;
 			object_list.erase(object_list.begin() + i);
@@ -32,15 +29,17 @@ void Grid::Update()
 	{
 		float l, t, r, b;
 		obj->GetBoundingBox(l, t, r, b);
-		t -= STATUS_BOARD_HEIGHT;
-		b -= STATUS_BOARD_HEIGHT;
 		int start_row = GetRow(t);
 		int end_row = GetRow(b);
 		int start_col = GetColumn(l);
 		int end_col = GetColumn(r);
 		for (int row = start_row; row <= end_row; row++)
 			for (int col = start_col; col <= end_col; col++)
-				grid_cells.at(row).at(col)->push_back(obj);
+			{
+				grid_cell[GetCellId(col, row)].push_back(obj);
+				if (obj->tag == Object_Type::STAIR_OBJECT)
+					DebugOut(L"Added Stair to row %d, col %d,id %d\n", row, col, GetCellId(col, row));
+			}
 
 	}
 }
@@ -51,39 +50,42 @@ void Grid::AddObject(LPGAMEOBJECT obj)
 	DebugOut(L"size %d\n", object_list.size());
 }
 
-void Grid::GetObjectsAccordingCam(Camera* cam, vector<LPGAMEOBJECT>* cell_object, unordered_map<int, bool>* dup_checker)
+void Grid::GetObjectsAccordingCam(Camera* cam, vector<LPGAMEOBJECT>* cell_object)
 {
 	float cam_x, cam_y;
 	cam->GetCamPosition(cam_x, cam_y);
 	int start_row = GetRow(cam_y);
-	int end_row = GetRow(cam_y + map_height - 2);
+	int end_row = GetRow(cam_y + screen_height);
 	int start_col = GetColumn(cam_x);
 	int end_col = GetColumn(cam_x + screen_width - 2);
-
+	unordered_map<int, LPGAMEOBJECT> temp_list;
+	
+	
+	//DebugOut(L"start row %d,end row %d, start col %d, end col %d\n", start_row, end_row, start_col, end_col);
 	for (int row = start_row; row <= end_row; row++)
 		for (int col = start_col; col <= end_col; col++)
-			GetCellObjects(row,col, cell_object, dup_checker);
+		{
+			for (auto obj : grid_cell[GetCellId(col,row)])
+			{
+				if (temp_list.find(obj->id) == temp_list.end())
+				{
+					temp_list[obj->id] = obj;
+					//DebugOut(L"Get cell %d\n", GetCellId(col, row));
+				}
+			}
+		}
+	for (auto obj : temp_list)
+		cell_object->push_back(obj.second);
+	//DebugOut(L"total object %d, total got %d\n", object_list.size(), temp_list.size());
 }
 
-void Grid::GetCellObjects(int row,int col, vector<LPGAMEOBJECT>* cell_object, unordered_map<int, bool>* dup_checker)
-{
-	for (UINT i =0; i<grid_cells.at(row).at(col)->size();i++)
-	{
-		if (dup_checker->find(grid_cells.at(row).at(col)->at(i)->id) == dup_checker->end())
-		{
-			cell_object->push_back(grid_cells.at(row).at(col)->at(i));
-			dup_checker->emplace(grid_cells.at(row).at(col)->at(i)->id,1);
-			
-		}
-	}
-}
+
+
 
 void Grid::Unload()
 {
 	ClearCells();
-	for (auto row : grid_cells)
-		row.clear();
-	grid_cells.clear();
+
 
 	for (UINT i = 0; i < object_list.size(); i++)
 	{
@@ -95,20 +97,24 @@ void Grid::Unload()
 
 void Grid::ClearCells()
 {
-	for (int i = 0; i < row; i++)
-		for (int j = 0; j < column; j++)
-			grid_cells[i][j]->clear();
+	for (auto cell : grid_cell)
+		cell.second.clear();
+	grid_cell.clear();
 }
 
 
 
 int Grid::GetColumn(float x)
 {
-	return x / (cell_width + 1);
+	return x / cell_width ;
 }
 
 int Grid::GetRow(float y)
 {
-	return y / (cell_height+1);
+	return y / cell_height;
 }
 
+int Grid::GetCellId(int col, int row)
+{
+	return col + row * column;
+}
