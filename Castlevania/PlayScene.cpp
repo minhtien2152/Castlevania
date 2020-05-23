@@ -34,7 +34,7 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :	CScene(id, filePath)
 	id_counter = 0;
 	weaponWaitingToBeProcess = -1;
 	srand(time(NULL));
-
+	deathTimer = -1;
 }
 
 /*
@@ -379,6 +379,7 @@ void CPlayScene::Update(DWORD dt)
 		
 	}
 	player->Update(dt, &objectList);
+	CheckSimonDead();
 }
 
 void CPlayScene::Render()
@@ -742,6 +743,26 @@ void CPlayScene::CreateSubWeapon(int type)
 		DebugOut(L"Wrong weapon type\n");
 }
 
+void CPlayScene::CheckSimonDead()
+{
+	if (player->GetState() == SIMON_DEAD)
+	{
+		if (deathTimer == -1)
+			deathTimer = GetTickCount();
+
+		else if (GetTickCount() - deathTimer >= DEATH_TIMER_DELAY)
+		{
+			if (player->GetLife() == 0)
+				CGame::GetInstance()->SwitchScene(INTRO_SCENE_ID);
+			else
+			{
+				BackUp::GetInstance()->LoseLife();
+				CGame::GetInstance()->SwitchScene(id);
+			}
+		}
+	}
+}
+
 bool CPlayScene::IsStopWatchEnabled()
 {
 	for (auto weapon : weaponList)
@@ -822,6 +843,9 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		break;
 	case DIK_I:
 		((CPlayScene*)scene)->AccquireItem(Item_Type::STOPWATCH_ITEM);
+		break;
+	case DIK_M:
+		((CPlayScene*)scene)->player->SetHP(0);
 		break;
 	case DIK_SPACE:
 		if (simon->isJumping || simon->IsAttacking() || simon->GetState() == SIMON_SIT || simon->stairState !=0)

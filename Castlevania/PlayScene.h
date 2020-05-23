@@ -21,6 +21,7 @@ protected:
 	Grid* static_obj_grid;
 	Grid* dynamic_obj_grid;
 
+	DWORD deathTimer;
 
 
 	vector<LPGAMEOBJECT> objectList;
@@ -54,6 +55,7 @@ public:
 	void UpdateListsAccordingGrid();
 	void SetWeaponToBeProcess(int type);
 	void CreateSubWeapon(int type);
+	void CheckSimonDead();
 	bool IsStopWatchEnabled();
 	int GetWeaponNum();
 	void DestroyAllOnScreenEnemy();

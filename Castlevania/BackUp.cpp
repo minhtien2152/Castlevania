@@ -38,11 +38,25 @@ void BackUp::LoadBackUp(Simon* simon)
 	simon->GetMainWeapon()->SetState(whipLv);
 	simon->SetSupWeaponCap(subWeaponCap);
 	simon->SetSubWeaponItem(subWeaponItem);
+	loseLife = false;
 }
 
 void BackUp::SetTime(DWORD time)
 {
 	this->time = time;
+}
+
+void BackUp::SetLife(int life)
+{
+	this->life = life;
+}
+
+void BackUp::LoseLife()
+{
+	int life_backup = life-1;
+	ResetData();
+	SetLife(life_backup);
+	loseLife = true;
 }
 
 DWORD BackUp::GetTime()
@@ -70,4 +84,9 @@ void BackUp::ResetData()
 	subWeaponItem = -1;
 	whipLv = 0;
 	subWeaponCap = 1;
+}
+
+bool BackUp::HaveJustLostLife()
+{
+	return loseLife;
 }

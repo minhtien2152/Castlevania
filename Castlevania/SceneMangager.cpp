@@ -29,7 +29,8 @@ void CSceneMangager::SwitchScene(int idScene)
 	if (currentScene != NULL )	
 	{
 		if (currentScene->GetId() != INTRO_SCENE_ID)
-			((CPlayScene*)currentScene)->BackUpData();
+			if (!BackUp::GetInstance()->HaveJustLostLife())
+				((CPlayScene*)currentScene)->BackUpData();
 		ClearCurrentScene();
 	}
 	LPCWSTR path = scene_database[idScene];
@@ -46,6 +47,11 @@ void CSceneMangager::SwitchScene(int idScene)
 	}
 	game->SetKeyHandler(currentScene->GetKeyEventHandler());
 	currentScene->LoadScene();
+}
+
+void CSceneMangager::ResetScene()
+{
+	SwitchScene(currentScene->GetId());
 }
 
 void CSceneMangager::ClearCurrentScene()

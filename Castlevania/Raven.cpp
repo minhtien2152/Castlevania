@@ -73,10 +73,13 @@ void Raven::SetState(int state)
 
 void Raven::SetDesToFollowSimon()
 {
-	float plr_x, plr_y;
-	player->GetPosition(plr_x, plr_y);
-	destinationX = plr_x + 32;
-	destinationY = plr_y + 16;
+	if (player != NULL)
+	{
+		float plr_x, plr_y;
+		player->GetPosition(plr_x, plr_y);
+		destinationX = plr_x + 32;
+		destinationY = plr_y + 16;
+	}
 }
 
 bool Raven::IsPlayerWithinAttackRange()

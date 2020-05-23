@@ -12,6 +12,7 @@ public:
 	 static CSceneMangager* GetInstance();
 	 LPSCENE GetCurrentScene();
 	 void SwitchScene(int idScene);
+	 void ResetScene();
 	 void ClearCurrentScene();
 
 };

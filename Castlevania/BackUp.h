@@ -12,6 +12,7 @@ class BackUp
 	int heart;
 	int whipLv;
 	int subWeaponCap;
+	bool loseLife;
 public:
 	static BackUp* GetInstance();
 	BackUp();
@@ -19,10 +20,13 @@ public:
 	void BackUpSimon(Simon* simon);
 	void LoadBackUp(Simon* simon);
 	void SetTime(DWORD time);
+	void SetLife(int life);
+	void LoseLife();
 	DWORD GetTime();
 	void SetSupWPItem(int type);
 	int GetSupWPItem();
 	void ResetData();
+	bool HaveJustLostLife();
 	
 };
 

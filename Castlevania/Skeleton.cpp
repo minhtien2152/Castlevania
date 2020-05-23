@@ -32,12 +32,12 @@ void Skeleton::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 			if (isTouchingGround)
 			{
-				if (isColidingSideways)
-					nx_backUp *= -1;
+				
 				int onEdge = IsOnEdge();
-				if (onEdge!=0 && onEdge == nx_backUp)
-					if (JumpingSimulator())	
+				if (onEdge != 0 && onEdge == nx_backUp)
+					if (JumpingSimulator())
 						SetState(SKELETON_JUMP);
+					/*else nx_backUp = -onEdge;*/
 				if (nx == 1)
 				{
 					if (x >= x_backUp + SIMON_BBOX_WIDTH + TILE_WIDTH * 2  )
@@ -52,6 +52,7 @@ void Skeleton::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					else if (x <= x_backUp  - TILE_WIDTH * 2)
 						nx_backUp = -1;
 				}
+
 				SetState(SKELETON_MOVING);
 				if (GetTickCount() - lastAttack >= SKELETON_ATTACK_INTERVAL)
 					SetState(SKELETON_ATTACK);
@@ -151,6 +152,12 @@ bool Skeleton::JumpingSimulator()
 		decoy->Update(dt, &solidObjects);
 		dc_x = decoy->GetPosX();
 		dc_y = decoy->GetPosY();
+		if (decoy->isColidingSideways && !isTouchingGround)
+		{
+			free(decoy);
+			decoy = NULL;
+			return false;
+		}
 		if (decoy->isTouchingGround)
 		{
 			free(decoy);

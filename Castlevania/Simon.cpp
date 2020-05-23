@@ -100,7 +100,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 			mainWeapon->isEnabled = false;
 	}
 	
-	if (hp == 0)
+	if (hp <= 0)
 		SetState(SIMON_DEAD);
 	//DebugOut(L"x = %f , y = %f \n", x, y);
 	
@@ -406,9 +406,11 @@ void Simon::CheckGetOffStair()
 			if (stairState != 0)
 			{
 				if (obj->nx == currentStairDirection && ((StairObject*)obj)->GetType() == currentStairType || obj->nx == -currentStairDirection && ((StairObject*)obj)->GetType() == -currentStairType)
+				{
 					SetState(SIMON_STAND);
-				if (((StairObject*)obj)->GetType() == -1)
-					y -= 2;
+					if (((StairObject*)obj)->GetType() == STAIR_STATE_GOING_UP)
+						y -= 1;
+				}
 			}
 		}
 	}

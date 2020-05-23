@@ -157,3 +157,4 @@ enum Effect_Type
 #define GAME_STATE_PLAYSCENE	2
 
 #define SUB_WEAPON_RECT_TEX_ID 0
+#define DEATH_TIMER_DELAY 2000
