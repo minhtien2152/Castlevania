@@ -13,6 +13,11 @@ class BackUp
 	int whipLv;
 	int subWeaponCap;
 	bool loseLife;
+
+	int currentStairDirection;
+	int currentStairType;
+	int stairState;
+	int nx;
 public:
 	static BackUp* GetInstance();
 	BackUp();

@@ -44,25 +44,25 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 			stateWaitingToBeRendered = -1;
 		}
 	//DebugOut(L"waiting for ani %d\n", isWaitingForAni);
-	if (stairState != 0)
-		isTouchingGround = false;
-	isCollidingStairObject = false;
-	isAllowToGoDown = false;
-	isAllowToGoUp = false;
 
 
 	//DebugOut(L"touchingGround %d\n", isTouchingGround);
 	// simple fall down
 	if (stairState ==0)
 	{
-		CGameObject::Update(dt, coObjects);
+		isPhysicEnabled = true;
 		vy += SIMON_GRAVITY * dt;
 	}
-	else
-	{
-		x += vx * dt;
-		y += vy * dt;
+	else {
+		isPhysicEnabled = false;
 	}
+	CGameObject::Update(dt, coObjects);
+	if (stairState != 0)
+		isTouchingGround = false;
+	isCollidingStairObject = false;
+	isAllowToGoDown = false;
+	isAllowToGoUp = false;
+
 	if (isTouchingGround)
 	{
 		isJumping = false;
@@ -114,6 +114,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 		if (dynamic_cast<StairObject*>(obj))
 			stairObjects.push_back(obj);
 	}
+	//DebugOut(L"stairsize %d\n", stairObjects.size());
 	if(stairState!=0)
 		CheckGetOffStair();
 	for (UINT i = 0; i < nonSolidObjCoEvents.size(); i++)
@@ -124,10 +125,11 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 		{
 			CPortal* p = dynamic_cast<CPortal*>(e->obj);
 			CGame::GetInstance()->SwitchScene(p->GetSceneId());
+			return;
 		}
 
 	}
-	
+	DebugOut(L"State %d\n", state);
 //	DebugOut(L"x= %f,y= %f\n",x, y);
 	//DebugOut(L"vx= %f,vy= %f\n",vx, vy);
 	//DebugOut(L"stairEnterX = %f, isCollidingStairObject %d,currentStairType %d\n", stairEnterX, isCollidingStairObject,currentStairType);
@@ -344,6 +346,16 @@ int Simon::GetCurrentStairType()
 	return currentStairType;
 }
 
+void Simon::SetCurrentStairDirection(int dir)
+{
+	currentStairDirection = dir;
+}
+
+void Simon::SetCurrentStairType(int type)
+{
+	currentStairType = type;
+}
+
 float Simon::GetStairEnterPosX()
 {
 	return stairEnterX;
@@ -405,7 +417,7 @@ void Simon::CheckGetOffStair()
 		{
 			if (stairState != 0)
 			{
-				if (obj->nx == currentStairDirection && ((StairObject*)obj)->GetType() == currentStairType || obj->nx == -currentStairDirection && ((StairObject*)obj)->GetType() == -currentStairType)
+				if (((StairObject*)obj)->GetType() == -stairState && obj->nx == -nx)
 				{
 					SetState(SIMON_STAND);
 					if (((StairObject*)obj)->GetType() == STAIR_STATE_GOING_UP)

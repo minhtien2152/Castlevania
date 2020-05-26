@@ -28,13 +28,14 @@
 
 using namespace std;
 
-CPlayScene::CPlayScene(int id, LPCWSTR filePath) :	CScene(id, filePath)
+CPlayScene::CPlayScene(int id, LPCWSTR filePath, int prevScene) :	CScene(id, filePath)
 {
 	key_handler = new CPlayScenceKeyHandler(this);
 	id_counter = 0;
 	weaponWaitingToBeProcess = -1;
 	srand(time(NULL));
 	deathTimer = -1;
+	prev_scene = prevScene;
 }
 
 /*
@@ -70,7 +71,14 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	switch (object_type)
 	{
 	case Object_Type::SIMON: 
-			obj= player = new Simon();
+	{
+		if (player != NULL)
+			return;
+		int prev_scene_in_data = atoi(tokens[4].c_str());
+		if (prev_scene_in_data != -1 && prev_scene_in_data != prev_scene)
+			return;
+		obj = player = new Simon();
+	}
 		break;
 	case Object_Type::GROUND: obj = new Ground(); break;
 	case Object_Type::ZOMBIE: obj = new CZombie(); break;
@@ -84,7 +92,13 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		break;
 	case Object_Type::RAVEN:	obj = new Raven();	break;
 	case Object_Type::PLATFORM: obj = new MovingPlatform();	break;
-	case Object_Type::CANDLE: obj = new Candle(); break;
+	case Object_Type::CANDLE: 
+	{
+		int type = atoi(tokens[5].c_str());
+		obj = new Candle();
+		obj->SetState(type);
+	}
+		break;
 	case Object_Type::BUMPER: obj = new Bumper();	break;
 	case Object_Type::STAIR_OBJECT: 
 	{
@@ -104,6 +118,13 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		DebugOut(L"[ERR] Invalid object type: %d\n", object_type);
 		return;
 	}
+	if (obj->isDestructable)
+	{
+		int item_spawn = atoi(tokens[4].c_str());
+
+		obj->itemSpawn = item_spawn;
+	}
+
 	switch (object_type)
 	{
 	case Object_Type::ZOMBIE:
@@ -113,7 +134,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case Object_Type::SKELETON:
 	case Object_Type::RAVEN:	
 	{
-		int dam= atoi(tokens[4].c_str());
+		int dam= atoi(tokens[5].c_str());
 		obj->SetDamage(dam);
 	}
 		break;
@@ -372,12 +393,14 @@ void CPlayScene::Update(DWORD dt)
 				{
 					CreateEffect(objectList[i], Effect_Type::FIRE_EFFECT);
 					objectList[i]->isEnabled = false;
-					SpawnItem(objectList[i]);
+					if(objectList[i]->itemSpawn != Item_Type::NONE)
+						SpawnItem(objectList[i]);
 				}
 			}
 		}
 		
 	}
+	
 	player->Update(dt, &objectList);
 	CheckSimonDead();
 }
@@ -439,15 +462,13 @@ void CPlayScene::SpawnItem(LPGAMEOBJECT obj)
 	float x, y;
 	obj->GetPosition(x, y);
 	Item* item = new Item();
-	int type = Item_Type::CHICKEN;
-	if (player->GetMainWeapon()->GetState() < WHIP_LEVEL2)
-		type = Item_Type::CHAIN;
-	else if (player->GetHeartsCollected() < 15)
-		type = Item_Type::LARGEHEART;
-	else if (player->GetSubWeaponType() == NULL)
-		type = Item_Type::DAGGER_ITEM;
+	
+	int type;
+	if (obj->itemSpawn == Item_Type::RANDOM)
+		type = rand() % 17;
 	else
-		type = rand() % 17;	//co 17 loai item
+		type = obj->itemSpawn;
+
 	item->SetState(type);
 	item->SetPosition(x, y);
 	itemList.push_back(item);
@@ -928,8 +949,12 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		simon->ProcessStair(STAIR_STATE_GOING_DOWN);
 		
 			
-		
-		if (simon->isCollidingStairObject&& simon->isTouchingGround && !simon->isAllowToGoDown && simon->GetCurrentStairType() == 1)
+		DebugOut(L"iscoldingstair %d\n", simon->isCollidingStairObject);
+		DebugOut(L"isTouchingGround %d\n", simon->isTouchingGround);
+		DebugOut(L"isAllowToGoDown %d\n", !simon->isAllowToGoDown);
+		DebugOut(L"CurrentStairType %d\n", simon->GetCurrentStairType());
+
+		if (simon->isCollidingStairObject && !simon->isAllowToGoDown && simon->GetCurrentStairType() == STAIR_STATE_GOING_DOWN)
 		{
 			simon->GoToStairEnterPos();
 		}
@@ -938,8 +963,6 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 			simon->GoIntoStair(STAIR_STATE_GOING_DOWN, simon->GetCurrentStairDirection());
 		else if(simon->GetCurrentStairType() == -1 && simon->stairState != 0)
 			simon->GoIntoStair(STAIR_STATE_GOING_DOWN, -simon->GetCurrentStairDirection());
-		
-
 		else {
 			simon->SetState(SIMON_SIT);
 			if (game->IsKeyDown(DIK_RIGHT))
@@ -1004,8 +1027,11 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		if (simon->isSitting)
 			return;
 		simon->ProcessStair(STAIR_STATE_GOING_UP);
-
-		if (simon->isCollidingStairObject && simon->isTouchingGround && !simon->isAllowToGoUp && simon->GetCurrentStairType() == -1)
+		DebugOut(L"iscoldingstair %d\n", simon->isCollidingStairObject);
+		DebugOut(L"isTouchingGround %d\n", simon->isTouchingGround);
+		DebugOut(L"isAllowToGoUp %d\n", simon->isAllowToGoUp);
+		DebugOut(L"CurrentStairType %d\n", simon->GetCurrentStairType());
+		if (simon->isCollidingStairObject  && !simon->isAllowToGoUp && simon->GetCurrentStairType() == -1)
 		{
 			simon->GoToStairEnterPos();
 		}

@@ -26,6 +26,10 @@ void BackUp::BackUpSimon(Simon* simon)
 	whipLv = simon->GetMainWeapon()->GetState();
 	subWeaponCap = simon->GetSubWeaponCap();
 	subWeaponItem = simon->GetSubWeaponType();
+	currentStairDirection = simon->GetCurrentStairDirection();
+	currentStairType = simon->GetCurrentStairType();
+	stairState = simon->stairState;
+	nx = simon->nx;
 }
 
 void BackUp::LoadBackUp(Simon* simon)
@@ -38,6 +42,10 @@ void BackUp::LoadBackUp(Simon* simon)
 	simon->GetMainWeapon()->SetState(whipLv);
 	simon->SetSupWeaponCap(subWeaponCap);
 	simon->SetSubWeaponItem(subWeaponItem);
+	simon->SetCurrentStairDirection(currentStairDirection);
+	simon->SetCurrentStairType(currentStairType);
+	simon->stairState = stairState;
+	simon->SetDirection(nx);
 	loseLife = false;
 }
 
@@ -84,6 +92,8 @@ void BackUp::ResetData()
 	subWeaponItem = -1;
 	whipLv = 0;
 	subWeaponCap = 1;
+	stairState = STAIR_STATE_NONE;
+	nx = 1;
 }
 
 bool BackUp::HaveJustLostLife()

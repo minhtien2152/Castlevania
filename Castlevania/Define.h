@@ -72,6 +72,8 @@ enum Object_Type
 #define	ITEM_ANI_SET_ID 11
 enum Item_Type
 {
+	NONE =-2,
+	RANDOM= -1,
 	STOPWATCH_ITEM,
 	SMALLHEART,
 	LARGEHEART,

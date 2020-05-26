@@ -55,6 +55,8 @@ public:
 
 	int nx;
 
+	int itemSpawn;
+
 	DWORD dt;
 	int damage;
 	int state;

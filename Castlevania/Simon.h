@@ -4,7 +4,7 @@
 #include "Whip.h"
 
 #define SIMON_WALKING_SPEED		0.2f
-#define SIMON_JUMP_SPEED_Y		0.5f
+#define SIMON_JUMP_SPEED_Y		0.6f
 #define SIMON_GRAVITY			0.0022f
 #define SIMON_DEFLECT_SPEED_X	0.05
 #define SIMON_DEFLECT_SPEED_Y	0.5
@@ -51,7 +51,7 @@ class Simon : public CGameObject
 	//==all things stair related==
 	int currentStairDirection;
 	int currentStairType;
-	int currentStairId;
+
 	float stairEnterX;
 	vector<LPGAMEOBJECT> stairObjects;
 	int stateWaitingToBeRendered;
@@ -95,7 +95,8 @@ public:
 
 	int GetCurrentStairDirection();
 	int GetCurrentStairType();
-
+	void SetCurrentStairDirection(int dir);
+	void SetCurrentStairType(int type);
 
 	float GetStairEnterPosX();
 	void GoToStairEnterPos();

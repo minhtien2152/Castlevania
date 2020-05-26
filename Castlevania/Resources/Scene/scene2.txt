@@ -10,22 +10,28 @@
 Resources\TileMap\scene2.txt
 [OBJECTS]
 # type	x	y	ani_set_id	extra_settings per object type
-# type: 1= Simon , 2 =Ground , 3 = Zombie				
-# Simon				
-1	2	9	1
+# type: 1= Simon , 2 =Ground , 3 = Zombie
+# --- SCENE PORTAL ----
+# type	l	t	
+0	10	-1	3					
+# Simon	
+1	7	0	1	3
+1	2	9	1	-1
 #Candle
-20	12	8	20
+20	12	8	20	-1	1
+20	10	0	20	-1	1
 #Bumper
-31	10	4	0
+30	10	4	0
+
 #stair_bottom
 #dir : 1 = left, -1 = right
 #-1 = up, 1= down
-#	x	y	ani_set	dir	Up/down	id
-31	6	10	0	-1	-1	1
-31	11	5	0	1	1	1
-31	5	4	0	-1	-1	2
+#	x	y	ani_set	dir	Up/down
+31	6	10	0	-1	-1
+31	11	5	0	1	1
+31	4	4	0	-1	-1
 #Knight
-24	4	3	24	3
+24	4	3	24	-1	3
 #Ground	
 #2	9	4	2	
 2	0	0	2

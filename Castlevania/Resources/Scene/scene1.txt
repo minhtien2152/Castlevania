@@ -1,4 +1,4 @@
-# id	file_path			
+ # id	file_path			
 [RESOURCES]
 1	Resources/simon.txt
 2	Resources/PlaySceneResource.txt
@@ -16,15 +16,15 @@ Resources\TileMap\scene1.txt
 # type	l	t	
 0	43	8	2
 # Simon				
-1	1	8	1
+1	1	8	1	-1
 
 #3	70	70	3
 #Candle
-20	5	8	20
-20	15	8	20
-20	21	8	20
-20	30	8	20
-20	38	8	20
+20	5	8	20	2	0
+20	15	8	20	6	0
+20	21	8	20	6	0
+20	30	8	20	2	0
+20	38	8	20	7	0
 
 #Ground						
 2	0	10	2

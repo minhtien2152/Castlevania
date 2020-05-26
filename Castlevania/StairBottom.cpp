@@ -15,7 +15,7 @@ StairObject::StairObject(int dir, int type,int id)
 void StairObject::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
 	left = x;
-	right = left + TILE_WIDTH;
+	right = left + TILE_WIDTH*1.5f;
 	top = y + 31;
 	if (type == 1)
 		top = y;
@@ -44,8 +44,17 @@ float StairObject::GetEnterPosX()
 
 bool StairObject::IsInRightPosToEnterStair(float simonX, float simonY)
 {
-	if (simonX >= GetEnterPosX() -2 && simonX <= GetEnterPosX() +2 )
-		return true;
+	if (simonX >= GetEnterPosX() - 2 && simonX <= GetEnterPosX() + 2)
+		if (type == 1)
+		{
+			if (simonY >= y - 2 && simonY <= y + 2)
+				return true;
+		}
+		else
+		{
+			if (simonY +32 >= y - 2 && simonY  +32 <= y + 2)
+				return true;
+		}
 	return false;
 }
 

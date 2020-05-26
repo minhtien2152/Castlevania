@@ -17,7 +17,7 @@ class CPlayScene : public CScene
 protected:
 						
 	int id_counter;
-	
+	int prev_scene;
 	Grid* static_obj_grid;
 	Grid* dynamic_obj_grid;
 
@@ -36,7 +36,7 @@ protected:
 	void _ParseSection_OBJECTS(string line);
 	void _ParseSection_TILEMAP_DATA(string line);
 public:
-	CPlayScene(int id, LPCWSTR filePath);
+	CPlayScene(int id, LPCWSTR filePath, int preScene =0);
 
 	virtual void LoadScene();
 	virtual void Update(DWORD dt);
