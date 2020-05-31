@@ -4,12 +4,12 @@
 #define SKELETON_JUMP	1
 #define SKELETON_ATTACK 2
 #define SKELETON_SPEED_VX 0.1
-#define SKELETON_JUMP_SPEED_VX 0.35
+#define SKELETON_JUMP_SPEED_VX 0.1
 #define SKELETON_SPEED_VY	0.4
-#define SKELETON_ATTACK_INTERVAL 600
+#define SKELETON_ATTACK_INTERVAL 800
 #define SKELETON_BBOX_WIDTH		32
 #define SKELETON_BBOX_HEIGHT	63
-
+#define SKELETON_TURNAROUND_IGNORE_TIME 1000
 Skeleton::Skeleton() :SmartEnemy()
 {
 	lastAttack = 0;
@@ -29,39 +29,57 @@ void Skeleton::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	AdjustDirectionToFollowSimon();
 	if (player != NULL)
 	{
-
-			if (isTouchingGround)
+		if (isColidingSideways)
+			TurnAround();
+		if (isTouchingGround)
+		{
+			if (state == SKELETON_ATTACK )
 			{
-				
-				int onEdge = IsOnEdge();
-				if (onEdge != 0 && onEdge == nx_backUp)
-					if (JumpingSimulator())
-						SetState(SKELETON_JUMP);
-					/*else nx_backUp = -onEdge;*/
+				if (animation_set->at(state)->IsOver())
+					SetState(SKELETON_MOVING);
+				else
+					return;
+			}
+			if (GetTickCount() - lastTurnAround >= SKELETON_TURNAROUND_IGNORE_TIME)
+			{
 				if (nx == 1)
 				{
-					if (x >= x_backUp + SIMON_BBOX_WIDTH + TILE_WIDTH * 2  )
+					if (x >= x_backUp + SIMON_BBOX_WIDTH + TILE_WIDTH * 2)
 						nx_backUp = 1;
 					else if (x <= x_backUp + SIMON_BBOX_WIDTH - TILE_WIDTH * 2)
 						nx_backUp = -1;
 				}
-				else if(nx == -1)
+				else if (nx == -1)
 				{
-					if (x >= x_backUp  + TILE_WIDTH * 2)
+					if (x >= x_backUp + TILE_WIDTH * 2)
 						nx_backUp = 1;
-					else if (x <= x_backUp  - TILE_WIDTH * 2)
+					else if (x <= x_backUp - TILE_WIDTH * 2)
 						nx_backUp = -1;
 				}
-
-				SetState(SKELETON_MOVING);
-				if (GetTickCount() - lastAttack >= SKELETON_ATTACK_INTERVAL)
-					SetState(SKELETON_ATTACK);
-
 			}
-		if (state == SKELETON_ATTACK && animation_set->at(state)->IsOver())
 			SetState(SKELETON_MOVING);
-		
-
+			if (GetTickCount() - lastAttack >= SKELETON_ATTACK_INTERVAL)
+			{
+				SetState(SKELETON_ATTACK);
+				return;
+			}
+	
+			int onEdge = IsOnEdge();
+			
+			if (onEdge != 0 && onEdge == nx_backUp)
+			{
+				int prejump = JumpingSimulator();
+				if (prejump == 1)
+				{
+					SetState(SKELETON_JUMP);
+					//DebugOut(L"onedge %d, nx_backup %d\n", onEdge, nx_backUp);
+				}
+				else if (prejump == -1)
+					TurnAround();
+			}
+		}
+		else if (state == SKELETON_JUMP)
+			return;
 	}
 	if (timeAccumulated >= 1000 || timeAccumulated == -1)
 	{
@@ -141,37 +159,32 @@ bool Skeleton::CheckJumpingCondition()
 	return false;
 }
 
-bool Skeleton::JumpingSimulator()
+int Skeleton::JumpingSimulator()
 {
-	LPGAMEOBJECT decoy = CreateDecoy(x,y);
+	SmartEnemy* decoy = CreateDecoy(x,y);
 	decoy->SetState(SKELETON_JUMP);
 	float dc_x, dc_y;
 	while (decoy->GetPosY()<screen_height)
 	{
 		
 		decoy->Update(dt, &solidObjects);
+
 		dc_x = decoy->GetPosX();
 		dc_y = decoy->GetPosY();
-		if (decoy->isColidingSideways && !isTouchingGround)
-		{
-			free(decoy);
-			decoy = NULL;
-			return false;
-		}
 		if (decoy->isTouchingGround)
 		{
 			free(decoy);
 			decoy = NULL;
 			if (dc_y - y <= 0 && abs(dc_x -x)>=TILE_WIDTH)
-				return true;
+				return 1;
 			else
-				return false;
+				return 0;
 
 		}
 	}
 	free(decoy);
 	decoy = NULL;
-	return false;
+	return -1;
 }
 
 int Skeleton::IsOnEdge()
@@ -181,7 +194,7 @@ int Skeleton::IsOnEdge()
 	decoyleft->SetSpeed(0, GRAVITY * dt);
 	decoyright->SetSpeed(0, GRAVITY * dt);
 
-	int i = 2;
+	int i = 4;
 	while (i--) {
 		decoyleft->Update(dt, &solidObjects);
 		decoyright->Update(dt, &solidObjects);
@@ -203,6 +216,15 @@ SmartEnemy* Skeleton::CreateDecoy(float x, float y)
 {
 	SmartEnemy* decoy = new Skeleton();
 	decoy->SetPosition(x, y);
-	decoy->SetDirection(nx);
+	((Skeleton*)decoy)->nx_backUp = nx_backUp;
+	decoy->animation_set = animation_set;
 	return decoy;
+}
+
+
+
+void Skeleton::TurnAround()
+{
+	lastTurnAround = GetTickCount();
+	nx_backUp *= -1;
 }

@@ -25,7 +25,7 @@
 #include "Skeleton.h"
 #include "StopWatch.h"
 #include "Raven.h"
-
+#include "Bat.h"
 using namespace std;
 
 CPlayScene::CPlayScene(int id, LPCWSTR filePath, int prevScene) :	CScene(id, filePath)
@@ -80,11 +80,21 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		obj = player = new Simon();
 	}
 		break;
-	case Object_Type::GROUND: obj = new Ground(); break;
+	case Object_Type::GROUND: 
+	
+		obj = new Ground();
+		if(tokens.size() >4)
+		{
+			obj->isDestructable = true;
+			obj->itemSpawn =  atoi(tokens[4].c_str());
+		}
+	
+		break;
 	case Object_Type::ZOMBIE: obj = new CZombie(); break;
 	case Object_Type::KNIGHT:	obj = new Knight(); break;
 	case Object_Type::HUNCHBACK:obj = new HunchBack();	break;
 	case Object_Type::GHOST:	obj = new Ghost();	break;
+	case Object_Type::BAT:	obj = new Bat();	break;
 	case Object_Type::SKELETON: 
 		obj = new Skeleton();	
 		((Skeleton*)obj)->SetProjectTileList(&enemyProjectTile);
@@ -132,7 +142,8 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case Object_Type::HUNCHBACK:
 	case Object_Type::GHOST:	
 	case Object_Type::SKELETON:
-	case Object_Type::RAVEN:	
+	case Object_Type::RAVEN:
+	case Object_Type::BAT:
 	{
 		int dam= atoi(tokens[5].c_str());
 		obj->SetDamage(dam);
@@ -720,6 +731,7 @@ void CPlayScene::UpdateListsAccordingGrid()
 		case Object_Type::GHOST:
 		case Object_Type::RAVEN:
 		case Object_Type::SKELETON:
+		case Object_Type::BAT:
 			enemyList.push_back(obj);
 			break;
 		default:
@@ -898,7 +910,6 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		{
 		case SIMON_WALK:
 			simon->SetState(SIMON_STAND);
-			break;
 		case SIMON_STAND :
 		case SIMON_JUMP:
 			simon->SetState(SIMON_STAND_ATTACK);
@@ -949,10 +960,10 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		simon->ProcessStair(STAIR_STATE_GOING_DOWN);
 		
 			
-		DebugOut(L"iscoldingstair %d\n", simon->isCollidingStairObject);
+		/*DebugOut(L"iscoldingstair %d\n", simon->isCollidingStairObject);
 		DebugOut(L"isTouchingGround %d\n", simon->isTouchingGround);
 		DebugOut(L"isAllowToGoDown %d\n", !simon->isAllowToGoDown);
-		DebugOut(L"CurrentStairType %d\n", simon->GetCurrentStairType());
+		DebugOut(L"CurrentStairType %d\n", simon->GetCurrentStairType());*/
 
 		if (simon->isCollidingStairObject && !simon->isAllowToGoDown && simon->GetCurrentStairType() == STAIR_STATE_GOING_DOWN)
 		{
@@ -1027,10 +1038,10 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		if (simon->isSitting)
 			return;
 		simon->ProcessStair(STAIR_STATE_GOING_UP);
-		DebugOut(L"iscoldingstair %d\n", simon->isCollidingStairObject);
+	/*	DebugOut(L"iscoldingstair %d\n", simon->isCollidingStairObject);
 		DebugOut(L"isTouchingGround %d\n", simon->isTouchingGround);
 		DebugOut(L"isAllowToGoUp %d\n", simon->isAllowToGoUp);
-		DebugOut(L"CurrentStairType %d\n", simon->GetCurrentStairType());
+		DebugOut(L"CurrentStairType %d\n", simon->GetCurrentStairType());*/
 		if (simon->isCollidingStairObject  && !simon->isAllowToGoUp && simon->GetCurrentStairType() == -1)
 		{
 			simon->GoToStairEnterPos();

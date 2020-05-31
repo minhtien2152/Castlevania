@@ -6,11 +6,10 @@ class Effect
 	
 protected:
 	float x, y;
-	int type;
 	LPANIMATION_SET animation_set;
 public:
 	int isFinished;
-	Effect();
+	Effect(float x,float y);
 	~Effect();
 	virtual void Update(DWORD dt);
 	virtual void Render();

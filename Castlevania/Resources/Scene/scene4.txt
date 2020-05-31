@@ -14,9 +14,9 @@ Resources\TileMap\scene3-1.txt
 # --- SCENE PORTAL ----
 # type	l	t	
 0	4	-2	5
-# Simon				
+# Simon				prev_scene
 1	5	0	1	5
-1	45	7.9	1	-1
+1	45	7.8	1	-1
 #Hunch back
 27	11	4	27	-1	3
 27	19	6	27	-1	3

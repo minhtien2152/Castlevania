@@ -177,6 +177,12 @@
     <ClCompile Include="Bone.cpp">
       <Filter>Weapon</Filter>
     </ClCompile>
+    <ClCompile Include="FallingBrick.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BrickEffect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -325,6 +331,12 @@
     </ClInclude>
     <ClInclude Include="Bone.h">
       <Filter>Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="FallingBrick.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BrickEffect.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

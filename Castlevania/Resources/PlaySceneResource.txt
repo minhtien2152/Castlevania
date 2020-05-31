@@ -123,6 +123,8 @@ bat_idle	30056	100
 bat_fly	30057	100	30058	100	30059	100
 knight	30060	200	30061	200	30062	200	30061	200
 skeleton	30063	100	30064	300
+skeleton_jump	30063	100
+skeleton_atk	30064	100
 bone	30065	100	30066	100	30067	100
 zombie	30068	100	30069	100
 hunchback_idle	30070	100	30071	100
@@ -150,7 +152,7 @@ raven_fly	30076	100	30077	100	30078	100
 22	platform
 23	bat_idle	bat_fly
 24	knight
-25	skeleton	skeleton	skeleton
+25	skeleton	skeleton_jump	skeleton_atk
 26	zombie
 27	hunchback_idle	hunchback_jump
 28	ghost

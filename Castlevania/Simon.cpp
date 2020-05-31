@@ -129,7 +129,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 		}
 
 	}
-	DebugOut(L"State %d\n", state);
+	//DebugOut(L"State %d\n", state);
 //	DebugOut(L"x= %f,y= %f\n",x, y);
 	//DebugOut(L"vx= %f,vy= %f\n",vx, vy);
 	//DebugOut(L"stairEnterX = %f, isCollidingStairObject %d,currentStairType %d\n", stairEnterX, isCollidingStairObject,currentStairType);

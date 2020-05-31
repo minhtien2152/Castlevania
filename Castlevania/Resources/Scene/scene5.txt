@@ -21,8 +21,8 @@ Resources\TileMap\scene3-2.txt
 1	3	8	1	-1
 #raven
 29	17	2	29	-1	3
-29	26	5	29	-1	3
-29	33	10	29	-1	3
+#29	26	5	29	-1	3
+#29	33	10	29	-1	3
 #Candle
 20	9	4	20	-1	1
 20	14	8	20	-1	1
@@ -35,7 +35,7 @@ Resources\TileMap\scene3-2.txt
 20	42	8	20	-1	1
 20	45	5	20	-1	1
 #Skeleton
-25	22	8	25	-1	3
+#25	22	8	25	-1	3
 25	40	8	25	-1	3
 #stair
 #dir : 1 = left, -1 = right

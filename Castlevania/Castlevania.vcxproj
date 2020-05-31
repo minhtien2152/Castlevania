@@ -151,10 +151,12 @@
     <ClCompile Include="Bat.cpp" />
     <ClCompile Include="Bone.cpp" />
     <ClCompile Include="Boomerang.cpp" />
+    <ClCompile Include="BrickEffect.cpp" />
     <ClCompile Include="Bumper.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Dagger.cpp" />
     <ClCompile Include="Effect.cpp" />
+    <ClCompile Include="FallingBrick.cpp" />
     <ClCompile Include="FireEffect.cpp" />
     <ClCompile Include="Ghost.cpp" />
     <ClCompile Include="Grid.cpp" />
@@ -201,10 +203,12 @@
     <ClInclude Include="Bat.h" />
     <ClInclude Include="Bone.h" />
     <ClInclude Include="Boomerang.h" />
+    <ClInclude Include="BrickEffect.h" />
     <ClInclude Include="Bumper.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Dagger.h" />
     <ClInclude Include="Effect.h" />
+    <ClInclude Include="FallingBrick.h" />
     <ClInclude Include="FireEffect.h" />
     <ClInclude Include="Ghost.h" />
     <ClInclude Include="Grid.h" />

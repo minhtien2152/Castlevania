@@ -1,10 +1,8 @@
 #include "FireEffect.h"
 #include "Define.h"
 #include "AnimationSets.h"
-FireEffect::FireEffect(float x, float y):Effect()
+FireEffect::FireEffect(float x, float y):Effect(x,y)
 {
-	this->x = x;
-	this->y = y;
 	animation_set = CAnimationSets::GetInstance()->Get(Effect_Type::FIRE_EFFECT);
 	Reset();
 }

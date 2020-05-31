@@ -5,10 +5,10 @@ class Skeleton:public SmartEnemy
 {
 	float x_backUp;
 	int nx_backUp;
-	int unProcessedWeapon;
+
 	vector<CWeapon*>* projectTileList;
 	DWORD lastAttack;
-	
+	DWORD lastTurnAround;
 public:
 	Skeleton();
 	int screen_height;
@@ -19,8 +19,9 @@ public:
 	void SetProjectTileList(vector<CWeapon*>* projectTileList);
 	void ProcessWeapon();
 	bool CheckJumpingCondition();
-	bool JumpingSimulator();
+	int JumpingSimulator();
 	int IsOnEdge();
 	SmartEnemy* CreateDecoy(float x, float y);
+	void TurnAround();
 };
 

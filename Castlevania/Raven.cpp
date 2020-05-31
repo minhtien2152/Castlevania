@@ -6,24 +6,27 @@
 #define RAVEN_FLY	1
 #define RAVEN_SPEED	0.22
 #define PI 3.14159265
+#define RAVEN_WAIT_TIME 400
 Raven::Raven()
 {
 	isPhysicEnabled = false;
 	state = RAVEN_IDLE;
 	isDestructable = true;
 	destinationX = destinationY = 0;
+
 }
 
 void Raven::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 
 	SmartEnemy::Update(dt, coObjects);
+	AdjustDirectionToFollowSimon();
 	if (destinationX == 0 && destinationY == 0)
 	{
-		PickFirstPositioning();
+		PickRandomPositioning();
 		
 	}
-	AdjustDirectionToFollowSimon();
+
  	if(state == RAVEN_IDLE)
 		if (IsPlayerWithinAttackRange())
 		{
@@ -36,9 +39,16 @@ void Raven::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		
 		if (IsAtDestination())
 		{
-			SetDesToFollowSimon();
-			SetChargingSpeed();
+			vx = vy = 0;
+			if (timeAccumulated >= RAVEN_WAIT_TIME)
+			{
+				SetDesToFollowSimon();
+				SetChargingSpeed();
+
+			}
 		}
+		else
+			timeAccumulated = 0;
 		
 	}
 	//DebugOut(L"x %f, y %f\n", x, y);
@@ -94,7 +104,7 @@ bool Raven::IsPlayerWithinAttackRange()
 	return false;
 }
 
-void Raven::PickFirstPositioning()
+void Raven::PickRandomPositioning()
 {
 	
  	int randX = rand() % (TILE_WIDTH*2);

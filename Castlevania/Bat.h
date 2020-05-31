@@ -1,14 +1,15 @@
 #pragma once
-#include "GameObject.h"
-
-class Bat : public CGameObject
+#include"SmartEnemy.h"
+class Bat : public SmartEnemy
 {
-	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
-	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
-	virtual void Render();
-
-
+	float a;
+	float default_x, default_y;
 public:
 	Bat();
+	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = NULL);
+	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 	virtual void SetState(int state);
+	virtual void SetPosition(float x, float y);
+	void CalculateFlyingEquation();
+	bool IsPlayerWithinAttackRange();
 };

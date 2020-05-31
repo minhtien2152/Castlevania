@@ -2,9 +2,10 @@
 
 
 
-Effect::Effect()
+Effect::Effect(float x,float y)
 {
-	
+	this->x = x;
+	this->y = y;
 	isFinished = false;
 }
 

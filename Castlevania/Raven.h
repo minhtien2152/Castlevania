@@ -5,6 +5,7 @@ class Raven: public SmartEnemy
 	float destinationX;
 	float destinationY;
 	bool hasDoneFirstPositioning;
+
 public:
 	Raven();
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = NULL);
@@ -12,7 +13,7 @@ public:
 	virtual void SetState(int state);
 	void SetDesToFollowSimon();
 	bool IsPlayerWithinAttackRange();
-	void PickFirstPositioning();
+	void PickRandomPositioning();
 	void SetChargingSpeed();
 	bool IsAtDestination();
 };

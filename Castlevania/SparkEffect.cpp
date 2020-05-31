@@ -1,10 +1,9 @@
 #include "SparkEffect.h"
 #include "Define.h"
-SparkEffect::SparkEffect(float x, float y) : Effect()
+SparkEffect::SparkEffect(float x, float y) : Effect(x,y)
 {
-	this->x = x;
-	this->y = y;
-	type = Effect_Type::SPARK_EFFECT;
+
+	animation_set = CAnimationSets::GetInstance()->Get(Effect_Type::SPARK_EFFECT);
 	Reset();
 }
 
