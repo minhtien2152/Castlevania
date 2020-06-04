@@ -23,10 +23,9 @@ void Knight::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	{
 		LPCOLLISIONEVENT e = nonSolidObjCoEvents[i];
 
-		if(static_cast<Bumper*>(e->obj))
+		if(e->obj->tag == Object_Type::BUMPER)
 		{
 			isColidingSideways = true;
-			x += -nx *0.5f ;
 			
 		}
 

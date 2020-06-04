@@ -44,7 +44,7 @@ public:
 	virtual void Unload();
 	void SpawnItem(LPGAMEOBJECT obj);
 	void CreateEffect(LPGAMEOBJECT obj,int type);
-	void CheckForWeaponCollision();
+
 	void CheckForEnemyCollison();
 	void CheckForCollisonWithItems();
 	void AccquireItem(int type);

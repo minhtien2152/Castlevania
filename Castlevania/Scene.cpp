@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include"Utils.h"
+#include "Define.h"
 #include <fstream>
 CScene::CScene(int id, LPCWSTR filePath)
 {
@@ -148,5 +149,12 @@ void CScene::LoadBackUpData()
 	BackUp* backup = BackUp::GetInstance();
 	backup->LoadBackUp(player);
 	statusboard->SetTime(backup->GetTime());
+}
+
+bool CScene::IsFlickering()
+{
+	if (GetTickCount() - flickerTimer >= CROSS_FLICKER_TIME)
+		return false;
+	return true;
 }
 

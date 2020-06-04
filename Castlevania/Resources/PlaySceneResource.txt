@@ -143,9 +143,9 @@ raven_fly	30076	100	30077	100	30078	100
 10	bone
 11	stopwatch	smallheart	bigheart	moneybag1	moneybag2	moneybag3	chain	dagger	cross	axe_item	invispotion	boomerang_item	holywater_item	chicken	doubleshot	tripleshot	magiccrystal	crown	chest
 12	1up
-12	hit_effect
-13	fire_effect
-14	brick_effect
+13	hit_effect
+14	fire_effect
+15	brick_effect
 20	torch	candle
 
 #22	door

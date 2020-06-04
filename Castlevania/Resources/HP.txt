@@ -1,7 +1,7 @@
 # id	file_path	transparent_color_r	g	b	
 [TEXTURES]
 10	Resources\Texture\HP.png	255	0	255
-11	Resources\Texture\Rect.png	255	0	255
+11	Resources\Texture\Rect.png	0	0	0
 
 # id	left	top	right	bottom	texture_id
 [SPRITES]

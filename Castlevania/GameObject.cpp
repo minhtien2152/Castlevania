@@ -92,7 +92,10 @@ void CGameObject::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			vy = 0;
 			y += min_ty * dy + ny * 0.5f;
 			isTouchingGround = true;
+			LPCOLLISIONEVENT e = coEventsResult[0];
+			onFeetObjVx = e->obj->GetVx();
 			
+
 
 		}
 		else
@@ -101,15 +104,7 @@ void CGameObject::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			y += dy;
 		}
 		//DebugOut(L"coeventResult %d\n", coEventsResult.size());
-		for (UINT i = 0; i < coEventsResult.size(); i++)
-		{
-			LPCOLLISIONEVENT e = coEventsResult[0];
-		
-				onFeetObjVx = e->obj->GetVx();
-
-
-		}
-			
+	
 			
 
 		

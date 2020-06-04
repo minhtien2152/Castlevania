@@ -5,7 +5,7 @@
 3	Resources/HP.txt
 
 [TILE_SET]
--4	Resources\TileMap\scene3-1_bank.png	255	255	255
+-4	Resources\TileMap\scene3-1_bank.png	0	0	0
 [TILE_MAP_DATA]
 Resources\TileMap\scene3-1.txt
 [OBJECTS]

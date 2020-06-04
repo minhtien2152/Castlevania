@@ -26,6 +26,7 @@
 #include "StopWatch.h"
 #include "Raven.h"
 #include "Bat.h"
+#include "BrickEffect.h"
 using namespace std;
 
 CPlayScene::CPlayScene(int id, LPCWSTR filePath, int prevScene) :	CScene(id, filePath)
@@ -361,7 +362,7 @@ void CPlayScene::Update(DWORD dt)
 		else
 
 		{
-			free(weaponList[i]);
+			delete(weaponList[i]);
 			weaponList[i] = NULL;
 			weaponList.erase(weaponList.begin() + i);
 		}
@@ -381,7 +382,6 @@ void CPlayScene::Update(DWORD dt)
 		}
 	}
 	//DebugOut(L"weaponlist %d\n", weaponList.size());
-	CheckForWeaponCollision();
 	CheckForEnemyCollison();
 	CheckForCollisonWithItems();
 	// Update camer
@@ -402,7 +402,10 @@ void CPlayScene::Update(DWORD dt)
 				objectList[i]->Update(dt, &objectList);
 				if (objectList[i]->isDestroyed)
 				{
-					CreateEffect(objectList[i], Effect_Type::FIRE_EFFECT);
+					if (objectList[i]->tag == Object_Type::GROUND)
+						CreateEffect(objectList[i], Effect_Type::BROKEN_BRICK_EFFECT);
+					else
+						CreateEffect(objectList[i], Effect_Type::FIRE_EFFECT);
 					objectList[i]->isEnabled = false;
 					if(objectList[i]->itemSpawn != Item_Type::NONE)
 						SpawnItem(objectList[i]);
@@ -500,6 +503,10 @@ void CPlayScene::CreateEffect(LPGAMEOBJECT obj,int type)
 		case Effect_Type::SPARK_EFFECT:
 			effect = new SparkEffect(x, y);
 			break;
+		case Effect_Type::BROKEN_BRICK_EFFECT:
+			effect = new BrickEffect(x, y);
+			((BrickEffect*)effect)->screen_height = CGame::GetInstance()->GetScreenHeight();
+			break;
 		default:
 			break;
 		}
@@ -514,76 +521,6 @@ void CPlayScene::CreateEffect(LPGAMEOBJECT obj,int type)
 	
 }
 
-void CPlayScene::CheckForWeaponCollision()
-{
-	/*if (player->IsAttacking() && player->animation_set->at(player->state)->IsRenderingLastFrame())
-	{
-		for (UINT i = 0; i < dynamicObjectList.size(); i++)
-		{
-
-			LPGAMEOBJECT obj = dynamicObjectList[i];
-			if (obj->isEnabled)
-			{
-				if (this->player->GetMainWeapon()->IsColidingAABB(obj) == true)
-				{
-					if (dynamic_cast<Candle*>(obj))
-					{
-						Candle* e = dynamic_cast<Candle*> (obj);
-						e->SetState(CANDLE_DESTROYED);
-						SpawnItem(e);
-						CreateEffect(e, Effect_Type::FIRE_EFFECT);
-
-					}
-					
-				}
-				
-			}
-		}
-		for (UINT i = 0; i < enemyList.size(); i++)
-		{
-			LPGAMEOBJECT obj = enemyList[i];
-			if (obj->isEnabled)
-			{
-				if (this->player->GetMainWeapon()->IsColidingAABB(obj) == true)
-				{
-					if (dynamic_cast<CZombie*>(obj))
-					{
-						CZombie* e = dynamic_cast<CZombie*> (obj);
-
-						e->SetState(ZOMBIE_STATE_DIE);
-						SpawnItem(e);
-						CreateEffect(e,Effect_Type::FIRE_EFFECT);
-					}
-					
-				}
-				
-			}
-		}
-	}
-	if(player->GetSubWeapon() != NULL)
-	if (player->GetSubWeapon()->isEnabled)
-	{
-		for (auto e : player->GetSubWeapon()->dynamicCoEvents)
-		{
-			LPGAMEOBJECT obj = e->obj;
-			if (dynamic_cast<CZombie*>(obj))
-			{
-				obj->SetState(ZOMBIE_STATE_DIE);
-				SpawnItem(obj);
-				CreateEffect(obj, Effect_Type::FIRE_EFFECT);
-			}
-			else if (dynamic_cast<Candle*>(e->obj))
-			{
-				Candle* e = dynamic_cast<Candle*> (obj);
-				e->SetState(CANDLE_DESTROYED);
-				SpawnItem(e);
-				CreateEffect(e, Effect_Type::FIRE_EFFECT);
-			}
-			
-			player->GetSubWeapon()->isEnabled = false;
-		}
-	}*/
-}
 
 void CPlayScene::CheckForEnemyCollison()
 {
@@ -631,6 +568,7 @@ void CPlayScene::AccquireItem(int type)
 		player->SetSubWeaponItem(type);
 		break;
 	case Item_Type::CROSS:
+		flickerTimer = GetTickCount();
 		DestroyAllOnScreenEnemy();
 		break;
 

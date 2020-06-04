@@ -6,7 +6,7 @@
 
 
 [TILE_SET]
--1	Resources\TileMap\scene1_bank.png	255	0	255
+-1	Resources\TileMap\scene1_bank.png	0	0	0
 [TILE_MAP_DATA]
 Resources\TileMap\scene1.txt
 [OBJECTS]

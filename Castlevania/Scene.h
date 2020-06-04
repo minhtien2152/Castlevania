@@ -28,6 +28,7 @@ protected:
 	Simon* player;
 	CKeyEventHandler* key_handler;
 	int id;
+	DWORD flickerTimer;
 	LPCWSTR sceneFilePath;
 	Camera* camera;
 	StatusBoard* statusboard;
@@ -48,6 +49,7 @@ public:
 	virtual void _ParseSection_ANIMATION_SETS(string line);
 	virtual void _ParseSection_OBJECTS(string line)=0;
 	virtual void LoadBackUpData();
+	bool IsFlickering();
 	Simon* GetPlayer() 	{ return player; }
 	int GetId() { return id; }
 	DWORD GetTime() { return statusboard->GetTime(); }

@@ -13,7 +13,7 @@ public:
 	~Effect();
 	virtual void Update(DWORD dt);
 	virtual void Render();
-	bool IsFinished();
+	virtual bool IsFinished();
 	void SetAnimationSet(LPANIMATION_SET ani_set);
 	void Reset();
 };

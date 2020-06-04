@@ -57,11 +57,15 @@ void Render()
 	LPDIRECT3DDEVICE9 d3ddv = game->GetDirect3DDevice();
 	LPDIRECT3DSURFACE9 bb = game->GetBackBuffer();
 	LPD3DXSPRITE spriteHandler = game->GetSpriteHandler();
-
+	LPSCENE currentScene = CSceneMangager::GetInstance()->GetCurrentScene();
 	if (d3ddv->BeginScene())
 	{
 		// Clear back buffer with a color
+		if(currentScene->IsFlickering() && rand() % 2 == 1)
+		d3ddv->ColorFill(bb, NULL, BACKGROUND_GRAY);
+	else
 		d3ddv->ColorFill(bb, NULL, BACKGROUND_COLOR);
+
 
 		spriteHandler->Begin(D3DXSPRITE_ALPHABLEND);
 		
