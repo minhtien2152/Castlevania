@@ -6,6 +6,7 @@ CWeapon::CWeapon()
 	isEnabled = false;
 	isStatic = false;
 	cost = 0;
+	isPhysicEnabled = false;
 }
 
 CWeapon::~CWeapon()

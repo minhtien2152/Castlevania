@@ -34,6 +34,7 @@ protected:
 	StatusBoard* statusboard;
 	
 public:
+	bool IsFinished = false;
 	CScene(int id, LPCWSTR filePath);
 	CKeyEventHandler* GetKeyEventHandler() { return key_handler; }
 	virtual void LoadScene()=0;

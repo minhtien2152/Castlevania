@@ -322,6 +322,7 @@ void CGame::Load(LPCWSTR gameFile)
 void CGame::SwitchScene(int scene_id)
 {
 	FreeResources();
+
 	CSceneMangager::GetInstance()->SwitchScene(scene_id);
 }
 

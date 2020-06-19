@@ -56,10 +56,11 @@ public:
 	int nx;
 
 	int itemSpawn;
-
+	
 	DWORD dt;
 	int damage;
 	int state;
+	bool isActivated;
 	bool isStatic;
 	bool isSolid;
 	bool isDestructable;

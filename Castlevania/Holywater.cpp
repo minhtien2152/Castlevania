@@ -10,6 +10,7 @@ Holywater::Holywater()
 	animation_set = CAnimationSets::GetInstance()->Get(Weapon_Type::HOLYWATER);
 	tag = Weapon_Type::HOLYWATER;
 	cost = 1;
+	isPhysicEnabled = true;
 }
 Holywater::~Holywater()
 {
@@ -18,7 +19,7 @@ void Holywater::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CGameObject::Update(dt, coObjects);
 	vy += GRAVITY * dt;
-	if (isTouchingGround || isColidingSideways)
+	if (isTouchingGround)
 	{
 		
 		if (brokeTime == 0)
@@ -35,10 +36,6 @@ void Holywater::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	for (UINT i = 0; i < nonSolidObjCoEvents.size(); i++)
 	{
 		LPCOLLISIONEVENT e = nonSolidObjCoEvents[i];
-		if (state == HOLY_WATER_INTACT)
-		{
-			Break();
-		}
 		if (e->obj->isDestructable)
 		{
 			e->obj->AddHealth(-this->damage);

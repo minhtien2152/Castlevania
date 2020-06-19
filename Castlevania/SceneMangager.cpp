@@ -28,6 +28,7 @@ void CSceneMangager::SwitchScene(int idScene)
 	int prevScene=-1;
 	if (currentScene != NULL )	
 	{
+		currentScene->IsFinished = true;
 		if (currentScene->GetId() != INTRO_SCENE_ID)
 			if (!BackUp::GetInstance()->HaveJustLostLife())
 				((CPlayScene*)currentScene)->BackUpData();

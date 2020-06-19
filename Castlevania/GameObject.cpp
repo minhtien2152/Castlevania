@@ -16,6 +16,7 @@ CGameObject::CGameObject()
 	hp = 1;
 	isPhysicEnabled = true;
 	isUpdatingFrame = true;
+	isActivated = true;
 }
 
 bool CGameObject::IsColidingAABB(CGameObject* obj)

@@ -91,10 +91,23 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		}
 	
 		break;
-	case Object_Type::ZOMBIE: obj = new CZombie(); break;
+	case Object_Type::ZOMBIE: 
+	{
+		int dir = atoi(tokens[6].c_str());
+		obj = new CZombie();
+		obj->nx = dir;
+	}
+		break;
 	case Object_Type::KNIGHT:	obj = new Knight(); break;
 	case Object_Type::HUNCHBACK:obj = new HunchBack();	break;
-	case Object_Type::GHOST:	obj = new Ghost();	break;
+	case Object_Type::GHOST:	
+		
+		{
+			int dir = atoi(tokens[6].c_str());
+			obj = new Ghost();
+			obj->nx = dir;
+		}
+		break;
 	case Object_Type::BAT:	obj = new Bat();	break;
 	case Object_Type::SKELETON: 
 		obj = new Skeleton();	
@@ -165,10 +178,10 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
 			obj->SetAnimationSet(ani_set);
 		}
-		if (obj->isStatic)
-			static_obj_grid->AddObject(obj);
+		if (obj->isStatic && obj->isDestructable == false)
+			static_obj_grid->AddObjectToGrid(obj);
 		else
-			dynamic_obj_grid->AddObject(obj);
+			dynamic_obj_grid->AddObjectToGrid(obj);
 	}
 	
 	
@@ -259,8 +272,6 @@ void CPlayScene::LoadScene()
 	tileMap->SetCamera(camera);
 	CGame::GetInstance()->SetCamera(camera);
 	LoadBackUpData();
-	static_obj_grid->Update();
-
 	DebugOut(L"[INFO] Done loading scene resources %s\n", sceneFilePath);
 }
 
@@ -268,7 +279,7 @@ void CPlayScene::LoadScene()
 
 void CPlayScene::Update(DWORD dt)
 {
-	dynamic_obj_grid->Update();
+	dynamic_obj_grid->Update(camera);
 	UpdateListsAccordingGrid();
 
 	if (weaponWaitingToBeProcess != -1)
@@ -358,6 +369,12 @@ void CPlayScene::Update(DWORD dt)
 				GetCollidableObject(weaponList[i], coObjects);
 				weaponList[i]->Update(dt, &coObjects);
 			}
+			else
+			{
+				delete(weaponList[i]);
+				weaponList[i] = NULL;
+				weaponList.erase(weaponList.begin() + i);
+			}
 		}
 		else
 
@@ -416,7 +433,8 @@ void CPlayScene::Update(DWORD dt)
 	}
 	
 	player->Update(dt, &objectList);
-	CheckSimonDead();
+	if(!IsFinished)
+		CheckSimonDead();
 }
 
 void CPlayScene::Render()
@@ -525,9 +543,10 @@ void CPlayScene::CreateEffect(LPGAMEOBJECT obj,int type)
 void CPlayScene::CheckForEnemyCollison()
 {
 	if (!player->isInvulnerable)
+	{
 		for (auto enemy : enemyList)
 		{
-			if(enemy->isEnabled)
+			if (enemy->isEnabled && enemy->isActivated)
 				if (player->IsColidingAABB(enemy))
 				{
 					if (player->stairState == 0)
@@ -535,9 +554,20 @@ void CPlayScene::CheckForEnemyCollison()
 					player->TakeDamage(enemy->damage);
 					if (enemy->tag == Object_Type::RAVEN)
 						enemy->isDestroyed = true;
-					
+
 				}
 		}
+		for (auto projectile : enemyProjectTile)
+		{
+			if (projectile->isEnabled)
+				if (player->IsColidingAABB(projectile))
+				{
+					if (player->stairState == 0)
+						player->SetState(SIMON_DAMAGED);
+					player->TakeDamage(projectile->damage);
+				}
+		}
+	}
 }
 
 void CPlayScene::CheckForCollisonWithItems()
@@ -623,6 +653,11 @@ void CPlayScene::GetCollidableObject(LPGAMEOBJECT obj, vector<LPGAMEOBJECT>& coO
 		{
 			if (enemyList[i]->isEnabled)
 				coObjects.push_back(enemyList[i]);
+		}
+		for (int i = 0; i < enemyProjectTile.size(); i++)
+		{
+			if (enemyProjectTile[i]->isEnabled)
+				coObjects.push_back(enemyProjectTile[i]);
 		}
 		if(dynamic_cast<Boomerang*>(obj))
 			coObjects.push_back(player);
@@ -716,7 +751,7 @@ void CPlayScene::CreateSubWeapon(int type)
 
 void CPlayScene::CheckSimonDead()
 {
-	if (player->GetState() == SIMON_DEAD)
+	if (player->GetState() == SIMON_DEAD || !camera->IsInCam(player))
 	{
 		if (deathTimer == -1)
 			deathTimer = GetTickCount();
