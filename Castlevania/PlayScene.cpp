@@ -27,6 +27,7 @@
 #include "Raven.h"
 #include "Bat.h"
 #include "BrickEffect.h"
+#include "BossBat.h"
 using namespace std;
 
 CPlayScene::CPlayScene(int id, LPCWSTR filePath, int prevScene) :	CScene(id, filePath)
@@ -124,6 +125,12 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	}
 		break;
 	case Object_Type::BUMPER: obj = new Bumper();	break;
+	case Object_Type::BOSS:
+		obj = new BossBat();
+		((BossBat*)obj)->screen_height = tileMap->GetMapHeight();
+		((BossBat*)obj)->screen_width = CGame::GetInstance()->GetScreenWidth();
+		((BossBat*)obj)->SetCam(camera);
+		break;
 	case Object_Type::STAIR_OBJECT: 
 	{
 		int stair_dir = atoi(tokens[4].c_str());
@@ -151,6 +158,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 	switch (object_type)
 	{
+	case Object_Type::BOSS:
 	case Object_Type::ZOMBIE:
 	case Object_Type::KNIGHT:	
 	case Object_Type::HUNCHBACK:
@@ -216,7 +224,7 @@ void CPlayScene::_ParseSection_TILEMAP_DATA(string line)
 
 void CPlayScene::LoadScene()
 {
-	
+	camera = new Camera();
 	DebugOut(L"[INFO] Start loading scene resources from : %s \n", sceneFilePath);
 
 	ifstream f;
@@ -266,7 +274,7 @@ void CPlayScene::LoadScene()
 	statusboard = new StatusBoard(player);
 	statusboard->SetFont(CGame::GetInstance()->GetFont());
 	statusboard->SetSceneId(id);
-	camera = new Camera();
+	
 	camera->SetMapWidth(tileMap->GetMapWidth());
 	camera->SetMapHeight(tileMap->GetMapHeight());
 	tileMap->SetCamera(camera);
@@ -450,7 +458,7 @@ void CPlayScene::Render()
 			item->Render();
 	for (int i = 0; i < enemyList.size(); i++)
 		if (enemyList[i]->isEnabled)
-			if(camera->IsInCam(enemyList[i]))
+			//if(camera->IsInCam(enemyList[i]))
 				enemyList[i]->Render();
 	for (auto effect : effectList)
 	{
@@ -698,6 +706,7 @@ void CPlayScene::UpdateListsAccordingGrid()
 		case Object_Type::PLATFORM:
 			objectList.push_back(obj);
 			break;
+		case Object_Type::BOSS:
 		case Object_Type::ZOMBIE:
 		case Object_Type::KNIGHT:
 		case Object_Type::HUNCHBACK:

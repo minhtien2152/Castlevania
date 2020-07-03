@@ -38,7 +38,9 @@ void Ghost::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				else
 					vy -= GHOST_SPEED;
 				lastGlide = GetTickCount();
+				vx += -nx * GHOST_SPEED;
 			}
+			
 		}
 	}
 }

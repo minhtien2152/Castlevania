@@ -151,6 +151,7 @@
     <ClCompile Include="Bat.cpp" />
     <ClCompile Include="Bone.cpp" />
     <ClCompile Include="Boomerang.cpp" />
+    <ClCompile Include="BossBat.cpp" />
     <ClCompile Include="BrickEffect.cpp" />
     <ClCompile Include="Bumper.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -203,6 +204,7 @@
     <ClInclude Include="Bat.h" />
     <ClInclude Include="Bone.h" />
     <ClInclude Include="Boomerang.h" />
+    <ClInclude Include="BossBat.h" />
     <ClInclude Include="BrickEffect.h" />
     <ClInclude Include="Bumper.h" />
     <ClInclude Include="Camera.h" />

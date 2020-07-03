@@ -63,7 +63,8 @@ enum Object_Type
 	GHOST,
 	RAVEN,
 	BUMPER,
-	STAIR_OBJECT
+	STAIR_OBJECT,
+	BOSS
 };
 
 
