@@ -3,6 +3,7 @@
 Camera::Camera()
 {
 	cam_x = cam_y = 0.00f;
+	isInBossFight = false;
 }
 
 Camera::~Camera()
@@ -11,6 +12,8 @@ Camera::~Camera()
 
 void Camera::Update(Simon* simon)
 {
+	if (isInBossFight)
+		return;
 	float simon_x, simon_y;
 	simon->GetPosition(simon_x, simon_y);
 	if (simon_x >= CGame::GetInstance()->GetScreenWidth() / 2 //ria trai
@@ -30,11 +33,12 @@ void Camera::GetCamPosition(float& x, float& y)
 
 bool Camera::IsInCam(LPGAMEOBJECT obj)
 {
-	float obj_x, obj_y;
-	obj->GetPosition(obj_x, obj_y);
-	
-	return obj_x>cam_x && obj_x < cam_x + CGame::GetInstance()->GetScreenWidth()
-		&& obj_y - STATUS_BOARD_HEIGHT> cam_y && obj_y - STATUS_BOARD_HEIGHT < cam_y + mapHeight ;
+	float l,t,r,b;
+	obj->GetBoundingBox(l, t, r, b);
+	int screen_width = CGame::GetInstance()->GetScreenWidth();
+	return l > cam_x &&  r < cam_x + screen_width
+		&& t - STATUS_BOARD_HEIGHT> cam_y
+		&& b - STATUS_BOARD_HEIGHT < cam_y + mapHeight ;
 }
 
 void Camera::SetMapWidth(int width)
@@ -50,4 +54,9 @@ void Camera::SetMapHeight(int height)
 int Camera::GetMapWidth()
 {
 	return mapWidth;
+}
+
+void Camera::InBossFight()
+{
+	isInBossFight = true;
 }

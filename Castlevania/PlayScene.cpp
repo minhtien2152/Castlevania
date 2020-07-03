@@ -858,6 +858,11 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		break;
 	case DIK_I:
 		((CPlayScene*)scene)->AccquireItem(Item_Type::STOPWATCH_ITEM);
+
+		break;
+	case DIK_L:
+		((CPlayScene*)scene)->AccquireItem(Item_Type::INVISPOTION);
+
 		break;
 	case DIK_M:
 		((CPlayScene*)scene)->player->SetHP(0);

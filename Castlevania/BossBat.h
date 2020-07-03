@@ -6,7 +6,7 @@ class BossBat: public SmartEnemy
 	float destinationX;
 	float destinationY;
 	
-	float y_backUp;
+
 	Camera* cam;
 	
 	bool isCharging;
@@ -28,6 +28,6 @@ public:
 	void Hover();
 	void Charge();
 	void CalculateFlyingEquation();
-	
+	void HandleGoingOutOfScreen();
 };
 

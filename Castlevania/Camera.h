@@ -7,6 +7,7 @@ class Camera
 	float cam_x, cam_y;
 	int mapWidth;
 	int mapHeight;
+	bool isInBossFight;
 public:
 	Camera();
 	~Camera();
@@ -16,5 +17,6 @@ public:
 	void SetMapWidth(int width);
 	void SetMapHeight(int height);
 	int GetMapWidth();
+	void InBossFight();
 };
 

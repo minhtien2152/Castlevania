@@ -184,7 +184,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BossBat.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>GameObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -342,7 +342,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BossBat.h">
-      <Filter>Header Files</Filter>
+      <Filter>GameObject</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
