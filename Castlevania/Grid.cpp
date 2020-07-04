@@ -18,16 +18,22 @@ void Grid::Update(Camera* cam)
 	vector<LPGAMEOBJECT> temp_list;
 	GetObjectsAccordingCam(cam, &temp_list);
 	ClearCells(cam);
-
+	if (cam->cam_x > 0)
+		DebugOut(L"\n");
 	for (auto obj : temp_list)
 	{
-		if (obj->isEnabled == false)
+		
+		if (obj != NULL)
 		{
-			free(obj);
-			obj = NULL;
+
+			if (obj->isEnabled == false)
+			{
+				free(obj);
+				obj = NULL;
+			}
+			else
+				AddObjectToGrid(obj);
 		}
-		else
-		AddObjectToGrid(obj);
 	}
 	temp_list.clear();
 }
@@ -52,6 +58,10 @@ void Grid::AddObjectToGrid(LPGAMEOBJECT obj)
 
 
 
+void Grid::CleanUp()
+{
+}
+
 void Grid::GetObjectsAccordingCam(Camera* cam, vector<LPGAMEOBJECT>* cell_object)
 {
 	float cam_x, cam_y;
@@ -59,7 +69,7 @@ void Grid::GetObjectsAccordingCam(Camera* cam, vector<LPGAMEOBJECT>* cell_object
 	int start_row = GetRow(cam_y);
 	int end_row = GetRow(cam_y + screen_height);
 	int start_col = GetColumn(cam_x);
-	int end_col = GetColumn(cam_x + screen_width - 2);
+	int end_col = GetColumn(cam_x + screen_width -2);
 	unordered_map<int, LPGAMEOBJECT> temp_list;
 	
 	
@@ -72,9 +82,10 @@ void Grid::GetObjectsAccordingCam(Camera* cam, vector<LPGAMEOBJECT>* cell_object
 				if (temp_list.find(obj->id) == temp_list.end())
 				{
 					temp_list[obj->id] = obj;
-					//DebugOut(L"Get cell %d\n", GetCellId(col, row));
+				//	
 				}
 			}
+			DebugOut(L"Get cell %d\n", GetCellId(col, row));
 		}
 	for (auto obj : temp_list)
 		cell_object->push_back(obj.second);

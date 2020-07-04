@@ -58,6 +58,12 @@ public:
 	int itemSpawn;
 	
 	DWORD dt;
+
+	DWORD enterCam;
+
+	DWORD lastHit;
+	bool isHit;
+
 	int damage;
 	int state;
 	bool isActivated;
@@ -118,5 +124,7 @@ public:
 	void AddHealth(int amount);
 	void ResetAni();
 	void SetDamage(int damage) { this->damage = damage; }
+	void EnterCam();
+	void GetHit(int damage);
 	~CGameObject();
 };

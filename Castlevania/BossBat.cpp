@@ -10,11 +10,12 @@
 #define BOSS_IDLE_BBOX 32
 #define BOSS_FLY_BBOX_WIDTH 96
 #define BOSS_FLY_BBOX_HEIGHT 46
-
+#define BOSS_HEALTH 16
 BossBat::BossBat()
 {
 	isPhysicEnabled = false;
 	isDestructable = true;
+	hp = BOSS_HEALTH;
 }
 
 void BossBat::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -61,7 +62,7 @@ void BossBat::HandleGoingOutOfScreen()
 	cam->GetCamPosition(camx, camy);
 	float l, t, r, b;
 	GetBoundingBox(l, t, r, b);
-	if (r >= camx + screen_width-TILE_WIDTH/2 || l <= camx +TILE_WIDTH/2  || t  <= STATUS_BOARD_HEIGHT + TILE_HEIGHT)
+	if (r >= camx + screen_width || l <= camx   || t  <= STATUS_BOARD_HEIGHT + TILE_HEIGHT)
 	{
 		Hover();
 	}
@@ -124,7 +125,7 @@ void BossBat::PickRandomPositioning()
 	destinationY = camy + randY;
 }
 
-void BossBat::SetChargingSpeed()
+void BossBat::SetSpeed()
 {
 	if (isHovering)
 	{
@@ -166,7 +167,7 @@ void BossBat::Hover()
 	isHovering = true;
 
 	PickRandomPositioning();
-	SetChargingSpeed();
+	SetSpeed();
 }
 void BossBat::Charge()
 {
@@ -179,7 +180,7 @@ void BossBat::Charge()
 		destinationX = player->x;
 		destinationY = player->y;
 		CalculateFlyingEquation();
-		SetChargingSpeed();
+		SetSpeed();
 		
 	}
 	else

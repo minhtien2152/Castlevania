@@ -23,7 +23,7 @@ public:
 	void SetCam(Camera* camera);
 	bool IsPlayerWithinAttackRange();
 	void PickRandomPositioning();
-	void SetChargingSpeed();
+	void SetSpeed();
 	bool IsAtDestination();
 	void Hover();
 	void Charge();

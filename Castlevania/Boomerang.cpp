@@ -20,7 +20,7 @@ void Boomerang::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 		if (e->obj->isDestructable)
 		{
-			e->obj->AddHealth(-this->damage);	
+			e->obj->GetHit(this->damage);
 		}
 		else if (dynamic_cast<Simon*>(e->obj))
 		{

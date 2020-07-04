@@ -23,6 +23,7 @@ protected:
 
 	DWORD deathTimer;
 
+	LPGAMEOBJECT boss;
 
 	vector<LPGAMEOBJECT> objectList;
 	vector<Item*> itemList;

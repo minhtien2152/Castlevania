@@ -18,7 +18,7 @@ public:
 	void Update(Camera* cam);
 	void AddObjectToGrid(LPGAMEOBJECT obj);
 
-
+	void CleanUp();
 	void GetObjectsAccordingCam(Camera* cam, vector<LPGAMEOBJECT>* cell_object);
 	void Unload();
 	void ClearCells();

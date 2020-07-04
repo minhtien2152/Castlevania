@@ -4,13 +4,14 @@
 
 class Camera
 {
-	float cam_x, cam_y;
+	
 	int mapWidth;
 	int mapHeight;
 	bool isInBossFight;
 public:
 	Camera();
 	~Camera();
+	float cam_x, cam_y;
 	void Update(Simon * simon);
 	void GetCamPosition(float& x, float& y);
 	bool IsInCam(LPGAMEOBJECT obj);

@@ -38,7 +38,7 @@ void Holywater::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		LPCOLLISIONEVENT e = nonSolidObjCoEvents[i];
 		if (e->obj->isDestructable)
 		{
-			e->obj->AddHealth(-this->damage);
+			e->obj->GetHit(this->damage);
 		}
 
 	}

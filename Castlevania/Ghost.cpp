@@ -28,7 +28,7 @@ void Ghost::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			SetChargingSpeed();
 		}
 		
-		if (timeAccumulated >= 2000)
+		if (timeAccumulated >= 500)
 		{
 			timeAccumulated = 0;
 			if (rand() % 2 == 1)
@@ -42,6 +42,7 @@ void Ghost::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			}
 			
 		}
+		
 	}
 }
 
@@ -65,8 +66,8 @@ void Ghost::SetChargingSpeed()
 {
 	float plr_x, plr_y;
 	player->GetPosition(plr_x, plr_y);
-	D3DXVECTOR2* v1 = new D3DXVECTOR2(plr_x - x, plr_y - y);
-	D3DXVECTOR2* v2 = new D3DXVECTOR2(plr_x - x, 0);
+	D3DXVECTOR2* v1 = new D3DXVECTOR2(plr_x + TILE_WIDTH - x, plr_y + TILE_HEIGHT - y);
+	D3DXVECTOR2* v2 = new D3DXVECTOR2(plr_x + TILE_WIDTH - x, 0);
 	/*D3DXVec2Normalize(v1, v1);
 	D3DXVec2Normalize(v2, v2);*/
 	float angle = acos(D3DXVec2Dot(v1, v2) / (D3DXVec2Length(v1) * D3DXVec2Length(v2)));

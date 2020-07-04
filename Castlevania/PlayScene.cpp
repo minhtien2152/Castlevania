@@ -130,6 +130,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		((BossBat*)obj)->screen_height = tileMap->GetMapHeight();
 		((BossBat*)obj)->screen_width = CGame::GetInstance()->GetScreenWidth();
 		((BossBat*)obj)->SetCam(camera);
+		boss = obj;
 		break;
 	case Object_Type::STAIR_OBJECT: 
 	{
@@ -271,10 +272,11 @@ void CPlayScene::LoadScene()
 	
 	CTextures::GetInstance()->Add(ID_TEX_BBOX, L"Resources\\Texture\\bbox.png", D3DCOLOR_XRGB(255, 255, 255));
 
-	statusboard = new StatusBoard(player);
+
+	statusboard = new StatusBoard(player,boss);
 	statusboard->SetFont(CGame::GetInstance()->GetFont());
 	statusboard->SetSceneId(id);
-	
+
 	camera->SetMapWidth(tileMap->GetMapWidth());
 	camera->SetMapHeight(tileMap->GetMapHeight());
 	tileMap->SetCamera(camera);
@@ -337,8 +339,13 @@ void CPlayScene::Update(DWORD dt)
 			{
 				if (camera->IsInCam(enemyList[i]))
 				{
-					
-					
+					if (!enemyList[i]->isActivated && enemyList[i]->tag != Object_Type::RAVEN)
+						enemyList[i]->EnterCam();
+					if (enemyList[i]->isHit)
+					{
+						CreateEffect(enemyList[i], Effect_Type::SPARK_EFFECT);
+						enemyList[i]->isHit = false;
+					}
 					if (enemyList[i]->isDestroyed)
 					{
 						CreateEffect(enemyList[i], Effect_Type::FIRE_EFFECT);
@@ -354,6 +361,13 @@ void CPlayScene::Update(DWORD dt)
 						coObject.clear();
 					}
 				}
+				else
+				{
+					if (enemyList[i]->isActivated)
+						if (GetTickCount() - enemyList[i]->enterCam > 1000)
+							enemyList[i]->isEnabled = false;
+				}
+				
 
 			}
 
@@ -424,6 +438,7 @@ void CPlayScene::Update(DWORD dt)
 		{
 			if (camera->IsInCam(objectList[i]))
 			{
+
 				objectList[i]->Update(dt, &objectList);
 				if (objectList[i]->isDestroyed)
 				{
@@ -436,6 +451,7 @@ void CPlayScene::Update(DWORD dt)
 						SpawnItem(objectList[i]);
 				}
 			}
+
 		}
 		
 	}

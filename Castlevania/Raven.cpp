@@ -87,8 +87,8 @@ void Raven::SetDesToFollowSimon()
 	{
 		float plr_x, plr_y;
 		player->GetPosition(plr_x, plr_y);
-		destinationX = plr_x + 32;
-		destinationY = plr_y + 16;
+		destinationX = plr_x + TILE_WIDTH;
+		destinationY = plr_y + TILE_HEIGHT/2;
 	}
 }
 
@@ -119,8 +119,8 @@ void Raven::PickRandomPositioning()
 
 void Raven::SetChargingSpeed()
 {
-	D3DXVECTOR2* v1 = new D3DXVECTOR2(destinationX - x, destinationY - y);
-	D3DXVECTOR2* v2 = new D3DXVECTOR2(destinationX - x, 0);
+	D3DXVECTOR2* v1 = new D3DXVECTOR2(destinationX - x, destinationY  - y);
+	D3DXVECTOR2* v2 = new D3DXVECTOR2(destinationX  - x, 0);
 	/*D3DXVec2Normalize(v1, v1);
 	D3DXVec2Normalize(v2, v2);*/
 	float angle = acos(D3DXVec2Dot(v1, v2) / (D3DXVec2Length(v1) * D3DXVec2Length(v2)));

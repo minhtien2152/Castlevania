@@ -3,12 +3,14 @@
 #include"time.h"
 #include "Sprites.h"
 #define STATUS_BOARD_ID	101
-
-StatusBoard::StatusBoard(Simon* simon)
+#define BOSS_HEALTH 16
+StatusBoard::StatusBoard(Simon* simon, LPGAMEOBJECT boss)
 {
 	Reset();
 	this->simon = simon;
 	simonbar = new HealthBar(100, 30, simon, SIMON_HEALTH);
+	if(boss != NULL)
+		bossbar = new HealthBar(100, 50, boss, SIMON_HEALTH);
 	animation_set = CAnimationSets::GetInstance()->Get(STATUS_BOARD_ID);
 	item_animation_set = CAnimationSets::GetInstance()->Get(ITEM_ANI_SET_ID);
 	subWeaponType = -1;
@@ -47,6 +49,8 @@ void StatusBoard::Render()
 		font->DrawTextA(NULL, info.c_str(), -1, &rect, DT_LEFT, D3DCOLOR_XRGB(255, 255, 255));
 
 	simonbar->Render();
+	if (bossbar != NULL)
+		bossbar->Render();
 	animation_set->at(SUB_WEAPON_RECT_TEX_ID)->Render(290, 32,1, 1, false);
 	if (subWeaponType !=-1)
 		item_animation_set->at(subWeaponType)->Render(305, 38,1, 1, false);

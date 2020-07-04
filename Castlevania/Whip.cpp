@@ -27,7 +27,7 @@ void Whip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		if (obj->isDestructable)
 			if (this->IsColidingAABB(obj) && animation_set->at(state)->IsRenderingLastFrame())
 			{
-				obj->AddHealth(-1);
+				obj->GetHit(this->damage);
 				//DebugOut(L"health %d\n", obj->hp);
 			}
 	}

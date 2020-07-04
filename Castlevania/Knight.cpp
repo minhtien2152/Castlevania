@@ -11,6 +11,7 @@ Knight::Knight()
 	nx = -1;
 	isDestructable = true;
 	isDestroyed = false;
+	hp = 3;
 }
 
 void Knight::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)

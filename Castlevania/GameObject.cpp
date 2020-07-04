@@ -16,7 +16,7 @@ CGameObject::CGameObject()
 	hp = 1;
 	isPhysicEnabled = true;
 	isUpdatingFrame = true;
-	isActivated = true;
+	isActivated = false;
 }
 
 bool CGameObject::IsColidingAABB(CGameObject* obj)
@@ -266,6 +266,22 @@ void CGameObject::ResetAni()
 {
 	animation_set->at(state)->Reset();
 	animation_set->at(state)->SetAniStartTime(GetTickCount());
+}
+
+void CGameObject::EnterCam()
+{
+	this->isActivated = true;
+	enterCam = GetTickCount();
+}
+
+void CGameObject::GetHit(int damage)
+{
+	if (GetTickCount() - lastHit > 300)
+	{
+		AddHealth(-damage);
+		lastHit = GetTickCount();
+		isHit = true;
+	}
 }
 
 CGameObject::~CGameObject()

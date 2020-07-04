@@ -55,7 +55,7 @@ void CIntroScene::LoadScene()
 
 	f.close();
 
-	statusboard = new StatusBoard(player);
+	statusboard = new StatusBoard(player,NULL);
 	statusboard->SetSceneId(id);
 	statusboard->SetFont(CGame::GetInstance()->GetFont());
 	camera = new Camera();

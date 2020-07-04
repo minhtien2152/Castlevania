@@ -15,14 +15,17 @@ class StatusBoard
 	DWORD time;
 
 	HealthBar* simonbar;
-	//HealthBar* bossbar;
+	HealthBar* bossbar;
+
 	LPANIMATION_SET animation_set;
 	LPANIMATION_SET item_animation_set;
 	int subWeaponType;
 	int subWeaponCap;
 	int sceneId;
+	
 public:
-	StatusBoard(Simon* simon);
+	bool hasBoss;
+	StatusBoard(Simon* simon, LPGAMEOBJECT boss);
 	~StatusBoard();
 	void Update(DWORD dt);
 	void Render();
