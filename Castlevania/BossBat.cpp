@@ -1,16 +1,7 @@
 #include "BossBat.h"
 #include "Define.h"
 #include "Utils.h"
-#define BOSS_SPEED 0.12f
-#define BOSS_IDLE 0
-#define BOSS_FLY	1
-#define BOSS_WAIT_TIME 1000
-#define DEFAULT_A -0.016
-#define BOSS_CHARGING_TIME 600
-#define BOSS_IDLE_BBOX 32
-#define BOSS_FLY_BBOX_WIDTH 96
-#define BOSS_FLY_BBOX_HEIGHT 46
-#define BOSS_HEALTH 16
+
 BossBat::BossBat()
 {
 	isPhysicEnabled = false;

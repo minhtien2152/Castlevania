@@ -2,11 +2,7 @@
 #include "Define.h"
 #include "Utils.h"
 #include <DirectXMath.h>
-#define RAVEN_IDLE	0
-#define RAVEN_FLY	1
-#define RAVEN_SPEED	0.22
-#define PI 3.14159265
-#define RAVEN_WAIT_TIME 400
+
 Raven::Raven()
 {
 	isPhysicEnabled = false;

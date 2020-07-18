@@ -1,8 +1,6 @@
 #include "Ghost.h"
 #include "Simon.h"
 #include "Define.h"
-#define GHOST_SPEED 0.07f
-#define GHOST_SPEED_VY 0.1f
 
 Ghost::Ghost() : SmartEnemy()
 {
@@ -56,7 +54,7 @@ void Ghost::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 
 void Ghost::Render()
 {
-	//if(isActivated)
+	if(isActivated)
 		animation_set->at(state)->Render(x, y, nx);
 }
 

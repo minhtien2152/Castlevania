@@ -13,7 +13,8 @@ Ground::~Ground()
 
 void Ground::Render()
 {
-	//animation_set->at(0)->Render(x, y);
+	if(isDestructable)
+		animation_set->at(state)->Render(x, y);
 	RenderBoundingBox();
 }
 

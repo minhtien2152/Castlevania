@@ -158,3 +158,10 @@ bool CScene::IsFlickering()
 	return true;
 }
 
+void CScene::StartCalculatingHighScore()
+{
+	this->IsCalculatingHighScore = true;
+	statusboard->IsCalculatingHighScore = true;
+	player->SetState(SIMON_STAND);
+}
+

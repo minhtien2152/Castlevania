@@ -1,11 +1,6 @@
 #include "HunchBack.h"
 #include "Define.h"
 #include "Simon.h"
-#define HUNCHBACK_IDLE 0
-#define HUNCHBACK_JUMP 1
-#define HUNCHBACK_SPEED_VX 0.2f
-#define HUNCHBACK_SPEED_JUMP_VY	-0.4f
-#define HUNCHBACK_SPEED_CHARGE_VY	-0.1f
 
 HunchBack::HunchBack() : SmartEnemy()
 {

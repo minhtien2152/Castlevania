@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.2" tiledversion="1.3.3" orientation="orthogonal" renderorder="right-down" width="16" height="12" tilewidth="32" tileheight="32" infinite="0" nextlayerid="2" nextobjectid="1">
- <tileset firstgid="1" name="map2_bank.png" tilewidth="32" tileheight="32" tilecount="22" columns="11">
-  <image source="map2_bank.png" width="352" height="64"/>
+ <tileset firstgid="1" name="map2_bank.png" tilewidth="32" tileheight="32" tilecount="33" columns="11">
+  <image source="map2_bank.png" width="352" height="96"/>
  </tileset>
  <layer id="1" name="ShoeBox Tile Grab" width="16" height="12">
   <data>
@@ -99,7 +99,7 @@
    <tile gid="2"/>
    <tile gid="3"/>
    <tile gid="4"/>
-   <tile gid="1"/>
+   <tile gid="17"/>
    <tile gid="1"/>
    <tile gid="1"/>
    <tile gid="1"/>
@@ -115,7 +115,7 @@
    <tile gid="2"/>
    <tile gid="3"/>
    <tile gid="4"/>
-   <tile gid="1"/>
+   <tile gid="17"/>
    <tile gid="1"/>
    <tile gid="1"/>
    <tile gid="1"/>
@@ -127,13 +127,13 @@
    <tile gid="2"/>
    <tile gid="2"/>
    <tile gid="2"/>
-   <tile gid="17"/>
-   <tile gid="1"/>
-   <tile gid="1"/>
-   <tile gid="1"/>
-   <tile gid="1"/>
-   <tile gid="1"/>
    <tile gid="18"/>
+   <tile gid="1"/>
+   <tile gid="1"/>
+   <tile gid="1"/>
+   <tile gid="1"/>
+   <tile gid="1"/>
+   <tile gid="19"/>
    <tile gid="8"/>
    <tile gid="3"/>
    <tile gid="4"/>
@@ -149,8 +149,8 @@
    <tile gid="8"/>
    <tile gid="1"/>
    <tile gid="1"/>
-   <tile gid="19"/>
    <tile gid="20"/>
+   <tile gid="21"/>
    <tile gid="3"/>
    <tile gid="4"/>
    <tile gid="2"/>
@@ -165,8 +165,8 @@
    <tile gid="10"/>
    <tile gid="1"/>
    <tile gid="1"/>
-   <tile gid="21"/>
    <tile gid="22"/>
+   <tile gid="23"/>
    <tile gid="3"/>
    <tile gid="4"/>
    <tile gid="9"/>

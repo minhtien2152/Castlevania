@@ -8,37 +8,22 @@ Grid::Grid(int mapWidth, int mapHeight)
 	map_height = mapHeight;
 	cell_width = screen_width / 2 ;
 	cell_height = screen_height/ 2 ;
-	this->column = mapWidth / cell_width;
+	this->column = mapWidth-1 / cell_width;
 	this->row = mapHeight / cell_height;
 
 }
 
-void Grid::Update(Camera* cam)
+void Grid::Update()
 {
-	vector<LPGAMEOBJECT> temp_list;
-	GetObjectsAccordingCam(cam, &temp_list);
-	ClearCells(cam);
-	if (cam->cam_x > 0)
-		DebugOut(L"\n");
-	for (auto obj : temp_list)
+	ClearCells();
+	DeleteDisabledObj();
+	for (auto obj : objList)
 	{
-		
-		if (obj != NULL)
-		{
-
-			if (obj->isEnabled == false)
-			{
-				free(obj);
-				obj = NULL;
-			}
-			else
-				AddObjectToGrid(obj);
-		}
+		PlaceObjectInGrid(obj);
 	}
-	temp_list.clear();
 }
 
-void Grid::AddObjectToGrid(LPGAMEOBJECT obj)
+void Grid::PlaceObjectInGrid(LPGAMEOBJECT obj)
 {
 	float l, t, r, b;
 	obj->GetBoundingBox(l, t, r, b);
@@ -50,10 +35,15 @@ void Grid::AddObjectToGrid(LPGAMEOBJECT obj)
 		for (int col = start_col; col <= end_col; col++)
 		{
 			grid_cell[GetCellId(col, row)].push_back(obj);
-			if (obj->tag == Object_Type::STAIR_OBJECT)
-				DebugOut(L"Added Stair to row %d, col %d,id %d\n", row, col, GetCellId(col, row));
+			//if (obj->tag == Object_Type::STAIR_OBJECT)
+			//	DebugOut(L"Added Stair to row %d, col %d,id %d\n", row, col, GetCellId(col, row));
 		}
 
+}
+
+void Grid::AddObject(LPGAMEOBJECT obj)
+{
+	objList.push_back(obj);
 }
 
 
@@ -85,7 +75,7 @@ void Grid::GetObjectsAccordingCam(Camera* cam, vector<LPGAMEOBJECT>* cell_object
 				//	
 				}
 			}
-			DebugOut(L"Get cell %d\n", GetCellId(col, row));
+			//DebugOut(L"Get cell %d\n", GetCellId(col, row));
 		}
 	for (auto obj : temp_list)
 		cell_object->push_back(obj.second);
@@ -97,21 +87,13 @@ void Grid::GetObjectsAccordingCam(Camera* cam, vector<LPGAMEOBJECT>* cell_object
 
 void Grid::Unload()
 {
-	unordered_map<int, LPGAMEOBJECT> temp_list;
-	for (auto cell : grid_cell)
-	{
-		for (auto unit : cell.second)
-		{
-			if (temp_list.find(unit->id) == temp_list.end())
-				temp_list[unit->id] = unit;
-		}
-	}
-	for (auto obj : temp_list)
-	{
-		free(obj.second);
-		obj.second = NULL;
-	}
 	ClearCells();
+	for (auto object : objList)
+	{
+		delete(object);
+		object = NULL;
+	}
+	objList.clear();
 }
 
 void Grid::ClearCells()
@@ -121,25 +103,23 @@ void Grid::ClearCells()
 	grid_cell.clear();
 }
 
-void Grid::ClearCells(Camera* cam)
+void Grid::DeleteDisabledObj()
 {
-	float cam_x, cam_y;
-	cam->GetCamPosition(cam_x, cam_y);
-	int start_row = GetRow(cam_y);
-	int end_row = GetRow(cam_y + screen_height);
-	int start_col = GetColumn(cam_x);
-	int end_col = GetColumn(cam_x + screen_width - 2);
-
-	for (int row = start_row; row <= end_row; row++)
-		for (int col = start_col; col <= end_col; col++)
-			grid_cell[GetCellId(col, row)].clear();
-		
+	for (auto obj = objList.begin(); obj != objList.end();)
+	{ 
+		if ((*obj)->isEnabled == false)
+			obj = objList.erase(obj);
+		else
+			obj++;
+	}
 }
 
 
 
 int Grid::GetColumn(float x)
 {
+	//if (x < 0)
+	//	return 0;
 	return x / cell_width ;
 }
 

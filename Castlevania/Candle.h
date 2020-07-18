@@ -2,9 +2,6 @@
 #include"Define.h"
 #include"GameObject.h"
 
-#define BIG_CANDLE			0
-#define SMALL_CANDLE		1
-#define CANDLE_DESTROYED	2
 
 class Candle:public CGameObject
 {

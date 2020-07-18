@@ -7,9 +7,9 @@
 #define CASTLE_BACKGROUND_ID 2
 #define MENU_ID 0
 #define MENU_BAT_ID 1
-
+#define START_ID 5
+#define START_FLICKER_ID 6
 #define INTRO_CASTLE_WAIT_TIME 3000
-#include "Ground.h"
 CIntroScene::CIntroScene(int id, LPCWSTR filePath) :CScene(id, filePath)
 {
 	key_handler = new CIntroScenceKeyHandler(this);
@@ -109,14 +109,15 @@ void CIntroScene::Render()
 	}
 	else
 	{
-		RECT rect;
-		SetRect(&rect, 0, 220, SCREEN_WIDTH, 240);
-		font->DrawTextW(NULL, L"Press any key", -1, &rect, DT_NOCLIP, D3DCOLOR_XRGB(255, 255, 255));
+		
 		
 		
 		animation_set->at(MENU_ID)->Render(0, 0);
 		animation_set->at(MENU_BAT_ID)->Render(368, 208);
-		
+		animation_set->at(START_ID)->Render(150, 268);
+		//RECT rect;
+		//SetRect(&rect, 0, 220, SCREEN_WIDTH, 240);
+		//font->DrawTextW(NULL, L"Press any key", -1, &rect, DT_NOCLIP, D3DCOLOR_XRGB(255, 255, 255));
 
 	}
 }

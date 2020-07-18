@@ -1,15 +1,6 @@
 #include "Skeleton.h"
 #include "Define.h"
-#define SKELETON_MOVING	0
-#define SKELETON_JUMP	1
-#define SKELETON_ATTACK 2
-#define SKELETON_SPEED_VX 0.1
-#define SKELETON_JUMP_SPEED_VX 0.1
-#define SKELETON_SPEED_VY	0.4
-#define SKELETON_ATTACK_INTERVAL 800
-#define SKELETON_BBOX_WIDTH		32
-#define SKELETON_BBOX_HEIGHT	63
-#define SKELETON_TURNAROUND_IGNORE_TIME 1000
+
 Skeleton::Skeleton() :SmartEnemy()
 {
 	lastAttack = 0;

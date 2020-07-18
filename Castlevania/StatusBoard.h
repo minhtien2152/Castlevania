@@ -13,7 +13,7 @@ class StatusBoard
 	string info;
 	ID3DXFont* font;
 	DWORD time;
-
+	DWORD timeAccumulated;
 	HealthBar* simonbar;
 	HealthBar* bossbar;
 
@@ -25,13 +25,14 @@ class StatusBoard
 	
 public:
 	bool hasBoss;
+	bool IsCalculatingHighScore;
 	StatusBoard(Simon* simon, LPGAMEOBJECT boss);
 	~StatusBoard();
 	void Update(DWORD dt);
 	void Render();
 	void SetFont(ID3DXFont* font);
 	string FillStringWithZeros(string str, int totalChar);
-	
+	int GetRemainingTime();
 	void SetSupweapon(int type);
 	void Reset();
 	DWORD GetTime();

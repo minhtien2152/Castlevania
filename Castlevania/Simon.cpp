@@ -29,9 +29,6 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 	{
 		isPhysicEnabled = false;
 		CGameObject::Update(dt);
-		x += dx * 0.5;	//di cham lai
-
-		y += dy;
 		return;
 	}
 
@@ -43,10 +40,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 				SetState(stateWaitingToBeRendered);
 			stateWaitingToBeRendered = -1;
 		}
-	//DebugOut(L"waiting for ani %d\n", isWaitingForAni);
 
-
-	//DebugOut(L"touchingGround %d\n", isTouchingGround);
 	// simple fall down
 	if (stairState ==0)
 	{
@@ -74,23 +68,12 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 		CGameObject::SetState(SIMON_STAND);									//ko co chan lai sau khi danh xong
 	
 	
-	if(!isInvisible && isInvulnerable)
+	if(isInvulnerable)
 		if (GetTickCount() - invulnerable_start > SIMON_INVULNERABLE_TIME)
 		{
 			invulnerable_start = 0;
 			isInvulnerable = 0;
 		}
-	//if(isInvisible)
-	//if (GetTickCount() - invisibility_start > SIMON_INVISIBILITY_TIME)
-	//{
-	//	invisibility_start = 0;
-	//	isInvisible = 0;
-	//	isInvulnerable = 0;
-	//}
-
-
-	
-	
 
 	if (IsAttacking() && mainWeapon->isEnabled)
 	{
@@ -103,8 +86,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 	if (hp <= 0)
 		SetState(SIMON_DEAD);
 	//DebugOut(L"x = %f , y = %f \n", x, y);
-	
-//	DebugOut(L"NonsolidObject size %d\n", nonSolidObjects.size());
+	//DebugOut(L"NonsolidObject size %d\n", nonSolidObjects.size());
 	//DebugOut(L"stairState %d\n", stairState);
 	stairObjects.clear();
 	for (UINT i = 0; i < nonSolidObjects.size(); i++)
@@ -130,7 +112,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 
 	}
 	//DebugOut(L"State %d\n", state);
-//	DebugOut(L"x= %f,y= %f\n",x, y);
+	//DebugOut(L"x= %f,y= %f\n",x, y);
 	//DebugOut(L"vx= %f,vy= %f\n",vx, vy);
 	//DebugOut(L"stairEnterX = %f, isCollidingStairObject %d,currentStairType %d\n", stairEnterX, isCollidingStairObject,currentStairType);
 }
@@ -139,7 +121,7 @@ void Simon::Render()
 {
 	
 	int alpha = 255;
-	if (isInvulnerable  || isInvisible)
+	if (isInvulnerable)
 		alpha /= 2;
 
 		animation_set->at(state)->Render(x, y, nx, 1, 1, alpha);
@@ -302,7 +284,6 @@ void Simon::SetLife(int life)
 void Simon::StartInvisibilityTimer()
 {
 	invisibility_start = GetTickCount();
-	isInvisible = true;
 	isInvulnerable = true;
 }
 

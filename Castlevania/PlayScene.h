@@ -56,7 +56,7 @@ public:
 	void UpdateListsAccordingGrid();
 	void SetWeaponToBeProcess(int type);
 	void CreateSubWeapon(int type);
-	void CheckSimonDead();
+	bool CheckSimonDead();
 	bool IsStopWatchEnabled();
 	int GetWeaponNum();
 	void DestroyAllOnScreenEnemy();

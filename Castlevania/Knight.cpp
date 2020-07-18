@@ -2,9 +2,6 @@
 #include "Utils.h"
 #include "Define.h"
 #include "Bumper.h"
-#define KNIGHT_BBOW_WIDTH 32
-#define KNIGHT_BBOW_HEIGHT 62
-#define KNIGHT_WALKING_SPEED 0.06
 
 Knight::Knight()
 {

@@ -35,6 +35,7 @@ protected:
 	
 public:
 	bool IsFinished = false;
+	bool IsCalculatingHighScore;
 	CScene(int id, LPCWSTR filePath);
 	CKeyEventHandler* GetKeyEventHandler() { return key_handler; }
 	virtual void LoadScene()=0;
@@ -51,6 +52,7 @@ public:
 	virtual void _ParseSection_OBJECTS(string line)=0;
 	virtual void LoadBackUpData();
 	bool IsFlickering();
+	void StartCalculatingHighScore();
 	Simon* GetPlayer() 	{ return player; }
 	int GetId() { return id; }
 	DWORD GetTime() { return statusboard->GetTime(); }

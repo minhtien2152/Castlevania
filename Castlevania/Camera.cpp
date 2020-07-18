@@ -37,7 +37,7 @@ bool Camera::IsInCam(LPGAMEOBJECT obj)
 	obj->GetBoundingBox(l, t, r, b);
 	int screen_width = CGame::GetInstance()->GetScreenWidth();
 	return l > cam_x - TILE_WIDTH &&  r < cam_x + screen_width + TILE_WIDTH
-		&& t - STATUS_BOARD_HEIGHT> cam_y
+		&& t > cam_y
 		&& b - STATUS_BOARD_HEIGHT < cam_y + mapHeight + TILE_HEIGHT;
 }
 

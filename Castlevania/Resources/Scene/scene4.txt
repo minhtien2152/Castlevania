@@ -3,7 +3,7 @@
 1	Resources/simon.txt
 2	Resources/PlaySceneResource.txt
 3	Resources/HP.txt
-
+4	Resources/secretBrick.txt
 [TILE_SET]
 -4	Resources\TileMap\scene3-1_bank.png	0	0	0
 [TILE_MAP_DATA]
@@ -160,7 +160,7 @@ Resources\TileMap\scene3-1.txt
 2	45	0	0
 2	46	0	0
 2	47	0	0
-2	18	8	0
+2	18	8	201	13
 2	19	8	0
 2	26	8	0
 2	27	8	0

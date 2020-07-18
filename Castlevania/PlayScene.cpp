@@ -188,9 +188,9 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			obj->SetAnimationSet(ani_set);
 		}
 		if (obj->isStatic && obj->isDestructable == false)
-			static_obj_grid->AddObjectToGrid(obj);
+			static_obj_grid->PlaceObjectInGrid(obj);
 		else
-			dynamic_obj_grid->AddObjectToGrid(obj);
+			dynamic_obj_grid->AddObject(obj);
 	}
 	
 	
@@ -289,7 +289,16 @@ void CPlayScene::LoadScene()
 
 void CPlayScene::Update(DWORD dt)
 {
-	dynamic_obj_grid->Update(camera);
+	statusboard->Update(dt);
+
+	if (IsCalculatingHighScore)
+	{
+		return;
+	}
+	if (statusboard->GetRemainingTime() < 1)
+		player->SetState(SIMON_DEAD);
+	camera->Update(player);
+	dynamic_obj_grid->Update();
 	UpdateListsAccordingGrid();
 
 	if (weaponWaitingToBeProcess != -1)
@@ -339,7 +348,7 @@ void CPlayScene::Update(DWORD dt)
 			{
 				if (camera->IsInCam(enemyList[i]))
 				{
-					if (!enemyList[i]->isActivated && enemyList[i]->tag != Object_Type::RAVEN)
+					if (!enemyList[i]->isActivated && enemyList[i]->tag != Object_Type::GHOST)
 						enemyList[i]->EnterCam();
 					if (enemyList[i]->isHit)
 					{
@@ -366,6 +375,7 @@ void CPlayScene::Update(DWORD dt)
 					if (enemyList[i]->isActivated)
 						if (GetTickCount() - enemyList[i]->enterCam > 1000)
 							enemyList[i]->isEnabled = false;
+
 				}
 				
 
@@ -420,16 +430,10 @@ void CPlayScene::Update(DWORD dt)
 			enemyProjectTile.erase(enemyProjectTile.begin() + i);
 		}
 	}
-	//DebugOut(L"weaponlist %d\n", weaponList.size());
+
 	CheckForEnemyCollison();
 	CheckForCollisonWithItems();
-	// Update camer
-
-	camera->Update(player);
-
-	//DebugOut(L"Cx = %d , Cy = %d\n", cx, cy);
-
-	statusboard->Update(dt);
+	
 	
 	//update objects
 	for (UINT i = 0; i < objectList.size(); i++)
@@ -456,15 +460,19 @@ void CPlayScene::Update(DWORD dt)
 		
 	}
 	
-	player->Update(dt, &objectList);
-	if(!IsFinished)
-		CheckSimonDead();
+	
+	if (!IsFinished)
+	{
+		if(!CheckSimonDead())
+			player->Update(dt, &objectList);
+	}
 }
 
 void CPlayScene::Render()
 {
 	tileMap->Render();
 	player->Render();
+	
 
 	for (int i = 0; i < objectList.size(); i++)
 		if(objectList[i]->isEnabled)
@@ -476,11 +484,6 @@ void CPlayScene::Render()
 		if (enemyList[i]->isEnabled)
 			//if(camera->IsInCam(enemyList[i]))
 				enemyList[i]->Render();
-	for (auto effect : effectList)
-	{
-		if (!effect->isFinished)
-			effect->Render();
-	}
 
 	for (auto subweapon : weaponList)
 	{
@@ -489,7 +492,11 @@ void CPlayScene::Render()
 	}
 	for (auto projectTile : enemyProjectTile)
 		projectTile->Render();
-	
+	for (auto effect : effectList)
+	{
+		//if (!effect->isFinished)
+			effect->Render();
+	}
 	statusboard->Render();
 }
 
@@ -521,7 +528,7 @@ void CPlayScene::SpawnItem(LPGAMEOBJECT obj)
 	
 	int type;
 	if (obj->itemSpawn == Item_Type::RANDOM)
-		type = rand() % 17;
+		type = rand() % 16;
 	else
 		type = obj->itemSpawn;
 
@@ -651,6 +658,9 @@ void CPlayScene::AccquireItem(int type)
 	case Item_Type::TRIPLESHOT:
 		player->SetSupWeaponCap(3);
 		break;
+	case Item_Type::MAGICCRYSTAL:
+		StartCalculatingHighScore();
+		break;
 
 	}
 }
@@ -774,7 +784,7 @@ void CPlayScene::CreateSubWeapon(int type)
 		DebugOut(L"Wrong weapon type\n");
 }
 
-void CPlayScene::CheckSimonDead()
+bool CPlayScene::CheckSimonDead()
 {
 	if (player->GetState() == SIMON_DEAD || !camera->IsInCam(player))
 	{
@@ -790,8 +800,11 @@ void CPlayScene::CheckSimonDead()
 				BackUp::GetInstance()->LoseLife();
 				CGame::GetInstance()->SwitchScene(id);
 			}
+			return true;
 		}
+		
 	}
+	return false;
 }
 
 bool CPlayScene::IsStopWatchEnabled()
@@ -825,7 +838,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	Simon* simon = ((CPlayScene*)scene)->player;
 	CGame* game = CGame::GetInstance();
 
-	if (simon->GetState() == SIMON_DEAD)
+	if (simon->GetState() == SIMON_DEAD || scene->IsCalculatingHighScore)
 		return;
 	switch (KeyCode)
 	{
@@ -882,6 +895,12 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		break;
 	case DIK_M:
 		((CPlayScene*)scene)->player->SetHP(0);
+		break;
+	case DIK_N:
+		((CPlayScene*)scene)->player->SetHP(SIMON_DEFAULT_HEALTH);
+		break;
+	case DIK_B:
+		((CPlayScene*)scene)->AccquireItem(Item_Type::MAGICCRYSTAL);
 		break;
 	case DIK_SPACE:
 		if (simon->isJumping || simon->IsAttacking() || simon->GetState() == SIMON_SIT || simon->stairState !=0)
@@ -951,7 +970,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	CGame* game = CGame::GetInstance();
 	Simon* simon = ((CPlayScene*)scene)->player;
 
-	if (simon->GetState() == SIMON_DEAD)
+	if (simon->GetState() == SIMON_DEAD || scene->IsCalculatingHighScore)
 		return;
 	if (simon->isWaitingForAni)
 		return;

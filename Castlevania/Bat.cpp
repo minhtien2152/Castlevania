@@ -1,8 +1,6 @@
 #include "Bat.h"
 #include "Define.h"
-#define BAT_IDLE 0
-#define BAT_FLY	1
-#define BAT_SPEED_VX 0.2
+
 Bat::Bat()
 {
 	a = 0;

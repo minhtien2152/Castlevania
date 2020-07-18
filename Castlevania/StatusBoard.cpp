@@ -1,9 +1,14 @@
 #include "StatusBoard.h"
 #include"Define.h"
 #include"time.h"
+#include "Game.h"
 #include "Sprites.h"
 #define STATUS_BOARD_ID	101
 #define BOSS_HEALTH 16
+#define SCORE_PER_SEC 10
+#define SCORE_PER_HEART 100
+
+
 StatusBoard::StatusBoard(Simon* simon, LPGAMEOBJECT boss)
 {
 	Reset();
@@ -14,6 +19,7 @@ StatusBoard::StatusBoard(Simon* simon, LPGAMEOBJECT boss)
 	animation_set = CAnimationSets::GetInstance()->Get(STATUS_BOARD_ID);
 	item_animation_set = CAnimationSets::GetInstance()->Get(ITEM_ANI_SET_ID);
 	subWeaponType = -1;
+	timeAccumulated = 0;
 }
 
 StatusBoard::~StatusBoard()
@@ -22,10 +28,43 @@ StatusBoard::~StatusBoard()
 
 void StatusBoard::Update(DWORD dt)
 {
-	time += dt;
+	
 	simonbar->Update();
+	if (bossbar != NULL)
+		bossbar->Update();
 	subWeaponCap = simon->GetSubWeaponCap();
 	subWeaponType = simon->GetSubWeaponType();
+	if (IsCalculatingHighScore)
+	{
+		int health = simon->GetHP();
+		int heart = simon->GetHeartsCollected();
+		int remain_time = GetRemainingTime();
+		int score = simon->GetScore();
+		if (health < SIMON_DEFAULT_HEALTH)
+		{
+			simon->SetHP(++health);
+		}
+		else if (remain_time > 0)
+		{
+			time += CLOCKS_PER_SEC;
+			simon->SetScore(simon->GetScore() + SCORE_PER_SEC);
+		}
+		else {
+			if (heart > 0)
+			{
+				simon->SetHeartsCollected(--heart);
+				simon->SetScore(score + SCORE_PER_HEART);
+			}
+			else if (timeAccumulated > DEATH_TIMER_DELAY)
+				CGame::GetInstance()->SwitchScene(INTRO_SCENE_ID);
+			else {
+				timeAccumulated += dt;
+			}
+		}
+
+	}
+	else
+		time += dt;
 }
 
 void StatusBoard::Render()
@@ -35,11 +74,12 @@ void StatusBoard::Render()
 	string life = FillStringWithZeros(to_string(simon->GetLife()),2);
 	string sceneID = FillStringWithZeros(to_string(sceneId), 2);
 
-	int remainTime = DEFAULT_TIME_PLAY - time / CLOCKS_PER_SEC;
+	int remainTime = GetRemainingTime();
 	string time = FillStringWithZeros(to_string(remainTime), 3);
 
 	info = "SCORE-" + score + " TIME " + time + " SCENE "+ sceneID  + "\n";
 	info+= "PLAYER                  -" + hearts + "\n";
+	
 	info+= "ENEMY                   -" + life + "\n";
 
 	RECT rect;
@@ -61,6 +101,7 @@ void StatusBoard::Render()
 
 }
 
+
 void StatusBoard::SetFont(ID3DXFont* font)
 {
 	this->font = font;
@@ -70,6 +111,11 @@ string StatusBoard::FillStringWithZeros(string str, int totalChar)
 {
 	while (str.length() < totalChar) str = "0" + str;
 	return str;
+}
+
+int StatusBoard::GetRemainingTime()
+{
+	return DEFAULT_TIME_PLAY - time / CLOCKS_PER_SEC;
 }
 
 void StatusBoard::SetSupweapon(int type)
@@ -99,3 +145,4 @@ void StatusBoard::SetSceneId(int id)
 {
 	sceneId = id;
 }
+

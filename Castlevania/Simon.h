@@ -3,35 +3,6 @@
 #include "StairBottom.h"
 #include "Whip.h"
 
-#define SIMON_WALKING_SPEED		0.2f
-#define SIMON_JUMP_SPEED_Y		0.6f
-#define SIMON_GRAVITY			0.0022f
-#define SIMON_DEFLECT_SPEED_X	0.05
-#define SIMON_DEFLECT_SPEED_Y	0.5
-#define SIMON_STAIR_SPEED		0.075
-#define SIMON_INVULNERABLE_TIME 3000
-#define SIMON_INVISIBILITY_TIME 4000
-#define SIMON_STAND				0
-#define SIMON_WALK				1
-#define SIMON_SIT				2
-#define SIMON_JUMP				3
-#define SIMON_SIT_ATTACK		4
-#define SIMON_STAND_ATTACK		5
-#define SIMON_POWERUP			6
-#define SIMON_STAIR_UP			7	
-#define SIMON_STAIR_UP_IDLE		8
-
-#define SIMON_STAIR_DOWN		9
-#define SIMON_STAIR_DOWN_IDLE	10
-#define SIMON_STAIR_UP_ATK		11
-#define SIMON_STAIR_DOWN_ATK	12
-#define SIMON_DAMAGED			13
-#define SIMON_DEAD				14
-#define SIMON_WAIT				15
-
-#define STAIR_STATE_GOING_UP	-1
-#define	STAIR_STATE_GOING_DOWN	1
-#define	STAIR_STATE_NONE		0
 
 class Simon : public CGameObject
 {
@@ -62,7 +33,6 @@ public:
 	bool isJumping = false;
 	bool isSitting = false;
 	bool isInvulnerable = false;
-	bool isInvisible = false;
 	bool canUseSubWeapon = false;
 	bool IsAttacking();
 	bool isWaitingForAni = false;
