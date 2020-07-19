@@ -13,12 +13,20 @@ Grid::Grid(int mapWidth, int mapHeight)
 
 }
 
-void Grid::Update()
+void Grid::Update(Camera* cam)
 {
+	vector<LPGAMEOBJECT> temp_list;
+	SetCamCell(cam);
+	GetObjects(&temp_list);
 	ClearCells();
-	DeleteDisabledObj();
-	for (auto obj : objList)
+	for (auto obj : temp_list)
 	{
+		if (obj->isEnabled == false)
+		{
+			delete(obj);
+			obj = NULL;
+		}
+		else
 		PlaceObjectInGrid(obj);
 	}
 }
@@ -41,10 +49,11 @@ void Grid::PlaceObjectInGrid(LPGAMEOBJECT obj)
 
 }
 
-void Grid::AddObject(LPGAMEOBJECT obj)
+void Grid::PlaceObjectInGrid(LPGAMEOBJECT obj, int row, int col)
 {
-	objList.push_back(obj);
+	grid_cell[GetCellId(col, row)].push_back(obj);
 }
+
 
 
 
@@ -61,15 +70,15 @@ void Grid::GetObjectsAccordingCam(Camera* cam, vector<LPGAMEOBJECT>* cell_object
 	int start_col = GetColumn(cam_x);
 	int end_col = GetColumn(cam_x + screen_width -2);
 	unordered_map<int, LPGAMEOBJECT> temp_list;
-	
-	
 	//DebugOut(L"start row %d,end row %d, start col %d, end col %d\n", start_row, end_row, start_col, end_col);
 	for (int row = start_row; row <= end_row; row++)
 		for (int col = start_col; col <= end_col; col++)
 		{
-			for (auto obj : grid_cell[GetCellId(col,row)])
+			int cell = GetCellId(col, row);
+			cam_cell.push_back(cell);
+			for (auto obj : grid_cell[cell])
 			{
-				if (temp_list.find(obj->id) == temp_list.end())
+				if (temp_list[obj->id]==NULL)
 				{
 					temp_list[obj->id] = obj;
 				//	
@@ -82,33 +91,96 @@ void Grid::GetObjectsAccordingCam(Camera* cam, vector<LPGAMEOBJECT>* cell_object
 	//DebugOut(L"total object %d, total got %d\n", object_list.size(), temp_list.size());
 }
 
+void Grid::GetObjects(vector<LPGAMEOBJECT>* cell_object)
+{
+	unordered_map<int, LPGAMEOBJECT> temp_list;
+	//DebugOut(L"start row %d,end row %d, start col %d, end col %d\n", start_row, end_row, start_col, end_col);
+	for(auto cell_num:cam_cell)
+	{
+			for (auto obj : grid_cell[cell_num])
+			{
+				if (temp_list.find(obj->id) == temp_list.end())
+				{
+					temp_list[obj->id] = obj;
+					//	
+				}
+			}
+		}
+	for (auto obj : temp_list)
+		cell_object->push_back(obj.second);
+}
+
+void Grid::SetCamCell(Camera* cam)
+{
+	cam_cell.clear();
+	float cam_x, cam_y;
+	cam->GetCamPosition(cam_x, cam_y);
+	int start_row = GetRow(cam_y);
+	int end_row = GetRow(cam_y + screen_height);
+	int start_col = GetColumn(cam_x);
+	int end_col = GetColumn(cam_x + screen_width - 2);
+	for (int row = start_row; row <= end_row; row++)
+		for (int col = start_col; col <= end_col; col++)
+		{
+			int cell = GetCellId(col, row);
+			cam_cell.push_back(cell);
+		}
+}
+
 
 
 
 void Grid::Unload()
 {
-	ClearCells();
-	for (auto object : objList)
-	{
-		delete(object);
-		object = NULL;
-	}
-	objList.clear();
+	DeleteAllObjects();
+	ClearAll();
 }
 
 void Grid::ClearCells()
 {
-	for (auto cell : grid_cell)
-		cell.second.clear();
-	grid_cell.clear();
+	for (auto cell_num : cam_cell)
+	{
+		grid_cell[cell_num].clear();
+	}
 }
 
-void Grid::DeleteDisabledObj()
+void Grid::ClearAll()
 {
-	for (auto obj = objList.begin(); obj != objList.end();)
+	for (auto cell : grid_cell)
+	{
+		cell.second.clear();
+	}
+}
+
+void Grid::DeleteAllObjects()
+{
+	unordered_map<int, LPGAMEOBJECT> temp_list;
+	//DebugOut(L"start row %d,end row %d, start col %d, end col %d\n", start_row, end_row, start_col, end_col);
+	for (auto cell :grid_cell)
+	{
+		for (auto obj : cell.second)
+		{
+			if (temp_list.find(obj->id) == temp_list.end())
+			{
+				temp_list[obj->id] = obj;
+				//	
+			}
+		}
+	}
+	for (auto obj : temp_list)
+	{
+		delete(obj.second);
+		obj.second = NULL;
+	}
+}
+
+
+void Grid::DeleteDisabledObj(vector<LPGAMEOBJECT>* list)
+{
+	for (auto obj = list->begin(); obj != list->end();)
 	{ 
 		if ((*obj)->isEnabled == false)
-			obj = objList.erase(obj);
+			obj = list->erase(obj);
 		else
 			obj++;
 	}
@@ -118,8 +190,8 @@ void Grid::DeleteDisabledObj()
 
 int Grid::GetColumn(float x)
 {
-	//if (x < 0)
-	//	return 0;
+	if (x < 0)
+		return 0;
 	return x / cell_width ;
 }
 

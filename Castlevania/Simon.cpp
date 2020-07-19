@@ -283,7 +283,7 @@ void Simon::SetLife(int life)
 
 void Simon::StartInvisibilityTimer()
 {
-	invisibility_start = GetTickCount();
+	invulnerable_start = GetTickCount();
 	isInvulnerable = true;
 }
 

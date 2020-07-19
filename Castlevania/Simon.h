@@ -12,7 +12,6 @@ class Simon : public CGameObject
 	
 
 	DWORD invulnerable_start;
-	DWORD invisibility_start;
 	Whip* mainWeapon;
 
 	int subWeaponType;

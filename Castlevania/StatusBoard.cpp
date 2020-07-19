@@ -15,7 +15,7 @@ StatusBoard::StatusBoard(Simon* simon, LPGAMEOBJECT boss)
 	this->simon = simon;
 	simonbar = new HealthBar(100, 30, simon, SIMON_HEALTH);
 	if(boss != NULL)
-		bossbar = new HealthBar(100, 50, boss, SIMON_HEALTH);
+		bossbar = new HealthBar(100, 50, boss, ENEMY_HEALTH);
 	animation_set = CAnimationSets::GetInstance()->Get(STATUS_BOARD_ID);
 	item_animation_set = CAnimationSets::GetInstance()->Get(ITEM_ANI_SET_ID);
 	subWeaponType = -1;

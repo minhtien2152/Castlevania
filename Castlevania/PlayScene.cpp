@@ -30,6 +30,8 @@
 #include "BossBat.h"
 using namespace std;
 
+
+#define CELL_NUM_COL 4
 CPlayScene::CPlayScene(int id, LPCWSTR filePath, int prevScene) :	CScene(id, filePath)
 {
 	key_handler = new CPlayScenceKeyHandler(this);
@@ -69,14 +71,17 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	CAnimationSets* animation_sets = CAnimationSets::GetInstance();
 
 	CGameObject* obj = NULL;
+	
 	int id = 0;
+	int num_cell = atoi(tokens[CELL_NUM_COL].c_str());
+	int cell_end = CELL_NUM_COL + num_cell * 2;
 	switch (object_type)
 	{
 	case Object_Type::SIMON: 
 	{
 		if (player != NULL)
 			return;
-		int prev_scene_in_data = atoi(tokens[4].c_str());
+		int prev_scene_in_data = atoi(tokens[cell_end+1].c_str());
 		if (prev_scene_in_data != -1 && prev_scene_in_data != prev_scene)
 			return;
 		obj = player = new Simon();
@@ -85,16 +90,16 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case Object_Type::GROUND: 
 	
 		obj = new Ground();
-		if(tokens.size() >4)
+		if(tokens.size() > cell_end+1)
 		{
 			obj->isDestructable = true;
-			obj->itemSpawn =  atoi(tokens[4].c_str());
+			obj->itemSpawn =  atoi(tokens[cell_end].c_str());
 		}
 	
 		break;
 	case Object_Type::ZOMBIE: 
 	{
-		int dir = atoi(tokens[6].c_str());
+		int dir = atoi(tokens[cell_end+3].c_str());
 		obj = new CZombie();
 		obj->nx = dir;
 	}
@@ -104,7 +109,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case Object_Type::GHOST:	
 		
 		{
-			int dir = atoi(tokens[6].c_str());
+			int dir = atoi(tokens[cell_end+3].c_str());
 			obj = new Ghost();
 			obj->nx = dir;
 		}
@@ -119,7 +124,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case Object_Type::PLATFORM: obj = new MovingPlatform();	break;
 	case Object_Type::CANDLE: 
 	{
-		int type = atoi(tokens[5].c_str());
+		int type = atoi(tokens[cell_end +2].c_str());
 		obj = new Candle();
 		obj->SetState(type);
 	}
@@ -134,8 +139,8 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		break;
 	case Object_Type::STAIR_OBJECT: 
 	{
-		int stair_dir = atoi(tokens[4].c_str());
-		int stair_type = atoi(tokens[5].c_str());
+		int stair_dir = atoi(tokens[cell_end+1].c_str());
+		int stair_type = atoi(tokens[cell_end+2].c_str());
 		obj = new StairObject(stair_dir,stair_type,id); 
 	}
 		break;
@@ -152,7 +157,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	}
 	if (obj->isDestructable)
 	{
-		int item_spawn = atoi(tokens[4].c_str());
+		int item_spawn = atoi(tokens[cell_end+1].c_str());
 
 		obj->itemSpawn = item_spawn;
 	}
@@ -168,7 +173,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case Object_Type::RAVEN:
 	case Object_Type::BAT:
 	{
-		int dam= atoi(tokens[5].c_str());
+		int dam= atoi(tokens[cell_end + 2].c_str());
 		obj->SetDamage(dam);
 	}
 		break;
@@ -187,10 +192,22 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
 			obj->SetAnimationSet(ani_set);
 		}
-		if (obj->isStatic && obj->isDestructable == false)
-			static_obj_grid->PlaceObjectInGrid(obj);
-		else
-			dynamic_obj_grid->AddObject(obj);
+		
+		
+		for (int i = 0; i < num_cell; i++)
+		{
+			int row = atoi(tokens[CELL_NUM_COL+1 + i * 2].c_str());
+			int col = atoi(tokens[CELL_NUM_COL+2 + i * 2].c_str());
+			if (obj->isStatic && obj->isDestructable == false)
+			{
+				static_obj_grid->PlaceObjectInGrid(obj, row, col);
+			}
+			else {
+				dynamic_obj_grid->PlaceObjectInGrid(obj, row, col);
+			}
+		}
+		
+		
 	}
 	
 	
@@ -298,13 +315,22 @@ void CPlayScene::Update(DWORD dt)
 	if (statusboard->GetRemainingTime() < 1)
 		player->SetState(SIMON_DEAD);
 	camera->Update(player);
-	dynamic_obj_grid->Update();
+	
+	dynamic_obj_grid->Update(camera);
 	UpdateListsAccordingGrid();
 
 	if (weaponWaitingToBeProcess != -1)
 	{
-		if (player->IsInRightFrameToUseSubWeapon() || player->GetSubWeaponType() == Item_Type::STOPWATCH_ITEM)
+		int heart = player->GetHeartsCollected();
+		if (player->IsInRightFrameToUseSubWeapon() )
 		{
+			player->SetHeartsCollected(--heart);
+			CreateSubWeapon(weaponWaitingToBeProcess);
+			weaponWaitingToBeProcess = -1;
+		}
+		else if(player->GetSubWeaponType() == Item_Type::STOPWATCH_ITEM)
+		{
+			player->SetHeartsCollected(heart-=5);
 			CreateSubWeapon(weaponWaitingToBeProcess);
 			weaponWaitingToBeProcess = -1;
 		}
@@ -718,8 +744,11 @@ void CPlayScene::UpdateListsAccordingGrid()
 	CleanUpObjects();
 	vector<LPGAMEOBJECT> temp_obj_list;
 	
-	static_obj_grid->GetObjectsAccordingCam(camera, &temp_obj_list);
-	dynamic_obj_grid->GetObjectsAccordingCam(camera, &temp_obj_list);
+	static_obj_grid->SetCamCell(camera);
+	static_obj_grid->GetObjects(&temp_obj_list);
+
+	dynamic_obj_grid->GetObjects(&temp_obj_list);
+	
 	
 	for(auto obj : temp_obj_list)
 		switch (obj->tag)
@@ -925,6 +954,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 			}
 			else if( simon->GetSubWeaponType() != Item_Type::STOPWATCH_ITEM  && simon->GetHeartsCollected() > 0)
 				((CPlayScene*)scene)->SetWeaponToBeProcess(simon->GetSubWeaponType());
+			else simon->AttackWithWhip();
 		}
 		else simon->AttackWithWhip();
 
