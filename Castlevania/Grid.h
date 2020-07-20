@@ -13,6 +13,7 @@ class Grid
 	int column, row;
 	int cell_width, cell_height;
 	vector<int> cam_cell;
+	vector<int>	update_cell;
 	unordered_map<int, vector<LPGAMEOBJECT>> grid_cell;
 public:
 	Grid(int mapWidth,int mapHeight);
@@ -21,7 +22,8 @@ public:
 	void PlaceObjectInGrid(LPGAMEOBJECT obj,int row, int col);
 	void CleanUp();
 	void GetObjectsAccordingCam(Camera* cam, vector<LPGAMEOBJECT>* cell_object);
-	void GetObjects(vector<LPGAMEOBJECT>* cell_object);
+	void GetUpdateObjects(vector<LPGAMEOBJECT>* cell_object);
+	void GetCamObjects(vector<LPGAMEOBJECT>* cell_object);
 	void SetCamCell(Camera* cam);
 	void Unload();
 	void ClearCells();

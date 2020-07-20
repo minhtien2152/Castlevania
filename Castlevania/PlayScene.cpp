@@ -745,9 +745,9 @@ void CPlayScene::UpdateListsAccordingGrid()
 	vector<LPGAMEOBJECT> temp_obj_list;
 	
 	static_obj_grid->SetCamCell(camera);
-	static_obj_grid->GetObjects(&temp_obj_list);
+	static_obj_grid->GetCamObjects(&temp_obj_list);
 
-	dynamic_obj_grid->GetObjects(&temp_obj_list);
+	dynamic_obj_grid->GetCamObjects(&temp_obj_list);
 	
 	
 	for(auto obj : temp_obj_list)

@@ -17,7 +17,7 @@ void Grid::Update(Camera* cam)
 {
 	vector<LPGAMEOBJECT> temp_list;
 	SetCamCell(cam);
-	GetObjects(&temp_list);
+	GetUpdateObjects(&temp_list);
 	ClearCells();
 	for (auto obj : temp_list)
 	{
@@ -29,6 +29,7 @@ void Grid::Update(Camera* cam)
 		else
 		PlaceObjectInGrid(obj);
 	}
+
 }
 
 void Grid::PlaceObjectInGrid(LPGAMEOBJECT obj)
@@ -91,12 +92,14 @@ void Grid::GetObjectsAccordingCam(Camera* cam, vector<LPGAMEOBJECT>* cell_object
 	//DebugOut(L"total object %d, total got %d\n", object_list.size(), temp_list.size());
 }
 
-void Grid::GetObjects(vector<LPGAMEOBJECT>* cell_object)
+void Grid::GetUpdateObjects(vector<LPGAMEOBJECT>* cell_object)
 {
+
 	unordered_map<int, LPGAMEOBJECT> temp_list;
 	//DebugOut(L"start row %d,end row %d, start col %d, end col %d\n", start_row, end_row, start_col, end_col);
-	for(auto cell_num:cam_cell)
+	for (auto cell_num : update_cell)
 	{
+		if (grid_cell[cell_num].size() > 0)
 			for (auto obj : grid_cell[cell_num])
 			{
 				if (temp_list.find(obj->id) == temp_list.end())
@@ -105,7 +108,26 @@ void Grid::GetObjects(vector<LPGAMEOBJECT>* cell_object)
 					//	
 				}
 			}
+	}
+	for (auto obj : temp_list)
+		cell_object->push_back(obj.second);
+}
+
+void Grid::GetCamObjects(vector<LPGAMEOBJECT>* cell_object)
+{
+	unordered_map<int, LPGAMEOBJECT> temp_list;
+	//DebugOut(L"start row %d,end row %d, start col %d, end col %d\n", start_row, end_row, start_col, end_col);
+	for (auto cell_num : cam_cell)
+	{
+		for (auto obj : grid_cell[cell_num])
+		{
+			if (temp_list.find(obj->id) == temp_list.end())
+			{
+				temp_list[obj->id] = obj;
+				//	
+			}
 		}
+	}
 	for (auto obj : temp_list)
 		cell_object->push_back(obj.second);
 }
@@ -113,6 +135,7 @@ void Grid::GetObjects(vector<LPGAMEOBJECT>* cell_object)
 void Grid::SetCamCell(Camera* cam)
 {
 	cam_cell.clear();
+	update_cell.clear();
 	float cam_x, cam_y;
 	cam->GetCamPosition(cam_x, cam_y);
 	int start_row = GetRow(cam_y);
@@ -125,6 +148,18 @@ void Grid::SetCamCell(Camera* cam)
 			int cell = GetCellId(col, row);
 			cam_cell.push_back(cell);
 		}
+
+	if (start_col > 0)
+		start_col--;
+	if (end_col < column - 1)
+		end_col++;
+	for (int row = start_row; row <= end_row; row++)
+		for (int col = start_col; col <= end_col; col++)
+		{
+			int cell = GetCellId(col, row);
+			update_cell.push_back(cell);
+		}
+
 }
 
 
@@ -138,7 +173,7 @@ void Grid::Unload()
 
 void Grid::ClearCells()
 {
-	for (auto cell_num : cam_cell)
+	for (auto cell_num : update_cell)
 	{
 		grid_cell[cell_num].clear();
 	}
