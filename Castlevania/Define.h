@@ -71,7 +71,7 @@ enum Object_Type
 
 #define ITEM_APPEAR_TIME 3000
 #define GRAVITY 0.001f
-#define	ITEM_ANI_SET_ID 11
+#define	ITEM_ANI_SET_ID 12
 enum Item_Type
 {
 	NONE =-2,
@@ -106,7 +106,8 @@ enum Weapon_Type
 	AXE,
 	HOLYWATER,
 	STOPWATCH,
-	BONE
+	BONE,
+	FIREBALL
 	
 };
 
@@ -130,8 +131,8 @@ enum Effect_Type
 
 #define HOLY_WATER_BBOX_WIDTH	32
 #define HOLY_WATER_BBOX_HEIGHT	26
-#define HOLY_WATER_SPEED_X	0.25f
-#define HOLY_WATER_SPEED_Y	0.3f
+#define HOLY_WATER_SPEED_X	0.2f
+#define HOLY_WATER_SPEED_Y	0.2f
 
 #define DAGGER_BBOX_WIDTH		34
 #define DAGGER_BBOX_HEIGHT		18

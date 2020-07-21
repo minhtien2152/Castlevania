@@ -1,7 +1,7 @@
 #include "BossBat.h"
 #include "Define.h"
 #include "Utils.h"
-
+#include "FireBall.h"
 BossBat::BossBat()
 {
 	isPhysicEnabled = false;
@@ -29,7 +29,17 @@ void BossBat::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				vx = vy = 0;
 				if (timeAccumulated >= BOSS_WAIT_TIME)
 				{
-					Charge();
+					if (IsLowerThanSimon())
+					{
+						if (!justShooted)
+						{
+							Shoot();
+						}
+						else
+							Charge();
+					}
+					else
+						Charge();
 				}
 			}
 			else
@@ -42,8 +52,8 @@ void BossBat::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			y = a * (x - destinationX) * (x - destinationX) + destinationY;
 			HandleGoingOutOfScreen();
 		}
-		DebugOut(L"vx = %f\n", vx);
-		DebugOut(L"a = %f\n",a);
+		//DebugOut(L"vx = %f\n", vx);
+		//DebugOut(L"a = %f\n",a);
 	}
 }
 
@@ -57,6 +67,23 @@ void BossBat::HandleGoingOutOfScreen()
 	{
 		Hover();
 	}
+}
+void BossBat::Shoot()
+{
+	FireBall* fb = new FireBall();
+	fb->Attack(this);
+	fb->SetSpeed(player->x, player->y);
+	projectTileList->push_back(fb);
+	justShooted = true;
+	DebugOut(L"shoot\n");
+}
+bool BossBat::IsLowerThanSimon()
+{
+	return y > player->y;
+}
+void BossBat::SetProjectTileList(vector<CWeapon*>* projectTileList)
+{
+	this->projectTileList = projectTileList;
 }
 void BossBat::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
@@ -116,7 +143,7 @@ void BossBat::PickRandomPositioning()
 	destinationY = camy + randY;
 }
 
-void BossBat::SetSpeed()
+void BossBat::SetSpeed(float destinationX,float destinationY)
 {
 	if (isHovering)
 	{
@@ -156,14 +183,15 @@ void BossBat::Hover()
 {
 	isCharging = false;
 	isHovering = true;
-
+	justShooted = false;
 	PickRandomPositioning();
-	SetSpeed();
+	SetSpeed(destinationX,destinationY);
 }
 void BossBat::Charge()
 {
 	isCharging = true;
 	isHovering = false;
+	justShooted = false;
 	nx = (player->x - x)/abs(player->x-x);
 	vy = 0;
 	if (player->y - y >= 50)
@@ -171,13 +199,13 @@ void BossBat::Charge()
 		destinationX = player->x;
 		destinationY = player->y;
 		CalculateFlyingEquation();
-		SetSpeed();
+		SetSpeed(destinationX,destinationY);
 		
 	}
 	else
 	{
 		a = DEFAULT_A;
-		vx = BOSS_SPEED;
+		vx = -nx*BOSS_SPEED;
 	}
 	
 

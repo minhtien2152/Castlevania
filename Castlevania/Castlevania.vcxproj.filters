@@ -186,6 +186,9 @@
     <ClCompile Include="BossBat.cpp">
       <Filter>GameObject</Filter>
     </ClCompile>
+    <ClCompile Include="FireBall.cpp">
+      <Filter>Weapon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -343,6 +346,9 @@
     </ClInclude>
     <ClInclude Include="BossBat.h">
       <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="FireBall.h">
+      <Filter>Weapon</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

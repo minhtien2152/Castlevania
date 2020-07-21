@@ -132,6 +132,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case Object_Type::BUMPER: obj = new Bumper();	break;
 	case Object_Type::BOSS:
 		obj = new BossBat();
+		((BossBat*)obj)->SetProjectTileList(&enemyProjectTile);
 		((BossBat*)obj)->screen_height = tileMap->GetMapHeight();
 		((BossBat*)obj)->screen_width = CGame::GetInstance()->GetScreenWidth();
 		((BossBat*)obj)->SetCam(camera);
@@ -607,9 +608,9 @@ void CPlayScene::CheckForEnemyCollison()
 				if (player->IsColidingAABB(enemy))
 				{
 					if (player->stairState == 0)
-						player->SetState(SIMON_DAMAGED);
+						player->SetStateToBeRender(SIMON_DAMAGED);
 					player->TakeDamage(enemy->damage);
-					if (enemy->tag == Object_Type::RAVEN)
+					if (enemy->tag == Object_Type::RAVEN || enemy->tag== Object_Type::BAT)
 						enemy->isDestroyed = true;
 
 				}

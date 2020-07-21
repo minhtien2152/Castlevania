@@ -33,12 +33,12 @@ void Holywater::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		}
 	}
 	
-	for (UINT i = 0; i < nonSolidObjCoEvents.size(); i++)
+	for (UINT i = 0; i < nonSolidObjects.size(); i++)
 	{
-		LPCOLLISIONEVENT e = nonSolidObjCoEvents[i];
-		if (e->obj->isDestructable)
+		if(IsColidingAABB(nonSolidObjects[i]))
+		if (nonSolidObjects[i]->isDestructable)
 		{
-			e->obj->GetHit(this->damage);
+			nonSolidObjects[i]->GetHit(this->damage);
 		}
 
 	}

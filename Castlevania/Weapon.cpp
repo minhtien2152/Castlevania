@@ -1,5 +1,6 @@
 #include "Weapon.h"
 #include "Utils.h"
+#include "Define.h"
 CWeapon::CWeapon()
 {
 	damage = 1;
@@ -17,7 +18,10 @@ void CWeapon::Attack(LPGAMEOBJECT user)
 {
 	float obj_x, obj_y;
 	user->GetPosition(obj_x, obj_y);
-	SetPosition(obj_x, obj_y);
+	if(user->nx == 1)
+		SetPosition(obj_x, obj_y);
+	else
+		SetPosition(obj_x+SIMON_BBOX_WIDTH, obj_y);
 	isEnabled = true;
 	nx = user->nx;
 	ResetAni();

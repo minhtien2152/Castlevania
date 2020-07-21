@@ -12,6 +12,8 @@ HealthBar::HealthBar(float x, float y, LPGAMEOBJECT object,int type)
 	this->type = type;
 	if (type == SIMON_HEALTH)
 		defaultHP = SIMON_DEFAULT_HEALTH;
+	else
+		defaultHP = BOSS_HEALTH;
 	animation_set = CAnimationSets::GetInstance()->Get(HEALTH_CELL_ID);
 }
 

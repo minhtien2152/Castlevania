@@ -32,14 +32,15 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 		return;
 	}
 
-	if (isWaitingForAni)
-		if (animation_set->at(state)->IsOver())
+	if (isWaitingForAni && animation_set->at(state)->IsOver() || !isWaitingForAni)
+	{
+		isWaitingForAni = false;
+		if (stateWaitingToBeRendered != -1)
 		{
-			isWaitingForAni = false;
-			if (stateWaitingToBeRendered != -1)
-				SetState(stateWaitingToBeRendered);
+			SetState(stateWaitingToBeRendered);
 			stateWaitingToBeRendered = -1;
 		}
+	}
 
 	// simple fall down
 	if (stairState ==0)
@@ -65,9 +66,9 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 	}
 
 	if (isJumping && IsAttacking() && animation_set->at(state)->IsOver())
+	{
 		CGameObject::SetState(SIMON_STAND);									//ko co chan lai sau khi danh xong
-	
-	
+	}
 	if(isInvulnerable)
 		if (GetTickCount() - invulnerable_start > SIMON_INVULNERABLE_TIME)
 		{
@@ -79,9 +80,12 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 	{
 		mainWeapon->SetPosition(x, y);
 		mainWeapon->SetSpeed(vx, vy);
-		if (animation_set->at(state)->IsOver())
+		if(animation_set->at(state)->IsOver())
 			mainWeapon->isEnabled = false;
 	}
+
+
+		
 	
 	if (hp <= 0)
 		SetState(SIMON_DEAD);
@@ -111,6 +115,7 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 		}
 
 	}
+	DebugOut(L"main enabled %d\n", mainWeapon->isEnabled);
 	//DebugOut(L"State %d\n", state);
 	//DebugOut(L"x= %f,y= %f\n",x, y);
 	//DebugOut(L"vx= %f,vy= %f\n",vx, vy);
@@ -182,6 +187,7 @@ void Simon::SetState(int state)
 		ResetAni();
 		break;
 	case SIMON_DAMAGED:
+		mainWeapon->isEnabled = false;
 		vx = nx * SIMON_DEFLECT_SPEED_X;
 		vy = -SIMON_DEFLECT_SPEED_Y;
 		isJumping = true;
@@ -229,6 +235,7 @@ void Simon::SetState(int state)
 	default:
 		break;
 	}
+
 }
 
 void Simon::PullUp()
@@ -256,7 +263,7 @@ void Simon::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 
 void Simon::AttackWithWhip()
 {
-
+	DebugOut(L"attack with whip\n");
 	mainWeapon->Attack(this);
 }
 

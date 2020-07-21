@@ -11,8 +11,9 @@ class BossBat: public SmartEnemy
 	
 	bool isCharging;
 	bool isHovering;
-
+	bool justShooted;
 	float a;
+	vector<CWeapon*>* projectTileList;
 public:
 	BossBat();
 	int screen_width;
@@ -23,11 +24,16 @@ public:
 	void SetCam(Camera* camera);
 	bool IsPlayerWithinAttackRange();
 	void PickRandomPositioning();
-	void SetSpeed();
+	void SetSpeed(float destinationX, float destinationY);
 	bool IsAtDestination();
 	void Hover();
 	void Charge();
 	void CalculateFlyingEquation();
 	void HandleGoingOutOfScreen();
+	void Shoot();
+	bool IsLowerThanSimon();
+	void SetProjectTileList(vector<CWeapon*>* projectTileList);
+
+
 };
 

@@ -35,7 +35,7 @@ bool BrickEffect::IsFinished()
 {
 
 	for (auto brick : falling_bricks)
-		if (brick->x < screen_height)
+		if (brick->y < screen_height)
 			return false;
 	return true;
 }
