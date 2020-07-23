@@ -28,6 +28,7 @@
 #include "Bat.h"
 #include "BrickEffect.h"
 #include "BossBat.h"
+#include "ItemSpawner.h"
 using namespace std;
 
 
@@ -150,6 +151,18 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		int scene_id = atoi(tokens[3].c_str());
 
 		obj  = new CPortal(scene_id);
+		break;
+	}
+	case Object_Type::ITEM_SPAWNER:
+	{	
+		float spawn_x = TILE_WIDTH*atoi(tokens[cell_end + 2].c_str());
+		float spawn_y = TILE_HEIGHT*atoi(tokens[cell_end + 3].c_str());
+		obj = new ItemSpawner();
+		obj->state = atoi(tokens[cell_end + 4].c_str());
+		((ItemSpawner*)obj)->SetItemList(&itemList);
+		((ItemSpawner*)obj)->SetItemSpawnPoint(spawn_x,spawn_y);
+		((ItemSpawner*)obj)->itemSpawn = atoi(tokens[cell_end + 1].c_str());
+
 	}
 		break;
 	default:
@@ -760,6 +773,7 @@ void CPlayScene::UpdateListsAccordingGrid()
 		case Object_Type::BUMPER:
 		case Object_Type::STAIR_OBJECT:
 		case Object_Type::PLATFORM:
+		case Object_Type::ITEM_SPAWNER:
 			objectList.push_back(obj);
 			break;
 		case Object_Type::BOSS:

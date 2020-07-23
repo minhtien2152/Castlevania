@@ -26,7 +26,7 @@ protected:
 	LPGAMEOBJECT boss;
 
 	vector<LPGAMEOBJECT> objectList;
-	vector<Item*> itemList;
+	vector<LPGAMEOBJECT> itemList;
 	vector<LPGAMEOBJECT> enemyList;
 	vector<Effect*> effectList;
 	Map* tileMap;

@@ -5,6 +5,7 @@
 #include "Game.h"
 #include "Portal.h"
 #include "StairBottom.h"
+#include "ItemSpawner.h"
 Simon::Simon()
 {
 	if (CGame::GetInstance()->GetState() == GAME_STATE_PLAYSCENE)
@@ -107,13 +108,23 @@ void Simon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 	{
 		LPCOLLISIONEVENT e = nonSolidObjCoEvents[i];
 
-		if (dynamic_cast<CPortal*>(e->obj))
+		if (e->obj->tag == Object_Type::PORTAL)
 		{
 			CPortal* p = dynamic_cast<CPortal*>(e->obj);
 			CGame::GetInstance()->SwitchScene(p->GetSceneId());
 			return;
 		}
-
+	}
+	for (UINT i = 0; i < nonSolidObjects.size(); i++)
+	{
+		LPGAMEOBJECT obj = nonSolidObjects[i];
+		if(obj->tag == Object_Type::ITEM_SPAWNER)
+		{
+			if(IsColidingAABB(obj))
+			if (!obj->isActivated)
+				if (((ItemSpawner*)obj)->state == -1 || ((ItemSpawner*)obj)->state == state)
+					((ItemSpawner*)obj)->Activate();
+		}
 	}
 	DebugOut(L"main enabled %d\n", mainWeapon->isEnabled);
 	//DebugOut(L"State %d\n", state);

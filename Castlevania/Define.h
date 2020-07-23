@@ -64,7 +64,8 @@ enum Object_Type
 	RAVEN,
 	BUMPER,
 	STAIR_OBJECT,
-	BOSS
+	BOSS,
+	ITEM_SPAWNER
 };
 
 
@@ -94,8 +95,8 @@ enum Item_Type
 	TRIPLESHOT,
 	MAGICCRYSTAL,
 	CROWN,
-	CHEST
-
+	CHEST,
+	SPECIAL_MONEYBAG
 };
 
 enum Weapon_Type

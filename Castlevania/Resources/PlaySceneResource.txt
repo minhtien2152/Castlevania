@@ -105,6 +105,7 @@ bigheart	30027	100
 moneybag1	30028	100
 moneybag2	30029	100
 moneybag3	30030	100
+specialmoneybag	30028	100	30029	100	30030	100
 magiccrystal	30031	100	30032	100
 candle	30033	100	30034	100
 torch	30035	100	30036	100
@@ -144,7 +145,7 @@ fireball	30079	100
 9	stopwatch
 10	bone
 11	fireball
-12	stopwatch	smallheart	bigheart	moneybag1	moneybag2	moneybag3	chain	dagger	cross	axe_item	invispotion	boomerang_item	holywater_item	chicken	doubleshot	tripleshot	magiccrystal	crown	chest
+12	stopwatch	smallheart	bigheart	moneybag1	moneybag2	moneybag3	chain	dagger	cross	axe_item	invispotion	boomerang_item	holywater_item	chicken	doubleshot	tripleshot	magiccrystal	crown	chest	specialmoneybag
 13	hit_effect
 14	fire_effect
 15	brick_effect
