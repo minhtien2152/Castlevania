@@ -176,6 +176,7 @@
     <ClCompile Include="ItemSpawner.cpp" />
     <ClCompile Include="Knight.cpp" />
     <ClCompile Include="Map.cpp" />
+    <ClCompile Include="MoneyEffect.cpp" />
     <ClCompile Include="MovingPlatform.cpp" />
     <ClCompile Include="Portal.cpp" />
     <ClCompile Include="Raven.cpp" />
@@ -232,6 +233,7 @@
     <ClInclude Include="ItemSpawner.h" />
     <ClInclude Include="Knight.h" />
     <ClInclude Include="Map.h" />
+    <ClInclude Include="MoneyEffect.h" />
     <ClInclude Include="MovingPlatform.h" />
     <ClInclude Include="Portal.h" />
     <ClInclude Include="Raven.h" />

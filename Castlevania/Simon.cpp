@@ -12,7 +12,7 @@ Simon::Simon()
 		mainWeapon = new Whip();
 	else mainWeapon = NULL;
 	stateWaitingToBeRendered = -1;
-	hp = 16;
+	hp = SIMON_DEFAULT_HEALTH;
 	subWeaponType = -1;
 }
 
@@ -246,7 +246,9 @@ void Simon::SetState(int state)
 	default:
 		break;
 	}
-
+	if (mainWeapon != NULL)
+		if (!IsAttacking())
+			mainWeapon->isEnabled = false;
 }
 
 void Simon::PullUp()

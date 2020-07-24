@@ -15,7 +15,7 @@ public:
 	virtual void Render();
 	virtual bool IsFinished();
 	void SetAnimationSet(LPANIMATION_SET ani_set);
-	void Reset();
+	virtual void Reset();
 };
 
 typedef Effect* LPEFFECT;

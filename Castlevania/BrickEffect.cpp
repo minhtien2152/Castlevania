@@ -1,5 +1,6 @@
 #include "BrickEffect.h"
 #include "Define.h"
+#define RANDOM_VELOCITY_RANGE	15
 BrickEffect::BrickEffect(float x, float y) : Effect(x,y)
 {
 	animation_set = CAnimationSets::GetInstance()->Get(Effect_Type::BROKEN_BRICK_EFFECT);
@@ -12,10 +13,10 @@ void BrickEffect::InitBricks()
 	for (int i = 0; i < num_brick; i++)
 	{
 		LPGAMEOBJECT brick = new FallingBrick();
-		float vx = (float)(rand() % 15+1) / 100;
+		float vx = (float)(rand() % RANDOM_VELOCITY_RANGE +1) / 100;
 		if (rand() % 2 == 0)
 			vx *= -1;
-		float vy = (float)( rand() % 15 + 5) / 100;
+		float vy = (float)( rand() % RANDOM_VELOCITY_RANGE + 5) / 100;
 		brick->SetPosition(x, y);
 		brick->SetSpeed(vx, -vy);
 		brick->animation_set = animation_set;

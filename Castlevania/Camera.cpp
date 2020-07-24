@@ -4,6 +4,7 @@ Camera::Camera()
 {
 	cam_x = cam_y = 0.00f;
 	isInBossFight = false;
+	screen_width = CGame::GetInstance()->GetScreenWidth();
 }
 
 Camera::~Camera()
@@ -35,7 +36,7 @@ bool Camera::IsInCam(LPGAMEOBJECT obj)
 {
 	float l,t,r,b;
 	obj->GetBoundingBox(l, t, r, b);
-	int screen_width = CGame::GetInstance()->GetScreenWidth();
+
 	return l > cam_x - TILE_WIDTH &&  r < cam_x + screen_width + TILE_WIDTH
 		&& t > cam_y
 		&& b - STATUS_BOARD_HEIGHT < cam_y + mapHeight + TILE_HEIGHT;

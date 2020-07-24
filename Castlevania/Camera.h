@@ -11,6 +11,7 @@ class Camera
 public:
 	Camera();
 	~Camera();
+	int screen_width;
 	float cam_x, cam_y;
 	void Update(Simon * simon);
 	void GetCamPosition(float& x, float& y);

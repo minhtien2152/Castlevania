@@ -21,7 +21,7 @@ void CZombie::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects )
 void CZombie::Render()
 {
 
-	animation_set->at(state)->Render(x, y, nx);
+	animation_set->at(state)->Render(x, y, nx,isUpdatingFrame);
 	RenderBoundingBox();
 
 }

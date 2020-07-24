@@ -45,7 +45,8 @@ public:
 	virtual void Unload();
 	void SpawnItem(LPGAMEOBJECT obj);
 	void CreateEffect(LPGAMEOBJECT obj,int type);
-
+	void CreateMoneyEffect(LPGAMEOBJECT obj,int value);
+	void HandleGoingOutOfCam();
 	void CheckForEnemyCollison();
 	void CheckForCollisonWithItems();
 	void AccquireItem(int type);

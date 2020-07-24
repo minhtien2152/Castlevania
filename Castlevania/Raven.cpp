@@ -24,6 +24,7 @@ void Raven::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	}
 
  	if(state == RAVEN_IDLE)
+		if(!isFrozen)
 		if (IsPlayerWithinAttackRange())
 		{
 			SetState(RAVEN_FLY);

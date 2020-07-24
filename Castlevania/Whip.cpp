@@ -6,6 +6,7 @@ Whip::Whip()
 	SetAnimationSet(CAnimationSets::GetInstance()->Get(Weapon_Type::WHIP));
 	tag = Weapon_Type::WHIP;
 	CGameObject::SetState(WHIP_LEVEL0);
+	damage = 1;
 }
 
 Whip::~Whip()
@@ -39,21 +40,26 @@ void Whip::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 	bottom = top + WHIP_BBOX_HEIGHT;
 	if (nx < 0)
 	{
-		if (state != WHIP_LEVEL2)
-			left = x + 80 + LONG_CHAIN_BBOX_WIDTH;
-		left = x + 80 + NORMAL_WHIP_BBOX_WIDTH;
+			left = x +80+ NORMAL_WHIP_BBOX_WIDTH;
+
+		
 	}
 	else if (nx > 0)
 	{
-		if (state != WHIP_LEVEL2)
-			left = LONG_CHAIN_BBOX_WIDTH + x;
-		left = NORMAL_WHIP_BBOX_WIDTH + x;
+
+			left = NORMAL_WHIP_BBOX_WIDTH + x;
+			if (state == WHIP_LEVEL2)
+				left = x + NORMAL_WHIP_BBOX_WIDTH/2;
+
+		
 
 	}
 
 	if (state != WHIP_LEVEL2)
 		right = left + NORMAL_WHIP_BBOX_WIDTH;
-	else  right = left + LONG_CHAIN_BBOX_WIDTH;
+		
+	else 
+		right = left + LONG_CHAIN_BBOX_WIDTH;
 }
 
 void Whip::LevelUp()

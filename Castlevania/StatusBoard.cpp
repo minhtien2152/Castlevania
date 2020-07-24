@@ -7,8 +7,12 @@
 #define BOSS_HEALTH 16
 #define SCORE_PER_SEC 10
 #define SCORE_PER_HEART 100
-
-
+#define RECT_X	290
+#define RECT_Y	32
+#define	SUBWP_X	305
+#define	SUBWP_Y	38
+#define WEAPON_CAP_X	450
+#define WEAPON_CAP_Y	38
 StatusBoard::StatusBoard(Simon* simon, LPGAMEOBJECT boss)
 {
 	Reset();
@@ -91,13 +95,13 @@ void StatusBoard::Render()
 	simonbar->Render();
 	if (bossbar != NULL)
 		bossbar->Render();
-	animation_set->at(SUB_WEAPON_RECT_TEX_ID)->Render(290, 32,1, 1, false);
+	animation_set->at(SUB_WEAPON_RECT_TEX_ID)->Render(RECT_X, RECT_Y,1, 1, false);
 	if (subWeaponType !=-1)
-		item_animation_set->at(subWeaponType)->Render(305, 38,1, 1, false);
+		item_animation_set->at(subWeaponType)->Render(SUBWP_X, SUBWP_Y,1, 1, false);
 	if(subWeaponCap ==2)
-		item_animation_set->at(Item_Type::DOUBLESHOT)->Render(450, 38, 1, 1, false);
+		item_animation_set->at(Item_Type::DOUBLESHOT)->Render(WEAPON_CAP_X, WEAPON_CAP_Y, 1, 1, false);
 	else if(subWeaponCap ==3)
-		item_animation_set->at(Item_Type::TRIPLESHOT)->Render(450, 38, 1, 1, false);
+		item_animation_set->at(Item_Type::TRIPLESHOT)->Render(WEAPON_CAP_X, WEAPON_CAP_Y, 1, 1, false);
 
 }
 

@@ -1,0 +1,8 @@
+[SPRITES]
+30070	1036	144	1068	176	3
+30071	1070	144	1102	176	3
+[ANIMATIONS]
+hunchback_idle	30070	100	30071	100
+hunchback_jump	30071	100
+[ANIMATION_SETS]
+27	hunchback_idle	hunchback_jump

@@ -19,7 +19,7 @@ public:
 	Grid(int mapWidth,int mapHeight);
 	void Update(Camera*cam);
 	void PlaceObjectInGrid(LPGAMEOBJECT obj);
-	void PlaceObjectInGrid(LPGAMEOBJECT obj,int row, int col);
+	void PlaceObjectInGrid(LPGAMEOBJECT obj,int id);
 	void CleanUp();
 	void GetObjectsAccordingCam(Camera* cam, vector<LPGAMEOBJECT>* cell_object);
 	void GetUpdateObjects(vector<LPGAMEOBJECT>* cell_object);

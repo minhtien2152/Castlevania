@@ -37,7 +37,7 @@ void CGameObject::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	this->dt = dt;
 	if (hp <= 0)
 		isDestroyed = true;
-	if (isStatic || isDestroyed)	return;
+	if (isStatic || isDestroyed || isFrozen)	return;
 	
 	dx = vx * dt;
 	dy = vy * dt;
@@ -282,8 +282,4 @@ void CGameObject::GetHit(int damage)
 		lastHit = GetTickCount();
 		isHit = true;
 	}
-}
-
-CGameObject::~CGameObject()
-{
 }

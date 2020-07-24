@@ -13,19 +13,20 @@ void Bat::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	if (state == BAT_IDLE)
 	{
-
-		if (IsPlayerWithinAttackRange())
-		{
-			AdjustDirectionToFollowSimon();
-			CalculateFlyingEquation();
-			SetState(BAT_FLY);
+		if (!isFrozen)
+			if (IsPlayerWithinAttackRange())
+			{
+				AdjustDirectionToFollowSimon();
+				CalculateFlyingEquation();
+				SetState(BAT_FLY);
 			
-		}
+			}
 	}
 	
 	if (state == BAT_FLY)
 	{
 		//the flying equation is a parabol x = a(y-y0)^2 +x0
+		vx = -nx * BAT_SPEED_VX;
 		y = sqrt((x - default_x) / a) + default_y;	
 	}
 }

@@ -1,5 +1,6 @@
 #include "SmartEnemy.h"
 #include "Simon.h"
+#include "Define.h"
 SmartEnemy::SmartEnemy()
 {
 	hp = 1;
@@ -33,7 +34,7 @@ void SmartEnemy::AdjustDirectionToFollowSimon()
 	{
 		float plr_x, plr_y;
 		player->GetPosition(plr_x, plr_y);
-		if (x - (plr_x + 16) > 0)
+		if (x - (plr_x + TILE_WIDTH) > 0)
 			SetDirection(1);
 		else
 			SetDirection(-1);

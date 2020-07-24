@@ -76,6 +76,7 @@ public:
 	bool isDestroyed;
 	bool isPhysicEnabled;
 	bool isUpdatingFrame;
+	bool isFrozen;
 	LPANIMATION_SET animation_set;
 	vector<LPCOLLISIONEVENT> nonSolidObjCoEvents;
 	vector<LPGAMEOBJECT> nonSolidObjects;
@@ -126,5 +127,5 @@ public:
 	void SetDamage(int damage) { this->damage = damage; }
 	void EnterCam();
 	void GetHit(int damage);
-	~CGameObject();
+
 };

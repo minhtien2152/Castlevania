@@ -1,0 +1,10 @@
+[SPRITES]
+30063	1408	164	1440	228	3
+30064	1442	164	1474	228	3
+# ani_id	sprite1_id	time1	sprite2_id	time2	...			
+[ANIMATIONS]
+skeleton	30063	100	30064	300
+skeleton_jump	30063	100
+skeleton_atk	30064	100
+[ANIMATION_SETS]
+25	skeleton	skeleton_jump	skeleton_atk

@@ -194,7 +194,7 @@ void BossBat::Charge()
 	justShooted = false;
 	nx = (player->x - x)/abs(player->x-x);
 	vy = 0;
-	if (player->y - y >= 50)
+	if (player->y - y >= TILE_HEIGHT)
 	{
 		destinationX = player->x;
 		destinationY = player->y;

@@ -1,0 +1,24 @@
+[SPRITES]
+30024	1454	44	1470	76	3
+30072	110	228	126	260	3
+30080	2	228	18	244	3
+30081	20	228	36	244	3
+30082	38	228	54	244	3
+30083	56	228	72	244	3
+30084	74	228	90	244	3
+30085	92	228	108	244	3
+[ANIMATIONS]
+hit_effect	30024	150
+fire_effect	30019	100	30020	100
+brick_effect	30072	100
+money_one	30080	300
+money_two	30081	300
+money_four	30082	300
+money_seven	30083	300
+money_hundred	30084	300
+money_thousand	30085	300
+[ANIMATION_SETS]
+13	hit_effect
+14	fire_effect
+15	brick_effect
+16	money_one	money_two	money_four	money_seven	money_hundred	money_thousand

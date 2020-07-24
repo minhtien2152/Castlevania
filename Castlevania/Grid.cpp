@@ -1,5 +1,5 @@
 #include "Grid.h"
-
+#include <algorithm>
 Grid::Grid(int mapWidth, int mapHeight)
 {
 	
@@ -8,8 +8,8 @@ Grid::Grid(int mapWidth, int mapHeight)
 	map_height = mapHeight;
 	cell_width = screen_width / 2 ;
 	cell_height = screen_height/ 2 ;
-	this->column = mapWidth-1 / cell_width;
-	this->row = mapHeight / cell_height;
+	this->column = mapWidth / cell_width;
+	
 
 }
 
@@ -29,7 +29,6 @@ void Grid::Update(Camera* cam)
 		else
 		PlaceObjectInGrid(obj);
 	}
-
 }
 
 void Grid::PlaceObjectInGrid(LPGAMEOBJECT obj)
@@ -50,9 +49,9 @@ void Grid::PlaceObjectInGrid(LPGAMEOBJECT obj)
 
 }
 
-void Grid::PlaceObjectInGrid(LPGAMEOBJECT obj, int row, int col)
+void Grid::PlaceObjectInGrid(LPGAMEOBJECT obj, int id)
 {
-	grid_cell[GetCellId(col, row)].push_back(obj);
+	grid_cell[id].push_back(obj);
 }
 
 
@@ -189,23 +188,16 @@ void Grid::ClearAll()
 
 void Grid::DeleteAllObjects()
 {
-	unordered_map<int, LPGAMEOBJECT> temp_list;
-	//DebugOut(L"start row %d,end row %d, start col %d, end col %d\n", start_row, end_row, start_col, end_col);
-	for (auto cell :grid_cell)
-	{
+	vector<LPGAMEOBJECT> tempList;
+	for (auto cell : grid_cell)
 		for (auto obj : cell.second)
-		{
-			if (temp_list.find(obj->id) == temp_list.end())
-			{
-				temp_list[obj->id] = obj;
-				//	
-			}
-		}
-	}
-	for (auto obj : temp_list)
+			tempList.push_back(obj);
+	std::sort(tempList.begin(), tempList.end());
+	tempList.erase(std::unique(tempList.begin(), tempList.end()), tempList.end());
+	for (auto obj : tempList)
 	{
-		delete(obj.second);
-		obj.second = NULL;
+		delete(obj);
+		obj = NULL;
 	}
 }
 

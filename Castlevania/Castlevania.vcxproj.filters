@@ -192,6 +192,9 @@
     <ClCompile Include="ItemSpawner.cpp">
       <Filter>GameObject</Filter>
     </ClCompile>
+    <ClCompile Include="MoneyEffect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -355,6 +358,9 @@
     </ClInclude>
     <ClInclude Include="ItemSpawner.h">
       <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MoneyEffect.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

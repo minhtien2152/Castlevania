@@ -29,6 +29,7 @@
 #include "BrickEffect.h"
 #include "BossBat.h"
 #include "ItemSpawner.h"
+#include "MoneyEffect.h"
 using namespace std;
 
 
@@ -75,7 +76,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	
 	int id = 0;
 	int num_cell = atoi(tokens[CELL_NUM_COL].c_str());
-	int cell_end = CELL_NUM_COL + num_cell * 2;
+	int cell_end = CELL_NUM_COL + num_cell ;
 	switch (object_type)
 	{
 	case Object_Type::SIMON: 
@@ -210,14 +211,14 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		
 		for (int i = 0; i < num_cell; i++)
 		{
-			int row = atoi(tokens[CELL_NUM_COL+1 + i * 2].c_str());
-			int col = atoi(tokens[CELL_NUM_COL+2 + i * 2].c_str());
+			int id = atoi(tokens[CELL_NUM_COL+1 + i].c_str());
+
 			if (obj->isStatic && obj->isDestructable == false)
 			{
-				static_obj_grid->PlaceObjectInGrid(obj, row, col);
+				static_obj_grid->PlaceObjectInGrid(obj, id);
 			}
 			else {
-				dynamic_obj_grid->PlaceObjectInGrid(obj, row, col);
+				dynamic_obj_grid->PlaceObjectInGrid(obj, id);
 			}
 		}
 		
@@ -274,7 +275,7 @@ void CPlayScene::LoadScene()
 
 		if (line == "[RESOURCES]") { section = SCENE_SECTION_RESOURCES; continue; }
 
-		if (line == "[TILE_SET]") { section = SCENE_SECTION_TILESET; continue; }
+		if (line == "[TEXTURES]") { section = SCENE_SECTION_TILESET; continue; }
 
 		if (line == "[TILE_MAP_DATA]") { section = SCENE_SECTION_TILEMAP_DATA; continue; }
 
@@ -322,7 +323,7 @@ void CPlayScene::Update(DWORD dt)
 {
 	statusboard->Update(dt);
 
-	if (IsCalculatingHighScore)
+	if (IsCalculatingHighScore || IsFinished)
 	{
 		return;
 	}
@@ -382,8 +383,7 @@ void CPlayScene::Update(DWORD dt)
 	for (UINT i = 0; i < enemyList.size(); i++)
 	{
 		enemyList[i]->isUpdatingFrame = !IsStopWatchEnabled();
-		if (IsStopWatchEnabled()) continue;
-		else
+	
 			if (enemyList[i]->isEnabled)
 			{
 				if (camera->IsInCam(enemyList[i]))
@@ -402,12 +402,14 @@ void CPlayScene::Update(DWORD dt)
 						SpawnItem(enemyList[i]);
 					}
 					else {
+						enemyList[i]->isFrozen = IsStopWatchEnabled();
 						vector<LPGAMEOBJECT> coObject;
 						for (UINT i = 0; i < objectList.size(); i++)
 							coObject.push_back(objectList[i]);
 						coObject.push_back(player);
 						enemyList[i]->Update(dt, &coObject);
 						coObject.clear();
+					
 					}
 				}
 				else
@@ -500,11 +502,14 @@ void CPlayScene::Update(DWORD dt)
 		
 	}
 	
-	
+	HandleGoingOutOfCam();
 	if (!IsFinished)
 	{
-		if(!CheckSimonDead())
+		if (!CheckSimonDead())
+		{
 			player->Update(dt, &objectList);
+			
+		}
 	}
 }
 
@@ -568,7 +573,7 @@ void CPlayScene::SpawnItem(LPGAMEOBJECT obj)
 	
 	int type;
 	if (obj->itemSpawn == Item_Type::RANDOM)
-		type = rand() % 16;
+		type = rand() % RANDOM_DROP_ITEM_RANGE;
 	else
 		type = obj->itemSpawn;
 
@@ -606,8 +611,20 @@ void CPlayScene::CreateEffect(LPGAMEOBJECT obj,int type)
 		}
 		else
 			DebugOut(L"[ERROR]Wrong effect type");
-	
-	
+}
+
+void CPlayScene::CreateMoneyEffect(LPGAMEOBJECT obj, int value)
+{
+	float x, y;
+	obj->GetPosition(x, y);
+	Effect* effect = new MoneyEffect(x, y,value);
+	effectList.push_back(effect);
+}
+
+void CPlayScene::HandleGoingOutOfCam()
+{
+	if (player->x < camera->cam_x || player->x + SIMON_BBOX_WIDTH + TILE_WIDTH > camera->cam_x+ camera->screen_width)
+		player->x -= player->dx;
 }
 
 
@@ -684,10 +701,6 @@ void CPlayScene::AccquireItem(int type)
 		break;
 	case Item_Type::SMALLHEART:
 		player->SetHeartsCollected(player->GetHeartsCollected() + 1);
-	case Item_Type::REDMONEYBAG:
-	case Item_Type::WHITEMONEYBAG:
-	case Item_Type::BLUEMONEYBAG:
-		player->SetScore(player->GetScore() + 100);
 		break;
 	case Item_Type::CHICKEN:
 		player->SetHP(SIMON_DEFAULT_HEALTH);
@@ -701,7 +714,26 @@ void CPlayScene::AccquireItem(int type)
 	case Item_Type::MAGICCRYSTAL:
 		StartCalculatingHighScore();
 		break;
-
+	case Item_Type::CROWN:
+		player->SetScore(player->GetScore() + CROWN_VALUE);
+		CreateMoneyEffect(player, CROWN_VALUE);
+		break;
+	case Item_Type::REDMONEYBAG:
+		player->SetScore(player->GetScore() + RED_MONEYBAG_VALUE);
+		CreateMoneyEffect(player, RED_MONEYBAG_VALUE);
+		break;
+	case Item_Type::WHITEMONEYBAG:
+		player->SetScore(player->GetScore() + WHITE_MONEYBAG_VALUE);
+		CreateMoneyEffect(player, WHITE_MONEYBAG_VALUE);
+		break;
+	case Item_Type::BLUEMONEYBAG:
+		player->SetScore(player->GetScore() + BLUE_MONEYBAG_VALUE);
+		CreateMoneyEffect(player, BLUE_MONEYBAG_VALUE);
+		break;
+	case Item_Type::SPECIAL_MONEYBAG:
+		player->SetScore(player->GetScore() + SPECIAL_MONEYBAG_VALUE);
+		CreateMoneyEffect(player, SPECIAL_MONEYBAG_VALUE);
+		break;
 	}
 }
 
@@ -725,7 +757,7 @@ void CPlayScene::GetCollidableObject(LPGAMEOBJECT obj, vector<LPGAMEOBJECT>& coO
 		}
 		for (int i = 0; i < enemyList.size(); i++)
 		{
-			if (enemyList[i]->isEnabled)
+			if (enemyList[i]->isEnabled && enemyList[i]->isActivated)
 				coObjects.push_back(enemyList[i]);
 		}
 		for (int i = 0; i < enemyProjectTile.size(); i++)
@@ -869,7 +901,7 @@ void CPlayScene::DestroyAllOnScreenEnemy()
 {
 	for (auto enemy : enemyList)
 	{
-		if (camera->IsInCam(enemy))
+		if (camera->IsInCam(enemy) && enemy->isActivated)
 			enemy->isDestroyed = true;
 	}
 }
@@ -946,6 +978,9 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	case DIK_B:
 		((CPlayScene*)scene)->AccquireItem(Item_Type::MAGICCRYSTAL);
 		break;
+	case DIK_G:
+		((CPlayScene*)scene)->CreateMoneyEffect(simon, RED_MONEYBAG_VALUE);
+		break;
 	case DIK_SPACE:
 		if (simon->isJumping || simon->IsAttacking() || simon->GetState() == SIMON_SIT || simon->stairState !=0)
 			return;
@@ -976,7 +1011,6 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		switch (simon->GetState())
 		{
 		case SIMON_WALK:
-			simon->SetState(SIMON_STAND);
 		case SIMON_STAND :
 		case SIMON_JUMP:
 			simon->SetState(SIMON_STAND_ATTACK);

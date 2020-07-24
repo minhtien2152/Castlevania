@@ -55,7 +55,7 @@ void Ghost::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 void Ghost::Render()
 {
 	if(isActivated)
-		animation_set->at(state)->Render(x, y, nx);
+		animation_set->at(state)->Render(x, y, nx,isUpdatingFrame);
 }
 
 
